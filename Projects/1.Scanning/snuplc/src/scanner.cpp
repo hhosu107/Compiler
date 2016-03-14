@@ -49,17 +49,45 @@ using namespace std;
 //
 #define TOKEN_STRLEN 16
 
+// but we have to change tLetter to tAlpha,
+// and make character type, integer type, etc...
+
 char ETokenName[][TOKEN_STRLEN] = {
-  "tDigit",                         ///< a digit
-  "tLetter",                        ///< a letter
+  "tDigit",                         ///< a digit. '0' to '9'
+  "tLetter",                        ///< a letter. 'A' to 'Z', 'a' to 'z'
+  "tUnderbar",                      ///< '_'
+  "tBoolean",                       ///< "true" or "false"
   "tPlusMinus",                     ///< '+' or '-'
   "tMulDiv",                        ///< '*' or '/'
   "tRelOp",                         ///< relational operator
   "tAssign",                        ///< assignment operator
+  "tAnd",                           ///< "&&"
+  "tOr",                            ///< "||"
+  "tNot",                           ///< '!' before boolean value
   "tSemicolon",                     ///< a semicolon
+  "tColon",                         ///< a colon
   "tDot",                           ///< a dot
   "tLBrak",                         ///< a left bracket
   "tRBrak",                         ///< a right bracket
+  "tLLargebrak",                    ///< a left large bracket '['
+  "tRLargebrak",                    ///< a right large bracket ']'
+  "tQuote",                         ///< '''
+  "tDquote",                        ///< '"'
+
+  "tModule",                        ///< "module"
+  "tBegin",                         ///< "begin"
+  "tEnd",                           ///< "end"
+  "tIf",                            ///< "if"
+  "tThen",                          ///< "then"
+  "tElse",                          ///< "else"
+  "tWhile",                         ///< "while"
+  "tDo",                            ///< "do"
+  "tReturn",                        ///< "return"
+  "tVar",                           ///< "var"
+  "tProcedure",                     ///< "procedure"
+  "tFunction",                      ///< "function"
+  "tBegin",                         ///< "begin"
+  "tComment",                       ///< multi single lines starting from "//"
 
   "tEOF",                           ///< end of file
   "tIOError",                       ///< I/O error
@@ -72,16 +100,41 @@ char ETokenName[][TOKEN_STRLEN] = {
 //
 
 char ETokenStr[][TOKEN_STRLEN] = {
-  "tDigit (%s)",                    ///< a digit
-  "tLetter (%s)",                   ///< a letter
+  "tDigit (%s)",                    ///< a digit. '0' to '9'
+  "tLetter (%s)",                   ///< a letter. 'A' to 'Z', 'a' to 'z'
+  "tUnderbar",                      ///< '_'
+  "tBoolean (%s)",                     ///< "true" or "false"
   "tPlusMinus (%s)",                ///< '+' or '-'
   "tMulDiv (%s)",                   ///< '*' or '/'
   "tRelOp (%s)",                    ///< relational operator
   "tAssign",                        ///< assignment operator
+  "tAnd",                           ///< "&&"
+  "tOr",                            ///< "||"
+  "tNot",                           ///< '!' before boolean value
   "tSemicolon",                     ///< a semicolon
+  "tColon",                         ///< a colon
   "tDot",                           ///< a dot
   "tLBrak",                         ///< a left bracket
   "tRBrak",                         ///< a right bracket
+  "tLLargebrak",                    ///< a left large bracket '['
+  "tRLargebrak",                    ///< a right large bracket ']'
+  "tQoute",                         ///< '''
+  "tDquote",                        ///< '"'
+
+  "tModule",                        ///< "module"
+  "tBegin",                         ///< "begin"
+  "tEnd",                           ///< "end"
+  "tIf",                            ///< "if"
+  "tThen",                          ///< "then"
+  "tElse",                          ///< "else"
+  "tWhile",                         ///< "while"
+  "tDo",                            ///< "do"
+  "tReturn",                        ///< "return"
+  "tVar",                           ///< "var"
+  "tProcedure",                     ///< "procedure"
+  "tFunction",                      ///< "function"
+  "tBegin",                         ///< "begin"
+  "tComment",                       ///< multi single lines starting fron "//".. Doesn't it require (%s) ?
 
   "tEOF",                           ///< end of file
   "tIOError",                       ///< I/O error
