@@ -49,45 +49,50 @@ using namespace std;
 /// each member of this enumeration represents a token in SnuPL/0
 ///
 enum EToken {
-  tDigit=0,                         ///< a digit. '0' to '9'
-  tLetter,                          ///< a letter. 'A' to 'Z', 'a' to 'z'
-  tUnderbar,                        ///< '_'
-  tBoolean,                         ///< "true" or "false"
-  tPlusMinus,                       ///< '+' or '-'
-  tMulDiv,                          ///< '*' or '/'
-  tRelOp,                           ///< relational operator
-  tAssign,                          ///< assignment operator
-  tAnd,                             ///< "&&"
-  tOr,                              ///< "||"
-  tNot,                             ///< '!' before boolean value
-  tSemicolon,                       ///< a semicolon
-  tColon,                           ///< a colon
-  tDot,                             ///< a dot
-  tLBrak,                           ///< a left bracket
-  tRBrak,                           ///< a right bracket
-  tLLargebrak,                      ///< a left large bracket '['
-  tRLargebrak,                      ///< a right large bracket ']'
-  tQuote,                           ///< '''
-  tDquote,                          ///< '"'
+  tNumber = 0,                    ///< an integer
+  tIdent,                         ///< an identifier
+  tCharacter,                     ///< a character. ASCIIchar, "\n", "\t"
+  tString,                        ///< a string such as "hello".
+  tBool,                          ///< "true" value or "false" value
 
-  tModule,                          ///< "module"
-  tBegin,                           ///< "begin"
-  tEnd,                             ///< "end"
-  tIf,                              ///< "if"
-  tThen,                            ///< "then"
-  tElse,                            ///< "else"
-  tWhile,                           ///< "while"
-  tDo,                              ///< "do"
-  tReturn,                          ///< "return"
-  tVar,                             ///< "var"
-  tProcedure,                       ///< "procedure"
-  tFunction,                        ///< "function"
-  tBegin,                           ///< "begin"
-  tComment,                         ///< multi single lines starting from "//"
+  tPlusMinus,                     ///< '+' or '-'
+  tMulDiv,                        ///< '*' or '/'
+  tRelOp,                         ///< "=", "#", "<", "<=", ">", or ">="
+  tAndOr,                         ///< "&&" or "||"
+  tNot,                           ///< '!' before boolean value
+  tAssign,                        ///< ":="
+  tSemicolon,                     ///< a semicolon
+  tColon,                         ///< a colon
+  tComma,                         ///< a comma
+  tDot,                           ///< a dot which represents EOF
+  tLBrak,                         ///< a left bracket
+  tRBrak,                         ///< a right bracket
+  tLLbrak,                        ///< a left large bracket '['
+  tRLbrak,                        ///< a right large bracket ']'
+  tQuote,                         ///< '''
+  tDquote,                        ///< '"'
 
-  tEOF,                             ///< end of file
-  tIOError,                         ///< I/O error
-  tUndefined,                       ///< undefined
+  tModule,                        ///< "module"
+  tBegin,                         ///< "begin"
+  tEnd,                           ///< "end"
+  tIf,                            ///< "if"
+  tThen,                          ///< "then"
+  tElse,                          ///< "else"
+  tWhile,                         ///< "while"
+  tDo,                            ///< "do"
+  tReturn,                        ///< "return"
+  tVar,                           ///< "var"
+  tProcedure,                     ///< "procedure"
+  tFunction,                      ///< "function"
+  tBegin,                         ///< "begin"
+  tBoolean,                       ///< "boolean"
+  tChar,                          ///< "char"
+  tInteger,                       ///< "integer"
+  tComment,                       ///< multi single lines starting from "//"
+
+  tEOF,                           ///< end of file
+  tIOError,                       ///< I/O error
+  tUndefined,                     ///< undefined
 };
 
 

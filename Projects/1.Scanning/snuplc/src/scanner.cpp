@@ -49,28 +49,30 @@ using namespace std;
 //
 #define TOKEN_STRLEN 16
 
-// but we have to change tLetter to tAlpha,
-// and make character type, integer type, etc...
-
+//------------------------------------------------------------------------------
+// SnuPL/1 token types
+//
 char ETokenName[][TOKEN_STRLEN] = {
-  "tDigit",                         ///< a digit. '0' to '9'
-  "tLetter",                        ///< a letter. 'A' to 'Z', 'a' to 'z'
-  "tUnderbar",                      ///< '_'
-  "tBoolean",                       ///< "true" or "false"
+  "tNumber",                        ///< an integer
+  "tIdent",                         ///< an identifier
+  "tCharacter",                     ///< a character. ASCIIchar, "\n", "\t"
+  "tString",                        ///< a string such as "hello".
+  "tBool",                          ///< true value or false value
+
   "tPlusMinus",                     ///< '+' or '-'
   "tMulDiv",                        ///< '*' or '/'
-  "tRelOp",                         ///< relational operator
-  "tAssign",                        ///< assignment operator
-  "tAnd",                           ///< "&&"
-  "tOr",                            ///< "||"
+  "tRelOp",                         ///< "=", "#", "<", "<=", ">", or ">="
+  "tAndOr",                         ///< "&&"
   "tNot",                           ///< '!' before boolean value
+  "tAssign",                        ///< ":="
   "tSemicolon",                     ///< a semicolon
   "tColon",                         ///< a colon
-  "tDot",                           ///< a dot
+  "tComma",                         ///< a comma
+  "tDot",                           ///< a dot which represents EOF
   "tLBrak",                         ///< a left bracket
   "tRBrak",                         ///< a right bracket
-  "tLLargebrak",                    ///< a left large bracket '['
-  "tRLargebrak",                    ///< a right large bracket ']'
+  "tLLbrak",                        ///< a left large bracket '['
+  "tRLbrak",                        ///< a right large bracket ']'
   "tQuote",                         ///< '''
   "tDquote",                        ///< '"'
 
@@ -87,6 +89,9 @@ char ETokenName[][TOKEN_STRLEN] = {
   "tProcedure",                     ///< "procedure"
   "tFunction",                      ///< "function"
   "tBegin",                         ///< "begin"
+  "tBoolean",                       ///< "boolean"
+  "tChar",                          ///< "char"
+  "tInteger",                       ///< "integer"
   "tComment",                       ///< multi single lines starting from "//"
 
   "tEOF",                           ///< end of file
@@ -100,25 +105,27 @@ char ETokenName[][TOKEN_STRLEN] = {
 //
 
 char ETokenStr[][TOKEN_STRLEN] = {
-  "tDigit (%s)",                    ///< a digit. '0' to '9'
-  "tLetter (%s)",                   ///< a letter. 'A' to 'Z', 'a' to 'z'
-  "tUnderbar",                      ///< '_'
-  "tBoolean (%s)",                     ///< "true" or "false"
+  "tNumber (%s)",                   ///< an integer
+  "tIdent (%s)",                    ///< an identifier
+  "tCharacter (%s)",                ///< a character. ASCIIchar, "\n", "\t"
+  "tString (%s)",                   ///< a string such as "hello".
+  "tBool (%s)",                     ///< true value or false value
+
   "tPlusMinus (%s)",                ///< '+' or '-'
   "tMulDiv (%s)",                   ///< '*' or '/'
   "tRelOp (%s)",                    ///< relational operator
-  "tAssign",                        ///< assignment operator
-  "tAnd",                           ///< "&&"
-  "tOr",                            ///< "||"
+  "tAndOr (%s)",                    ///< "&&", "||"
   "tNot",                           ///< '!' before boolean value
+  "tAssign",                        ///< assignment operator
   "tSemicolon",                     ///< a semicolon
   "tColon",                         ///< a colon
-  "tDot",                           ///< a dot
+  "tComma",                         ///< a comma
+  "tDot",                           ///< a dot which represents EOF
   "tLBrak",                         ///< a left bracket
   "tRBrak",                         ///< a right bracket
-  "tLLargebrak",                    ///< a left large bracket '['
-  "tRLargebrak",                    ///< a right large bracket ']'
-  "tQoute",                         ///< '''
+  "tLLbrak",                        ///< a left large bracket '['
+  "tRLbrak",                        ///< a right large bracket ']'
+  "tQuote",                         ///< '''
   "tDquote",                        ///< '"'
 
   "tModule",                        ///< "module"
@@ -134,7 +141,10 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tProcedure",                     ///< "procedure"
   "tFunction",                      ///< "function"
   "tBegin",                         ///< "begin"
-  "tComment",                       ///< multi single lines starting fron "//".. Doesn't it require (%s) ?
+  "tBoolean",                       ///< "boolean"
+  "tChar",                          ///< "char"
+  "tInteger",                       ///< "integer"
+  "tComment (%s)",                  ///< multi single lines starting from "//"
 
   "tEOF",                           ///< end of file
   "tIOError",                       ///< I/O error
@@ -147,6 +157,11 @@ char ETokenStr[][TOKEN_STRLEN] = {
 //
 pair<const char*, EToken> Keywords[] =
 {
+  {"module", tModule}, {"begin", tBegin}, {"end", tEnd}, {"if", tIf},
+  {"then", tThen}, {"else", tElse}, {"while", tWhile}, {"do", tDo},
+  {"return", tReturn}, {"var", tVar}, {"procedure", tProcedure},
+  {"function", tFunction}, {"begin", tBegin}, {"boolean", tBoolean},
+  {"char", tChar}, {"integer", tInteger}, {"true", tBool}, {"false", tBool}
 };
 
 
@@ -326,6 +341,8 @@ CToken* CScanner::Scan()
   EToken token;
   string tokval;
   char c;
+  bool divider; /// for divide comment or not(divide)
+                /// to decide whether or not record
 
   while (_in->good() && IsWhite(_in->peek())) GetChar();
 
@@ -339,12 +356,6 @@ CToken* CScanner::Scan()
   token = tUndefined;
 
   switch (c) {
-    case ':':
-      if (_in->peek() == '=') {
-        tokval += GetChar();
-        token = tAssign;
-      }
-      break;
 
     case '+':
     case '-':
@@ -353,12 +364,42 @@ CToken* CScanner::Scan()
 
     case '*':
     case '/':
-      token = tMulDiv;
+      token = tMulDiv; // how to add comment
       break;
 
     case '=':
     case '#':
       token = tRelOp;
+      break;
+
+    case '<':
+      if(_in->peek() == '=') {
+        tokval += GetChar();
+        token = tRelOp;
+      }
+      else {
+        token = tRelOp;
+      }
+      break;
+
+    case '>':
+      if(_in->peek() == '=') {
+        tokval += GetChar();
+        token = tRelOp;
+      }
+      else {
+        token = tRelOp;
+      }
+      break;
+
+    case ':':
+      if (_in->peek() == '=') {
+        tokval += GetChar();
+        token = tAssign;
+      }
+      else{
+        token = tColon;
+      }
       break;
 
     case ';':
@@ -369,12 +410,32 @@ CToken* CScanner::Scan()
       token = tDot;
       break;
 
+    case ',':
+      token = tComma;
+      break;
+
     case '(':
       token = tLBrak;
       break;
 
     case ')':
       token = tRBrak;
+      break;
+
+    case '[':
+      token = tLLBrak;
+      break;
+
+    case ']':
+      token = tRRBrak;
+      break;
+
+    case ''':
+      token = tQuote;
+      break;
+
+    case '"':
+      token = tDquote;
       break;
 
     default:
