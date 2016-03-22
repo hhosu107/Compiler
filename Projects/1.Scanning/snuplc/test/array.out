@@ -1,0 +1,89 @@
+scanning 'array.mod'...
+  1:1: tComment (//)
+  2:1: tComment (// array declaration and definitions)
+  3:1: tComment (//)
+  5:1: tModule
+  5:8: tIdent (arrays)
+  5:14: tSemicolon
+  7:1: tVar
+  7:5: tIdent (A)
+  7:7: tColon
+  7:9: tInteger
+  7:16: tLBracket
+  7:17: tNumber (5)
+  7:18: tRBracket
+  7:19: tSemicolon
+  8:5: tIdent (B)
+  8:7: tColon
+  8:9: tBoolean
+  8:16: tLBracket
+  8:17: tNumber (1)
+  8:18: tRBracket
+  8:19: tSemicolon
+  9:5: tIdent (C)
+  9:7: tColon
+  9:9: tChar
+  9:13: tLBracket
+  9:14: tNumber (256)
+  9:17: tRBracket
+  9:18: tSemicolon
+  10:5: tIdent (i)
+  10:7: tColon
+  10:9: tInteger
+  10:16: tSemicolon
+  11:5: tIdent (b)
+  11:7: tColon
+  11:9: tBoolean
+  11:16: tSemicolon
+  12:5: tIdent (c)
+  12:7: tColon
+  12:9: tChar
+  12:13: tSemicolon
+  14:1: tProcedure
+  14:11: tIdent (print_array)
+  14:22: tLParen
+  14:23: tIdent (array)
+  14:28: tColon
+  14:30: tInteger
+  14:37: tLBracket
+  14:38: tRBracket
+  14:39: tRParen
+  14:40: tSemicolon
+  15:1: tBegin
+  16:1: tEnd
+  16:5: tIdent (print_array)
+  16:16: tSemicolon
+  18:1: tBegin
+  19:3: tIdent (i)
+  19:5: tAssign
+  19:8: tIdent (A)
+  19:9: tLBracket
+  19:10: tNumber (0)
+  19:11: tRBracket
+  19:12: tSemicolon
+  20:3: tIdent (b)
+  20:5: tAssign
+  20:8: tIdent (B)
+  20:9: tLBracket
+  20:10: tNumber (5)
+  20:11: tRBracket
+  20:12: tSemicolon
+  21:3: tIdent (c)
+  21:5: tAssign
+  21:8: tIdent (C)
+  21:9: tLBracket
+  21:10: tPlusMinus (-)
+  21:11: tNumber (1)
+  21:12: tRBracket
+  21:13: tSemicolon
+  23:3: tIdent (print_array)
+  23:14: tLParen
+  23:15: tIdent (A)
+  23:16: tRParen
+  24:1: tEnd
+  24:5: tIdent (arrays)
+  24:11: tDot
+  25:1: tEOF
+
+
+Done.

@@ -69,12 +69,10 @@ char ETokenName[][TOKEN_STRLEN] = {
   "tColon",                         ///< a colon
   "tComma",                         ///< a comma
   "tDot",                           ///< a dot which represents EOF
-  "tLBrak",                         ///< a left bracket
-  "tRBrak",                         ///< a right bracket
-  "tLLBrak",                        ///< a left large bracket '['
-  "tRLBrak",                        ///< a right large bracket ']'
-  "tQuote",                         ///< '''
-  "tDquote",                        ///< '"'
+  "tLParen",                         ///< a left bracket
+  "tRParen",                         ///< a right bracket
+  "tLBracket",                        ///< a left large bracket '['
+  "tRBracket",                        ///< a right large bracket ']'
 
   "tModule",                        ///< "module"
   "tBegin",                         ///< "begin"
@@ -120,12 +118,10 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tColon",                         ///< a colon
   "tComma",                         ///< a comma
   "tDot",                           ///< a dot which represents EOF
-  "tLBrak",                         ///< a left bracket
-  "tRBrak",                         ///< a right bracket
-  "tLLBrak",                        ///< a left large bracket '['
-  "tRLBrak",                        ///< a right large bracket ']'
-  "tQuote",                         ///< deprecated
-  "tDQuote",                        ///< deprecated
+  "tLParen",                         ///< a left bracket
+  "tRParen",                         ///< a right bracket
+  "tLBracket",                        ///< a left large bracket '['
+  "tRBracket",                        ///< a right large bracket ']'
 
   "tModule",                        ///< "module"
   "tBegin",                         ///< "begin"
@@ -340,7 +336,7 @@ CToken* CScanner::Scan()
   string tokval;
   char c;
   bool divider; /// for divide comment or not(divide)
-                /// to decide whether or not record
+  /// to decide whether or not record
 
   while (_in->good() && IsWhite(_in->peek())) GetChar();
 
@@ -441,19 +437,19 @@ CToken* CScanner::Scan()
       break;
 
     case '(':
-      token = tLBrak;
+      token = tLParen;
       break;
 
     case ')':
-      token = tRBrak;
+      token = tRParen;
       break;
 
     case '[':
-      token = tLLBrak;
+      token = tLBracket;
       break;
 
     case ']':
-      token = tRLBrak;
+      token = tRBracket;
       break;
 
     case '\'':
@@ -487,20 +483,15 @@ CToken* CScanner::Scan()
               }
             }
             else if(t == '\''){ // close quote
-              if(len == 0 || len > 1 || valid == false){
-                token = tUndefined;
-              }
-              else{
+              if(len == 1 && valid){
                 token = tCharacter;
               }
+              else token = tUndefined;
+
               break;
             }
             else if(!IsAscii(t)){
               valid = false;
-              while(_in->good() && (t = GetChar()) != '\''){
-                tokval += t;
-              }
-              break;
             }
             tokval += t;
             len++;
@@ -514,9 +505,54 @@ CToken* CScanner::Scan()
       }
 
     case '\"':
-      // Have to check whether or not it is character or not repeatedly
-      token = tDquote;
-      break;
+      {
+        tokval = "";
+
+        bool valid = true;
+
+        for(;;){
+          if(_in->good()){
+            char t = GetChar();
+            if(t == '\\'){ // escape
+              t = GetChar();
+              switch(t){
+                case 'n':
+                  t = '\n'; break;
+                case 't':
+                  t = '\t'; break;
+                case '\'':
+                  t = '\''; break;
+                case '\"':
+                  t = '\"'; break;
+                case '\\':
+                  t = '\\'; break;
+                case '0':
+                  t = '\0'; break;
+                default: // invalid
+                  valid = false;
+                  break;
+              }
+            }
+            else if(t == '\"'){ // close quote
+              if(valid){
+                token = tString;
+              }
+              else token = tUndefined;
+
+              break;
+            }
+            else if(!IsAscii(t)){
+              valid = false;
+            }
+            tokval += t;
+          }
+          else{
+            token = tUndefined;
+            break;
+          }
+        }
+        break;
+      }
 
     default:
       if (('0' <= c) && (c <= '9')) {

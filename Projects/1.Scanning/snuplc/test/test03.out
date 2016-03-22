@@ -1,0 +1,31 @@
+scanning 'test03.mod'...
+  1:1: tIdent (a)
+  1:3: tAssign
+  1:6: tNumber (5)
+  1:7: tSemicolon
+  3:1: tIdent (b)
+  3:3: tAssign
+  3:6: tNumber (2)
+  3:8: tPlusMinus (+)
+  3:10: tNumber (3)
+  3:11: tSemicolon
+  5:1: tIdent (c)
+  5:3: tAssign
+  5:6: tNumber (2)
+  5:8: tPlusMinus (+)
+  5:10: tNumber (3)
+  5:12: tMulDiv (*)
+  5:14: tLParen
+  5:15: tNumber (1)
+  5:17: tPlusMinus (-)
+  5:19: tNumber (2)
+  5:21: tPlusMinus (-)
+  5:23: tNumber (3)
+  5:25: tPlusMinus (+)
+  5:27: tNumber (1)
+  5:28: tRParen
+  6:1: tDot
+  7:1: tEOF
+
+
+Done.

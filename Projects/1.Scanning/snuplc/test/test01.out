@@ -1,0 +1,24 @@
+scanning 'test01.mod'...
+  1:1: tAssign
+  2:1: tPlusMinus (+)
+  3:1: tPlusMinus (-)
+  4:1: tMulDiv (*)
+  5:1: tMulDiv (/)
+  7:1: tRelOp (=)
+  8:1: tRelOp (#)
+  10:1: tSemicolon
+  11:1: tDot
+  12:1: tLParen
+  13:1: tRParen
+  15:1: tNumber (0)
+  16:1: tNumber (1)
+  17:1: tNumber (7)
+  18:1: tNumber (123456789)
+  19:1: tIdent (a)
+  20:1: tIdent (b)
+  21:1: tIdent (f)
+  22:1: tIdent (xyz)
+  23:1: tEOF
+
+
+Done.

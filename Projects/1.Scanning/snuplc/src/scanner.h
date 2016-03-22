@@ -65,12 +65,10 @@ enum EToken {
   tColon,                         ///< a colon
   tComma,                         ///< a comma
   tDot,                           ///< a dot which represents EOF
-  tLBrak,                         ///< a left bracket
-  tRBrak,                         ///< a right bracket
-  tLLBrak,                        ///< a left large bracket '['
-  tRLBrak,                        ///< a right large bracket ']'
-  tQuote,                         ///< '''
-  tDquote,                        ///< '"'
+  tLParen,                         ///< a left bracket
+  tRParen,                         ///< a right bracket
+  tLBracket,                        ///< a left large bracket '['
+  tRBracket,                        ///< a right large bracket ']'
 
   tModule,                        ///< "module"
   tBegin,                         ///< "begin"

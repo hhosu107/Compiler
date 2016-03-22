@@ -1,0 +1,69 @@
+scanning 'character.mod'...
+  1:1: tModule
+  1:8: tIdent (character)
+  1:17: tSemicolon
+  3:1: tVar
+  3:5: tIdent (c)
+  3:6: tColon
+  3:8: tChar
+  3:12: tSemicolon
+  5:1: tFunction
+  5:10: tIdent (test)
+  5:14: tLParen
+  5:15: tIdent (a)
+  5:16: tColon
+  5:18: tChar
+  5:22: tRParen
+  5:23: tColon
+  5:25: tChar
+  5:29: tSemicolon
+  6:1: tBegin
+  7:3: tReturn
+  7:10: tIdent (a)
+  8:1: tEnd
+  8:5: tIdent (test)
+  8:9: tSemicolon
+  10:1: tProcedure
+  10:11: tIdent (WriteLn)
+  10:18: tLParen
+  10:19: tIdent (string)
+  10:25: tColon
+  10:27: tChar
+  10:31: tLBracket
+  10:32: tRBracket
+  10:33: tRParen
+  10:34: tSemicolon
+  11:1: tBegin
+  12:1: tEnd
+  12:5: tIdent (WriteLn)
+  12:12: tSemicolon
+  14:1: tBegin
+  15:3: tIdent (c)
+  15:5: tAssign
+  15:8: tCharacter (7)
+  15:11: tSemicolon
+  16:3: tIdent (c)
+  16:5: tAssign
+  16:8: tIdent (test)
+  16:12: tLParen
+  16:13: tIdent (c)
+  16:14: tRParen
+  16:15: tSemicolon
+  17:3: tIdent (c)
+  17:5: tAssign
+  17:8: tIdent (test)
+  17:12: tLParen
+  17:13: tCharacter (0)
+  17:16: tRParen
+  17:17: tSemicolon
+  18:3: tIdent (WriteLn)
+  18:10: tLParen
+  18:11: tString (Hello, world!\n)
+  18:28: tRParen
+  19:1: tEnd
+  19:5: tIdent (character)
+  19:14: tDot
+  21:1: tEOF
+
+
+Done.
