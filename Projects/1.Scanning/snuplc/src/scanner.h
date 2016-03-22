@@ -301,11 +301,25 @@ class CScanner {
     /// @retval string containing the characters read
     string GetChar(int n);
 
+    /// @brief check if a character is a digit ("0".."9")
+    ///
+    /// @param c character
+    /// @retval true character is a digit
+    /// @retval false character is not a digit
+    bool IsDigit(char c) const;
+
+    /// @brief check is a character is a letter ("A".."Z" | "a" .. "z" | "_")
+    ///
+    /// @param c character
+    /// @retval true character is a letter
+    /// @retval false character is not a letter
+    bool IsLetter(char c) const;
+
     /// @brief check if a character is an ascii character
     ///
     /// @param c character
-    /// @retval true character is ascii character
-    /// @retval false character is not ascii character
+    /// @retval true character is an ascii character
+    /// @retval false character is not an ascii character
     bool IsAscii(char c) const;
 
     /// @brief check if a character is a white character

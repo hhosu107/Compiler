@@ -555,22 +555,26 @@ CToken* CScanner::Scan()
       }
 
     default:
-      if (('0' <= c) && (c <= '9')) {
+      if(IsDigit(c)){
         token = tNumber;
+
         char t = _in->peek();
-        while(('0' <= t) && (t <= '9')){
+        while(IsDigit(t)){
           tokval += GetChar();
           t = _in->peek();
         }
         break;
       }
-      else if ((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')) || (c == '_')) {
+
+      else if(IsLetter(c)){
         token = tIdent;
+
         char t = _in->peek();
-        while ((('a' <= t) && (t <= 'z')) || (('A' <= t) && (t <= 'Z')) || (t == '_') || (('0' <= t) && (t <= '9'))) {
+        while (IsLetter(t) || IsDigit(t)){
           tokval += GetChar();
           t = _in->peek();
         }
+
         if(keywords.find(tokval) != keywords.end()) {
           token = keywords.find(tokval)->second;
         }
@@ -580,10 +584,11 @@ CToken* CScanner::Scan()
         }
         break;
       }
+
       else {
-        tokval = "invalid character '";
+        tokval = "invalid character (";
         tokval += c;
-        tokval += "'";
+        tokval += ")";
       }
       break;
   }
@@ -603,6 +608,14 @@ string CScanner::GetChar(int n)
   string str;
   for (int i=0; i<n; i++) str += GetChar();
   return str;
+}
+
+bool CScanner::IsDigit(char c) const {
+  return (c >= '0' && c <= '9');
+}
+
+bool CScanner::IsLetter(char c) const {
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_');
 }
 
 bool CScanner::IsAscii(char c) const{
