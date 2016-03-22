@@ -303,6 +303,13 @@ class CScanner {
     /// @retval string containing the characters read
     string GetChar(int n);
 
+    /// @brief check if a character is an ascii character
+    ///
+    /// @param c character
+    /// @retval true character is ascii character
+    /// @retval false character is not ascii character
+    bool IsAscii(char c) const;
+
     /// @brief check if a character is a white character
     ///
     /// @param c character

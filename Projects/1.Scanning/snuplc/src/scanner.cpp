@@ -367,7 +367,7 @@ CToken* CScanner::Scan()
     case '/':
       token = tMulDiv;
 
-      if(_in->peek() == '/'){ // comment!
+      if(_in->peek() == '/'){ /// comment!
         token = tComment;
 
         for(;;){
@@ -376,6 +376,21 @@ CToken* CScanner::Scan()
           tokval += GetChar();
         }
       }
+      break;
+
+    case '&':
+    case '|':
+      if(c == _in->peek()){
+        token = tAndOr;
+        tokval += GetChar();
+      }
+      else{
+        token = tUndefined;
+      }
+      break;
+
+    case '!':
+      token = tNot;
       break;
 
     case '=':
@@ -442,9 +457,61 @@ CToken* CScanner::Scan()
       break;
 
     case '\'':
-      // Have to check whether it is character or not
-      token = tQuote;
-      break;
+      {
+        tokval = "";
+
+        bool valid = true;
+        int len = 0;
+
+        for(;;){
+          if(_in->good()){
+            char t = GetChar();
+            if(t == '\\'){ // escape
+              t = GetChar();
+              switch(t){
+                case 'n':
+                  t = '\n'; break;
+                case 't':
+                  t = '\t'; break;
+                case '\'':
+                  t = '\''; break;
+                case '\"':
+                  t = '\"'; break;
+                case '\\':
+                  t = '\\'; break;
+                case '0':
+                  t = '\0'; break;
+                default: // invalid
+                  valid = false;
+                  break;
+              }
+            }
+            else if(t == '\''){ // close quote
+              if(len == 0 || len > 1 || valid == false){
+                token = tUndefined;
+              }
+              else{
+                token = tCharacter;
+              }
+              break;
+            }
+            else if(!IsAscii(t)){
+              valid = false;
+              while(_in->good() && (t = GetChar()) != '\''){
+                tokval += t;
+              }
+              break;
+            }
+            tokval += t;
+            len++;
+          }
+          else{
+            token = tUndefined;
+            break;
+          }
+        }
+        break;
+      }
 
     case '\"':
       // Have to check whether or not it is character or not repeatedly
@@ -500,6 +567,10 @@ string CScanner::GetChar(int n)
   string str;
   for (int i=0; i<n; i++) str += GetChar();
   return str;
+}
+
+bool CScanner::IsAscii(char c) const{
+  return ((0x20 <= c) && (c <= 0x7E));
 }
 
 bool CScanner::IsWhite(char c) const
