@@ -67,8 +67,8 @@ enum EToken {
   tDot,                           ///< a dot which represents EOF
   tLBrak,                         ///< a left bracket
   tRBrak,                         ///< a right bracket
-  tLLbrak,                        ///< a left large bracket '['
-  tRLbrak,                        ///< a right large bracket ']'
+  tLLBrak,                        ///< a left large bracket '['
+  tRLBrak,                        ///< a right large bracket ']'
   tQuote,                         ///< '''
   tDquote,                        ///< '"'
 
@@ -84,7 +84,6 @@ enum EToken {
   tVar,                           ///< "var"
   tProcedure,                     ///< "procedure"
   tFunction,                      ///< "function"
-  tBegin,                         ///< "begin"
   tBoolean,                       ///< "boolean"
   tChar,                          ///< "char"
   tInteger,                       ///< "integer"

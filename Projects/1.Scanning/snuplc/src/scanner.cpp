@@ -71,8 +71,8 @@ char ETokenName[][TOKEN_STRLEN] = {
   "tDot",                           ///< a dot which represents EOF
   "tLBrak",                         ///< a left bracket
   "tRBrak",                         ///< a right bracket
-  "tLLbrak",                        ///< a left large bracket '['
-  "tRLbrak",                        ///< a right large bracket ']'
+  "tLLBrak",                        ///< a left large bracket '['
+  "tRLBrak",                        ///< a right large bracket ']'
   "tQuote",                         ///< '''
   "tDquote",                        ///< '"'
 
@@ -88,7 +88,6 @@ char ETokenName[][TOKEN_STRLEN] = {
   "tVar",                           ///< "var"
   "tProcedure",                     ///< "procedure"
   "tFunction",                      ///< "function"
-  "tBegin",                         ///< "begin"
   "tBoolean",                       ///< "boolean"
   "tChar",                          ///< "char"
   "tInteger",                       ///< "integer"
@@ -123,8 +122,10 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tDot",                           ///< a dot which represents EOF
   "tLBrak",                         ///< a left bracket
   "tRBrak",                         ///< a right bracket
-  "tLLbrak",                        ///< a left large bracket '['
-  "tRLbrak",                        ///< a right large bracket ']'
+  "tLLBrak",                        ///< a left large bracket '['
+  "tRLBrak",                        ///< a right large bracket ']'
+  "tQuote",                         ///< '''
+  "tDquote",                        ///< '"'
 
   "tModule",                        ///< "module"
   "tBegin",                         ///< "begin"
@@ -138,7 +139,6 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tVar",                           ///< "var"
   "tProcedure",                     ///< "procedure"
   "tFunction",                      ///< "function"
-  "tBegin",                         ///< "begin"
   "tBoolean",                       ///< "boolean"
   "tChar",                          ///< "char"
   "tInteger",                       ///< "integer"
@@ -361,8 +361,21 @@ CToken* CScanner::Scan()
       break;
 
     case '*':
+      token = tMulDiv;
+      break;
+
     case '/':
-      token = tMulDiv; // how to add comment
+      token = tMulDiv;
+
+      if(_in->peek() == '/'){ // comment!
+        token = tComment;
+
+        for(;;){
+          char t = _in->peek();
+          if(t == '\n') break;
+          tokval += GetChar();
+        }
+      }
       break;
 
     case '=':
@@ -425,7 +438,7 @@ CToken* CScanner::Scan()
       break;
 
     case ']':
-      token = tRRBrak;
+      token = tRLBrak;
       break;
 
     case '\'':
