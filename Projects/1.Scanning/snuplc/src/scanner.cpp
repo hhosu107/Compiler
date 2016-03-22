@@ -124,6 +124,8 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tRBrak",                         ///< a right bracket
   "tLLBrak",                        ///< a left large bracket '['
   "tRLBrak",                        ///< a right large bracket ']'
+  "tQuote",                         ///< deprecated
+  "tDQuote",                        ///< deprecated
 
   "tModule",                        ///< "module"
   "tBegin",                         ///< "begin"
@@ -498,5 +500,5 @@ string CScanner::GetChar(int n)
 
 bool CScanner::IsWhite(char c) const
 {
-  return ((c == ' ') || (c == '\n'));
+  return ((c == ' ') || (c == '\n') || (c == '\t'));
 }
