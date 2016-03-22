@@ -125,8 +125,6 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tRBrak",                         ///< a right bracket
   "tLLbrak",                        ///< a left large bracket '['
   "tRLbrak",                        ///< a right large bracket ']'
-  "tQuote",                         ///< '''
-  "tDquote",                        ///< '"'
 
   "tModule",                        ///< "module"
   "tBegin",                         ///< "begin"
@@ -430,21 +428,37 @@ CToken* CScanner::Scan()
       token = tRRBrak;
       break;
 
-    case ''':
+    case '\'':
+      // Have to check whether it is character or not
       token = tQuote;
       break;
 
-    case '"':
+    case '\"':
+      // Have to check whether or not it is character or not repeatedly
       token = tDquote;
       break;
 
     default:
       if (('0' <= c) && (c <= '9')) {
-        token = tDigit;
-      } else
-      if (('a' <= c) && (c <= 'z')) {
-        token = tLetter;
-      } else {
+        token = tNumber;
+        char t = _in->peek();
+        while(('0' <= t) && (t <= '9')){
+          tokval += GetChar();
+          t = _in->peek();
+        }
+        break;
+      }
+      else if ((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')) || (c == '_')) {
+        token = tIdent;
+        char t = _in->peek();
+        while ((('a' <= t) && (t <= 'z')) || (('A' <= t) && (t <= 'Z')) || (t == '_') || (('0' <= t) && (t <= '9'))){
+          tokval += GetChar();
+          t = _in->peek();
+        }
+        // find string from pair(Keyword)
+        break;
+      }
+      else {
         tokval = "invalid character '";
         tokval += c;
         tokval += "'";
