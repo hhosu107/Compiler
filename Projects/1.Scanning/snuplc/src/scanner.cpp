@@ -217,20 +217,18 @@ ostream& CToken::print(ostream &out) const
 
 string CToken::escape(const string text)
 {
-  const char *t = text.c_str();
   string s;
 
-  while (*t != '\0') {
-    switch (*t) {
-      case '\n': s += "\\n";  break;
-      case '\t': s += "\\t";  break;
-      case '\0': s += "\\0";  break;
-      case '\'': s += "\\'";  break;
+  for(char c : text){
+    switch(c){
+      case '\n': s += "\\n"; break;
+      case '\t': s += "\\t"; break;
+      case '\0': s += "\\0"; break;
+      case '\'': s += "\\'"; break;
       case '\"': s += "\\\""; break;
       case '\\': s += "\\\\"; break;
-      default :  s += *t;
+      default: s += c;
     }
-    t++;
   }
 
   return s;
@@ -335,8 +333,6 @@ CToken* CScanner::Scan()
   EToken token;
   string tokval;
   char c;
-  bool divider; /// for divide comment or not(divide)
-  /// to decide whether or not record
 
   while (_in->good() && IsWhite(_in->peek())) GetChar();
 
