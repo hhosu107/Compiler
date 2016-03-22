@@ -124,8 +124,8 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tRBrak",                         ///< a right bracket
   "tLLBrak",                        ///< a left large bracket '['
   "tRLBrak",                        ///< a right large bracket ']'
-  "tQuote",                         ///< '''
-  "tDquote",                        ///< '"'
+  "tQuote",                         ///< deprecated
+  "tDQuote",                        ///< deprecated
 
   "tModule",                        ///< "module"
   "tBegin",                         ///< "begin"
@@ -464,11 +464,17 @@ CToken* CScanner::Scan()
       else if ((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')) || (c == '_')) {
         token = tIdent;
         char t = _in->peek();
-        while ((('a' <= t) && (t <= 'z')) || (('A' <= t) && (t <= 'Z')) || (t == '_') || (('0' <= t) && (t <= '9'))){
+        while ((('a' <= t) && (t <= 'z')) || (('A' <= t) && (t <= 'Z')) || (t == '_') || (('0' <= t) && (t <= '9'))) {
           tokval += GetChar();
           t = _in->peek();
         }
-        // find string from pair(Keyword)
+        if(keywords.find(tokval) != keywords.end()) {
+          token = keywords.find(tokval)->second;
+        }
+        else {
+          token = tIdent;
+          keywords[tokval] = token;
+        }
         break;
       }
       else {
@@ -498,5 +504,5 @@ string CScanner::GetChar(int n)
 
 bool CScanner::IsWhite(char c) const
 {
-  return ((c == ' ') || (c == '\n'));
+  return ((c == ' ') || (c == '\n') || (c == '\t'));
 }
