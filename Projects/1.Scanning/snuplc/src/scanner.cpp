@@ -71,8 +71,8 @@ char ETokenName[][TOKEN_STRLEN] = {
   "tDot",                           ///< a dot which represents EOF
   "tLBrak",                         ///< a left bracket
   "tRBrak",                         ///< a right bracket
-  "tLLbrak",                        ///< a left large bracket '['
-  "tRLbrak",                        ///< a right large bracket ']'
+  "tLLBrak",                        ///< a left large bracket '['
+  "tRLBrak",                        ///< a right large bracket ']'
   "tQuote",                         ///< '''
   "tDquote",                        ///< '"'
 
@@ -88,7 +88,6 @@ char ETokenName[][TOKEN_STRLEN] = {
   "tVar",                           ///< "var"
   "tProcedure",                     ///< "procedure"
   "tFunction",                      ///< "function"
-  "tBegin",                         ///< "begin"
   "tBoolean",                       ///< "boolean"
   "tChar",                          ///< "char"
   "tInteger",                       ///< "integer"
@@ -123,8 +122,8 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tDot",                           ///< a dot which represents EOF
   "tLBrak",                         ///< a left bracket
   "tRBrak",                         ///< a right bracket
-  "tLLbrak",                        ///< a left large bracket '['
-  "tRLbrak",                        ///< a right large bracket ']'
+  "tLLBrak",                        ///< a left large bracket '['
+  "tRLBrak",                        ///< a right large bracket ']'
 
   "tModule",                        ///< "module"
   "tBegin",                         ///< "begin"
@@ -138,7 +137,6 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tVar",                           ///< "var"
   "tProcedure",                     ///< "procedure"
   "tFunction",                      ///< "function"
-  "tBegin",                         ///< "begin"
   "tBoolean",                       ///< "boolean"
   "tChar",                          ///< "char"
   "tInteger",                       ///< "integer"
@@ -361,8 +359,17 @@ CToken* CScanner::Scan()
       break;
 
     case '*':
+      token = tMulDiv;
+      break;
     case '/':
-      token = tMulDiv; // how to add comment
+      if(_in->peek() != '/') {
+        token = tMulDiv;
+        break;
+      }
+      else {
+        // Add comment checker.
+      }
+
       break;
 
     case '=':
@@ -425,7 +432,7 @@ CToken* CScanner::Scan()
       break;
 
     case ']':
-      token = tRRBrak;
+      token = tRLBrak;
       break;
 
     case '\'':
@@ -451,11 +458,17 @@ CToken* CScanner::Scan()
       else if ((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z')) || (c == '_')) {
         token = tIdent;
         char t = _in->peek();
-        while ((('a' <= t) && (t <= 'z')) || (('A' <= t) && (t <= 'Z')) || (t == '_') || (('0' <= t) && (t <= '9'))){
+        while ((('a' <= t) && (t <= 'z')) || (('A' <= t) && (t <= 'Z')) || (t == '_') || (('0' <= t) && (t <= '9'))) {
           tokval += GetChar();
           t = _in->peek();
         }
-        // find string from pair(Keyword)
+        if(keywords.find(tokval) != keywords.end()) {
+          token = keywords.find(tokval)->second;
+        }
+        else {
+          token = tIdent;
+          keywords[tokval] = token;
+        }
         break;
       }
       else {
