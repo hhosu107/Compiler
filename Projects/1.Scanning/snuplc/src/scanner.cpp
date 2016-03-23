@@ -639,7 +639,7 @@ bool CScanner::IsLetter(char c) const {
 }
 
 bool CScanner::IsAscii(char c) const{
-  return ((0x00 <= c) && (c <= 0x7F));
+  return ((0x20 <= c) && (c <= 0x7E));
 }
 
 bool CScanner::IsWhite(char c) const

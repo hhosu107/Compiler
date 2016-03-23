@@ -1,4 +1,4 @@
-scanning 'test02.mod'...
+scanning './test/test02.mod'...
   1:1: tIdent (a)
   1:2: tRelOp (=)
   1:3: tAssign
@@ -28,11 +28,11 @@ scanning 'test02.mod'...
   1:32: tSemicolon
   4:1: tLBracket
   5:1: tRBracket
-  6:1: tUndefined (invalid character \'{\')
-  7:1: tUndefined (invalid character \'}\')
-  8:1: tUndefined (invalid character \'?\')
-  9:1: tUndefined (invalid character \'^\')
-  10:1: tUndefined (invalid character \'\\\')
+  6:1: tUndefined (invalid character ({))
+  7:1: tUndefined (invalid character (}))
+  8:1: tUndefined (invalid character (?))
+  9:1: tUndefined (invalid character (^))
+  10:1: tUndefined (invalid character (\\))
   11:1: tEOF
 
 

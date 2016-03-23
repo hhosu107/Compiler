@@ -1,0 +1,55 @@
+scanning './test/test05.mod'...
+  1:1: tComment (//)
+  2:1: tComment (// test02)
+  3:1: tComment (//)
+  4:1: tComment (// scanner test: contains valid and invalid tokens)
+  5:1: tComment (//)
+  7:1: tComment (// scannable input)
+  8:1: tRelOp (<=)
+  8:3: tRelOp (=)
+  8:4: tRelOp (=)
+  8:5: tRelOp (>=)
+  8:7: tRelOp (#)
+  8:8: tAssign
+  8:10: tColon
+  8:11: tColon
+  8:12: tAssign
+  8:14: tRelOp (=)
+  8:15: tRelOp (>)
+  8:16: tSemicolon
+  8:17: tSemicolon
+  8:18: tSemicolon
+  8:19: tIf
+  8:21: tLParen
+  8:22: tThen
+  8:26: tRParen
+  8:27: tElse
+  8:31: tSemicolon
+  8:32: tIdent (a)
+  8:33: tAssign
+  8:35: tPlusMinus (-)
+  8:36: tNumber (1)
+  8:37: tDot
+  8:38: tNumber (1)
+  8:39: tSemicolon
+  8:40: tIdent (a)
+  8:41: tColon
+  8:42: tAssign
+  8:44: tRelOp (=)
+  8:45: tNumber (0)
+  8:46: tIdent (x5)
+  8:48: tSemicolon
+  9:1: tNumber (1)
+  9:2: tIdent (a2b)
+  10:1: tString (hello world)
+  12:1: tComment (// invalid input)
+  13:1: tUndefined (invalid character ({))
+  14:1: tUndefined (invalid character (}))
+  15:1: tUndefined (invalid character (?))
+  16:1: tUndefined (invalid character (^))
+  17:1: tUndefined (invalid character (\\))
+  18:1: tUndefined (hello world)
+  19:1: tEOF
+
+
+Done.

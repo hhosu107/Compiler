@@ -1,0 +1,80 @@
+scanning './test/test04.mod'...
+  1:1: tComment (//)
+  2:1: tComment (// test01)
+  3:1: tComment (//)
+  4:1: tComment (// scanner test: contains only valid tokens)
+  5:1: tComment (//)
+  7:1: tComment (// keywords)
+  9:1: tModule
+  10:1: tProcedure
+  11:1: tFunction
+  12:1: tVar
+  13:1: tInteger
+  14:1: tBoolean
+  15:1: tChar
+  16:1: tBegin
+  17:1: tEnd
+  18:1: tIf
+  19:1: tThen
+  20:1: tElse
+  21:1: tWhile
+  22:1: tDo
+  23:1: tReturn
+  24:1: tBool (true)
+  25:1: tBool (false)
+  27:1: tComment (// operators)
+  28:1: tAssign
+  29:1: tPlusMinus (+)
+  30:1: tPlusMinus (-)
+  31:1: tMulDiv (*)
+  32:1: tMulDiv (/)
+  33:1: tAndOr (||)
+  34:1: tAndOr (&&)
+  35:1: tNot
+  37:1: tComment (// relops)
+  38:1: tRelOp (<)
+  39:1: tRelOp (<=)
+  40:1: tRelOp (=)
+  41:1: tRelOp (>=)
+  42:1: tRelOp (>)
+  43:1: tRelOp (#)
+  45:1: tComment (// syntax elements)
+  46:1: tComma
+  47:1: tSemicolon
+  48:1: tColon
+  49:1: tDot
+  50:1: tLParen
+  51:1: tRParen
+  52:1: tLBracket
+  53:1: tRBracket
+  55:1: tComment (// identifiers)
+  56:1: tIdent (a)
+  57:1: tIdent (b)
+  58:1: tIdent (c)
+  59:1: tIdent (temp1)
+  60:1: tIdent (iftemp)
+  61:1: tIdent (elsetemp)
+  62:1: tIdent (_tmp1)
+  63:1: tIdent (_____t)
+  65:1: tComment (// numbers)
+  66:1: tNumber (0)
+  67:1: tNumber (1)
+  68:1: tNumber (2147483647)
+  69:1: tNumber (2147483648)
+  70:1: tNumber (000000000000000000)
+  71:1: tNumber (999999999999999999)
+  73:1: tComment (// boolean)
+  74:1: tBool (true)
+  75:1: tBool (false)
+  77:1: tComment (// characters)
+  78:1: tCharacter (a)
+  79:1: tCharacter (\n)
+  80:1: tCharacter (\t)
+  82:1: tComment (// strings)
+  83:1: tString (hello, world!)
+  84:1: tString (this\tis\ta\ttab!)
+  85:1: tString (a)
+  86:1: tEOF
+
+
+Done.
