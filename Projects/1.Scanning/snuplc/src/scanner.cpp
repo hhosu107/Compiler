@@ -219,7 +219,7 @@ string CToken::escape(const string text)
 {
   string s;
 
-  for(char c : text){
+  for(char c : text){ /// used c++0x scheme.
     switch(c){
       case '\n': s += "\\n"; break;
       case '\t': s += "\\t"; break;
@@ -457,25 +457,38 @@ CToken* CScanner::Scan()
 
         for(;;){
           if(_in->good()){
-            char t = GetChar();
-            if(t == '\\'){ // escape
-              t = GetChar();
-              switch(t){
-                case 'n':
-                  t = '\n'; break;
-                case 't':
-                  t = '\t'; break;
-                case '\'':
-                  t = '\''; break;
-                case '\"':
-                  t = '\"'; break;
-                case '\\':
-                  t = '\\'; break;
-                case '0':
-                  t = '\0'; break;
-                default: // invalid
-                  valid = false;
-                  break;
+            char t = _in->peek();
+            if(t == EOF){ /// pick EOF not to put EOF in character
+              token = tUndefined;
+              break;
+            }
+            else t = GetChar();
+            if(t == '\\'){ /// escape
+              if(_in->good()){ /// check w.o.n next input stream is good
+                t = _in->peek();
+                switch(t){
+                  case 'n':
+                    GetChar(); t = '\n'; break;
+                  case 't':
+                    GetChar(); t = '\t'; break;
+                  case '\'':
+                    GetChar(); t = '\''; break;
+                  case '\"':
+                    GetChar(); t = '\"'; break;
+                  case '\\':
+                    GetChar(); t = '\\'; break;
+                  case '0':
+                    GetChar(); t = '\0'; break;
+                  case EOF: /// pick EOF not to put EOF in character
+                    valid = false; break;
+                  default: // invalid
+                    GetChar(); valid = false;
+                    break;
+                }
+              }
+              else{
+                token = tUndefined; valid = false;
+                break;
               }
             }
             else if(t == '\''){ // close quote
@@ -483,7 +496,6 @@ CToken* CScanner::Scan()
                 token = tCharacter;
               }
               else token = tUndefined;
-
               break;
             }
             else if(!IsAscii(t)){
@@ -508,25 +520,38 @@ CToken* CScanner::Scan()
 
         for(;;){
           if(_in->good()){
-            char t = GetChar();
+            char t = _in->peek();
+            if(t == EOF){ /// pick EOF not to put EOF in string
+              token = tUndefined;
+              break;
+            }
+            else t = GetChar();
             if(t == '\\'){ // escape
-              t = GetChar();
-              switch(t){
-                case 'n':
-                  t = '\n'; break;
-                case 't':
-                  t = '\t'; break;
-                case '\'':
-                  t = '\''; break;
-                case '\"':
-                  t = '\"'; break;
-                case '\\':
-                  t = '\\'; break;
-                case '0':
-                  t = '\0'; break;
-                default: // invalid
-                  valid = false;
-                  break;
+              if(_in->good()){
+                t = _in->peek();
+                switch(t){
+                  case 'n':
+                    GetChar(); t = '\n'; break;
+                  case 't':
+                    GetChar(); t = '\t'; break;
+                  case '\'':
+                    GetChar(); t = '\''; break;
+                  case '\"':
+                    GetChar(); t = '\"'; break;
+                  case '\\':
+                    GetChar(); t = '\\'; break;
+                  case '0':
+                    GetChar(); t = '\0'; break;
+                  case EOF: /// pick EOF not to put EOF in string
+                    valid = false; break;
+                  default: // invalid
+                    GetChar(); valid = false;
+                    break;
+                }
+              }
+              else{
+                token = tUndefined; valid = false;
+                break;
               }
             }
             else if(t == '\"'){ // close quote
@@ -534,7 +559,6 @@ CToken* CScanner::Scan()
                 token = tString;
               }
               else token = tUndefined;
-
               break;
             }
             else if(!IsAscii(t)){
@@ -582,7 +606,7 @@ CToken* CScanner::Scan()
       }
 
       else {
-        tokval = "invalid character (";
+        tokval = "invalid character ("; // To make consistency, changed ''' to '('
         tokval += c;
         tokval += ")";
       }
