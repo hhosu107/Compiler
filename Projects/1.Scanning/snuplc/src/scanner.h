@@ -325,8 +325,8 @@ class CScanner {
     /// @brief check if a character is a white character
     ///
     /// @param c character
-    /// @retval true character is white space
-    /// @retval false character is not white space
+    /// @retval true character is one of white space
+    /// @retval false character is not one of white space
     bool IsWhite(char c) const;
 
     /// @}

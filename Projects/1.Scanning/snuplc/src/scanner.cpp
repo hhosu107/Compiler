@@ -219,7 +219,7 @@ string CToken::escape(const string text)
 {
   string s;
 
-  for(char c : text){ /// used c++0x scheme.
+  for(char c : text){ // Use c++0x scheme to be able to read string over NULL.
     switch(c){
       case '\n': s += "\\n"; break;
       case '\t': s += "\\t"; break;
@@ -359,7 +359,7 @@ CToken* CScanner::Scan()
     case '/':
       token = tMulDiv;
 
-      if(_in->peek() == '/'){ /// comment!
+      if(_in->peek() == '/'){ // comment!
         token = tComment;
 
         for(;;){
@@ -458,13 +458,13 @@ CToken* CScanner::Scan()
         for(;;){
           if(_in->good()){
             char t = _in->peek();
-            if(t == EOF){ /// pick EOF not to put EOF in character
+            if(t == EOF){ // pick EOF not to put EOF in character
               token = tUndefined;
               break;
             }
             else t = GetChar();
-            if(t == '\\'){ /// escape
-              if(_in->good()){ /// check w.o.n next input stream is good
+            if(t == '\\'){ // escape
+              if(_in->good()){ // check w.o.n next input stream is good
                 t = _in->peek();
                 switch(t){
                   case 'n':
@@ -479,7 +479,7 @@ CToken* CScanner::Scan()
                     GetChar(); t = '\\'; break;
                   case '0':
                     GetChar(); t = '\0'; break;
-                  case EOF: /// pick EOF not to put EOF in character
+                  case EOF: // pick EOF not to put EOF in character
                     valid = false; break;
                   default: // invalid
                     GetChar(); valid = false;
@@ -493,6 +493,8 @@ CToken* CScanner::Scan()
             }
             else if(t == '\''){ // close quote
               if(len == 1 && valid){
+                // We assumed that we have to read all characters from opening
+                // quote to closing quote and make it one token.
                 token = tCharacter;
               }
               else token = tUndefined;
@@ -521,13 +523,13 @@ CToken* CScanner::Scan()
         for(;;){
           if(_in->good()){
             char t = _in->peek();
-            if(t == EOF){ /// pick EOF not to put EOF in string
+            if(t == EOF){ // pick EOF not to put EOF in string
               token = tUndefined;
               break;
             }
             else t = GetChar();
             if(t == '\\'){ // escape
-              if(_in->good()){
+              if(_in->good()){ // check w.o.n next input stream is good
                 t = _in->peek();
                 switch(t){
                   case 'n':
@@ -542,7 +544,7 @@ CToken* CScanner::Scan()
                     GetChar(); t = '\\'; break;
                   case '0':
                     GetChar(); t = '\0'; break;
-                  case EOF: /// pick EOF not to put EOF in string
+                  case EOF: // pick EOF not to put EOF in string
                     valid = false; break;
                   default: // invalid
                     GetChar(); valid = false;
@@ -556,6 +558,8 @@ CToken* CScanner::Scan()
             }
             else if(t == '\"'){ // close quote
               if(valid){
+                // We assumed that we have to read all characters from opening
+                // quote to closing quote and make it one token.
                 token = tString;
               }
               else token = tUndefined;
@@ -575,7 +579,7 @@ CToken* CScanner::Scan()
       }
 
     default:
-      if(IsDigit(c)){
+      if(IsDigit(c)){ // First detect digit.
         token = tNumber;
 
         char t = _in->peek();
@@ -586,7 +590,7 @@ CToken* CScanner::Scan()
         break;
       }
 
-      else if(IsLetter(c)){
+      else if(IsLetter(c)){ // Else detect letter.
         token = tIdent;
 
         char t = _in->peek();
@@ -595,7 +599,7 @@ CToken* CScanner::Scan()
           t = _in->peek();
         }
 
-        if(keywords.find(tokval) != keywords.end()) {
+        if(keywords.find(tokval) != keywords.end()) { // find existing keyword
           token = keywords.find(tokval)->second;
         }
         else {
@@ -630,19 +634,19 @@ string CScanner::GetChar(int n)
   return str;
 }
 
-bool CScanner::IsDigit(char c) const {
+bool CScanner::IsDigit(char c) const { // Digit checker
   return (c >= '0' && c <= '9');
 }
 
-bool CScanner::IsLetter(char c) const {
+bool CScanner::IsLetter(char c) const { // Letter checker
   return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_');
 }
 
-bool CScanner::IsAscii(char c) const{
+bool CScanner::IsAscii(char c) const{ // Ascii checker
   return ((0x20 <= c) && (c <= 0x7E));
 }
 
-bool CScanner::IsWhite(char c) const
+bool CScanner::IsWhite(char c) const // Whitespace checker
 {
   return ((c == ' ') || (c == '\n') || (c == '\t'));
 }

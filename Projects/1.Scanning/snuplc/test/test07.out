@@ -1,0 +1,191 @@
+scanning './test/test07.mod'...
+  1:1: tIdent (CC)
+  1:3: tRelOp (=)
+  1:4: tIdent (g)
+  1:5: tPlusMinus (+)
+  1:6: tPlusMinus (+)
+  2:1: tIdent (CCFLAGS)
+  2:8: tRelOp (=)
+  2:9: tPlusMinus (-)
+  2:10: tIdent (std)
+  2:13: tRelOp (=)
+  2:14: tIdent (c)
+  2:15: tPlusMinus (+)
+  2:16: tPlusMinus (+)
+  2:17: tNumber (0)
+  2:18: tIdent (x)
+  2:20: tPlusMinus (-)
+  2:21: tIdent (g)
+  2:23: tPlusMinus (-)
+  2:24: tIdent (O0)
+  4:1: tIdent (SRC_DIR)
+  4:8: tRelOp (=)
+  4:9: tIdent (src)
+  5:1: tIdent (OBJ_DIR)
+  5:8: tRelOp (=)
+  5:9: tIdent (obj)
+  7:1: tIdent (DEPS)
+  7:5: tRelOp (=)
+  7:6: tIdent (scanner)
+  7:13: tDot
+  7:14: tIdent (h)
+  8:1: tIdent (SCANNER)
+  8:8: tRelOp (=)
+  8:9: tIdent (scanner)
+  8:16: tDot
+  8:17: tIdent (cpp)
+  10:1: tIdent (DEPS_)
+  10:6: tRelOp (=)
+  10:7: tUndefined (invalid character ($))
+  10:8: tLParen
+  10:9: tIdent (patsubst)
+  10:18: tUndefined (invalid character (%))
+  10:19: tComma
+  10:20: tUndefined (invalid character ($))
+  10:21: tLParen
+  10:22: tIdent (SRC_DIR)
+  10:29: tRParen
+  10:30: tMulDiv (/)
+  10:31: tUndefined (invalid character (%))
+  10:32: tComma
+  10:33: tUndefined (invalid character ($))
+  10:34: tLParen
+  10:35: tIdent (DEPS)
+  10:39: tRParen
+  10:40: tRParen
+  11:1: tIdent (OBJ_SCANNER)
+  11:12: tRelOp (=)
+  11:13: tUndefined (invalid character ($))
+  11:14: tLParen
+  11:15: tIdent (patsubst)
+  11:24: tUndefined (invalid character (%))
+  11:25: tDot
+  11:26: tIdent (cpp)
+  11:29: tComma
+  11:30: tUndefined (invalid character ($))
+  11:31: tLParen
+  11:32: tIdent (OBJ_DIR)
+  11:39: tRParen
+  11:40: tMulDiv (/)
+  11:41: tUndefined (invalid character (%))
+  11:42: tDot
+  11:43: tIdent (o)
+  11:44: tComma
+  11:45: tUndefined (invalid character ($))
+  11:46: tLParen
+  11:47: tIdent (SCANNER)
+  11:54: tRParen
+  11:55: tRParen
+  13:1: tDot
+  13:2: tIdent (PHONY)
+  13:7: tColon
+  13:9: tIdent (clean)
+  13:15: tIdent (doc)
+  15:1: tUndefined (invalid character ($))
+  15:2: tLParen
+  15:3: tIdent (OBJ_DIR)
+  15:10: tRParen
+  15:11: tMulDiv (/)
+  15:12: tUndefined (invalid character (%))
+  15:13: tDot
+  15:14: tIdent (o)
+  15:15: tColon
+  15:17: tUndefined (invalid character ($))
+  15:18: tLParen
+  15:19: tIdent (SRC_DIR)
+  15:26: tRParen
+  15:27: tMulDiv (/)
+  15:28: tUndefined (invalid character (%))
+  15:29: tDot
+  15:30: tIdent (cpp)
+  15:34: tUndefined (invalid character ($))
+  15:35: tLParen
+  15:36: tIdent (DEPS_)
+  15:41: tRParen
+  16:2: tUndefined (invalid character ($))
+  16:3: tLParen
+  16:4: tIdent (CC)
+  16:6: tRParen
+  16:8: tUndefined (invalid character ($))
+  16:9: tLParen
+  16:10: tIdent (CCFLAGS)
+  16:17: tRParen
+  16:19: tPlusMinus (-)
+  16:20: tIdent (c)
+  16:22: tPlusMinus (-)
+  16:23: tIdent (o)
+  16:25: tUndefined (invalid character ($))
+  16:26: tUndefined (invalid character (@))
+  16:28: tUndefined (invalid character ($))
+  16:29: tRelOp (<)
+  18:1: tIdent (all)
+  18:4: tColon
+  18:6: tIdent (test_scanner)
+  20:1: tIdent (test_scanner)
+  20:13: tColon
+  20:15: tUndefined (invalid character ($))
+  20:16: tLParen
+  20:17: tIdent (OBJ_DIR)
+  20:24: tRParen
+  20:25: tMulDiv (/)
+  20:26: tIdent (test_scanner)
+  20:38: tDot
+  20:39: tIdent (o)
+  20:41: tUndefined (invalid character ($))
+  20:42: tLParen
+  20:43: tIdent (OBJ_SCANNER)
+  20:54: tRParen
+  21:2: tUndefined (invalid character ($))
+  21:3: tLParen
+  21:4: tIdent (CC)
+  21:6: tRParen
+  21:8: tUndefined (invalid character ($))
+  21:9: tLParen
+  21:10: tIdent (CCFLAGS)
+  21:17: tRParen
+  21:19: tPlusMinus (-)
+  21:20: tIdent (o)
+  21:22: tUndefined (invalid character ($))
+  21:23: tUndefined (invalid character (@))
+  21:25: tUndefined (invalid character ($))
+  21:26: tLParen
+  21:27: tIdent (OBJ_DIR)
+  21:34: tRParen
+  21:35: tMulDiv (/)
+  21:36: tIdent (test_scanner)
+  21:48: tDot
+  21:49: tIdent (o)
+  21:51: tUndefined (invalid character ($))
+  21:52: tLParen
+  21:53: tIdent (OBJ_SCANNER)
+  21:64: tRParen
+  23:1: tIdent (doc)
+  23:4: tColon
+  24:2: tIdent (doxygen)
+  26:1: tIdent (clean)
+  26:6: tColon
+  27:2: tIdent (rm)
+  27:5: tPlusMinus (-)
+  27:6: tIdent (rf)
+  27:9: tUndefined (invalid character ($))
+  27:10: tLParen
+  27:11: tIdent (OBJ_DIR)
+  27:18: tRParen
+  27:19: tMulDiv (/)
+  27:20: tMulDiv (*)
+  27:21: tDot
+  27:22: tIdent (o)
+  27:24: tIdent (test_scanner)
+  29:1: tIdent (mrproper)
+  29:9: tColon
+  29:11: tIdent (clean)
+  30:2: tIdent (rm)
+  30:5: tPlusMinus (-)
+  30:6: tIdent (rf)
+  30:9: tIdent (doc)
+  30:12: tMulDiv (/)
+  30:13: tMulDiv (*)
+  32:1: tEOF
+
+
+Done.

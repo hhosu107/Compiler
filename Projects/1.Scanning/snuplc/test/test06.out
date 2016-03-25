@@ -1,0 +1,5 @@
+scanning './test/test06.mod'...
+  cannot open input stream: 1:1: tIOError
+
+
+Done.
