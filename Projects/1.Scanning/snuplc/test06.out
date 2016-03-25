@@ -1,0 +1,6 @@
+scanning 'test/test06.mod'...
+  1:1: tComment (// \"\\x\")
+  2:1: tEOF
+
+
+Done.

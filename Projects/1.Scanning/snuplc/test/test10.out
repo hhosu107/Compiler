@@ -1,0 +1,6 @@
+scanning 'test/test10.mod'...
+  1:1: tUndefined (\\\n)
+  2:1: tEOF
+
+
+Done.
