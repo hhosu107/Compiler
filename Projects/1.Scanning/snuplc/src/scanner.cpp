@@ -69,10 +69,10 @@ char ETokenName[][TOKEN_STRLEN] = {
   "tColon",                         ///< a colon
   "tComma",                         ///< a comma
   "tDot",                           ///< a dot which represents EOF
-  "tLParen",                         ///< a left bracket
-  "tRParen",                         ///< a right bracket
-  "tLBracket",                        ///< a left large bracket '['
-  "tRBracket",                        ///< a right large bracket ']'
+  "tLParen",                        ///< a left bracket
+  "tRParen",                        ///< a right bracket
+  "tLBracket",                      ///< a left large bracket '['
+  "tRBracket",                      ///< a right large bracket ']'
 
   "tModule",                        ///< "module"
   "tBegin",                         ///< "begin"
