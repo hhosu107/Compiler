@@ -118,10 +118,10 @@ char ETokenStr[][TOKEN_STRLEN] = {
   "tColon",                         ///< a colon
   "tComma",                         ///< a comma
   "tDot",                           ///< a dot which represents EOF
-  "tLParen",                         ///< a left bracket
-  "tRParen",                         ///< a right bracket
-  "tLBracket",                        ///< a left large bracket '['
-  "tRBracket",                        ///< a right large bracket ']'
+  "tLParen",                        ///< a left bracket
+  "tRParen",                        ///< a right bracket
+  "tLBracket",                      ///< a left large bracket '['
+  "tRBracket",                      ///< a right large bracket ']'
 
   "tModule",                        ///< "module"
   "tBegin",                         ///< "begin"
@@ -458,13 +458,13 @@ CToken* CScanner::Scan()
         for(;;){
           if(_in->good()){
             char t = _in->peek();
-            if(t == EOF){ // pick EOF not to put EOF in character
+            if(t == EOF){ // Pick EOF not to put EOF in character
               token = tUndefined;
               break;
             }
             else t = GetChar();
-            if(t == '\\'){ // escape
-              if(_in->good()){ // check w.o.n next input stream is good
+            if(t == '\\'){ // Escape
+              if(_in->good()){ // Check w.o.n next input stream is good
                 t = _in->peek();
                 switch(t){
                   case 'n':
@@ -479,9 +479,9 @@ CToken* CScanner::Scan()
                     GetChar(); t = '\\'; break;
                   case '0':
                     GetChar(); t = '\0'; break;
-                  case EOF: // pick EOF not to put EOF in character
+                  case EOF: // Pick EOF not to put EOF in character
                     valid = false; break;
-                  default: // invalid
+                  default: // Invalid
                     GetChar(); valid = false;
                     break;
                 }
@@ -491,7 +491,7 @@ CToken* CScanner::Scan()
                 break;
               }
             }
-            else if(t == '\''){ // close quote
+            else if(t == '\''){ // Close quote
               if(len == 1 && valid){
                 // We assumed that we have to read all characters from opening
                 // quote to closing quote and make it one token.
@@ -523,13 +523,13 @@ CToken* CScanner::Scan()
         for(;;){
           if(_in->good()){
             char t = _in->peek();
-            if(t == EOF){ // pick EOF not to put EOF in string
+            if(t == EOF){ // Pick EOF not to put EOF in string
               token = tUndefined;
               break;
             }
             else t = GetChar();
-            if(t == '\\'){ // escape
-              if(_in->good()){ // check w.o.n next input stream is good
+            if(t == '\\'){ // Escape
+              if(_in->good()){ // Check w.o.n next input stream is good
                 t = _in->peek();
                 switch(t){
                   case 'n':
@@ -544,9 +544,9 @@ CToken* CScanner::Scan()
                     GetChar(); t = '\\'; break;
                   case '0':
                     GetChar(); t = '\0'; break;
-                  case EOF: // pick EOF not to put EOF in string
+                  case EOF: // Pick EOF not to put EOF in string
                     valid = false; break;
-                  default: // invalid
+                  default: // Invalid
                     GetChar(); valid = false;
                     break;
                 }
@@ -599,7 +599,7 @@ CToken* CScanner::Scan()
           t = _in->peek();
         }
 
-        if(keywords.find(tokval) != keywords.end()) { // find existing keyword
+        if(keywords.find(tokval) != keywords.end()) { // Find existing keyword
           token = keywords.find(tokval)->second;
         }
         else {

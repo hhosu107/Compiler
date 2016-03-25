@@ -184,6 +184,7 @@ class CToken {
     ///
     /// @param text string
     /// @retval escaped string
+    /// @Can read after NULL occurs
     string escape(const string text);
 };
 
