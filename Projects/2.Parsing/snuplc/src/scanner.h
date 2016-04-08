@@ -186,6 +186,14 @@ class CToken {
     /// @retval escaped string
     /// @Can read after NULL occurs
     string escape(const string text);
+
+    /// @brief unescape special characters in a string
+    ///
+    /// @param text string
+    /// @retval unescaped string
+    /// @Can read after NULL occurs
+    string escape(const string text);
+
 };
 
 /// @name CToken output operators

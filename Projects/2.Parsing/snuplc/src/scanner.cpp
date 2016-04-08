@@ -234,6 +234,34 @@ string CToken::escape(const string text)
   return s;
 }
 
+string CToken::unescape(const string text)
+{
+  string s;
+  bool afterEscape = false;
+  for(char c : text){
+    if(afterEscape){
+      afterEscape = false;
+      switch(c){
+        case 'n': s += "\n"; break;
+        case 't': s += "\t"; break;
+        case '0': s += "\0"; break;
+        case '\'': s += "'"; break;
+        case '"': s += "\""; break;
+        case '\\': s += "\\"; break;
+        default : s += '?';
+      }
+    }
+    else if(c == '\\'){
+      afterEscape = true;
+    }
+    else{
+      s += c;
+    }
+  }
+
+  return s;
+}
+
 ostream& operator<<(ostream &out, const CToken &t)
 {
   return t.print(out);
