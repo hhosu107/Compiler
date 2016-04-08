@@ -1,0 +1,10 @@
+I put scanner.cpp/scanner.h we made, and there occurs an error.
+First one was tLParans/tRParens. Therefore I edited
+tLParens/tRParens -> tLParen/tRParen.
+And then, there occurs an another error. That is,
+    CASTStringConstant() has a line:(ast.cpp 1333)
+  type = tm->GetArray(strlen(CToken::unescape(value).c_str())+1,
+                      tm->GetChar());.
+We know that our scanner gives string constant token with escaped characters:
+\' -> \\', .... etc.
+Therefore we have to unescape them.
