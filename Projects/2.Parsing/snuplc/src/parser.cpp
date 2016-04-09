@@ -122,7 +122,8 @@ void CParser::InitSymbolTable(CSymtab *s)
 CAstModule* CParser::module(void)
 {
   //
-  // module ::= statSequence  ".".
+  // module ::= "module" ident ";" varDeclaration { subroutineDecl } |
+  //            "begin" statSequence "end" ident ".".
   //
   CToken dummy;
   CAstModule *m = new CAstModule(dummy, "placeholder");
@@ -140,7 +141,8 @@ CAstStatement* CParser::statSequence(CAstScope *s)
 {
   //
   // statSequence ::= [ statement { ";" statement } ].
-  // statement ::= assignment.
+  // statement ::= assignment | subroutineCall | ifStatement |
+  //                whileStatement | returnStatement.
   // FIRST(statSequence) = { tNumber }
   // FOLLOW(statSequence) = { tDot }
   //
@@ -184,7 +186,7 @@ CAstStatement* CParser::statSequence(CAstScope *s)
 CAstStatAssign* CParser::assignment(CAstScope *s)
 {
   //
-  // assignment ::= number ":=" expression.
+  // assignment ::= qualident ":=" expression.
   //
   CToken t;
 
@@ -199,7 +201,7 @@ CAstStatAssign* CParser::assignment(CAstScope *s)
 CAstExpression* CParser::expression(CAstScope* s)
 {
   //
-  // expression ::= simpleexpr [ relOp simpleexpression ].
+  // expression ::= simpleexpr [ relOp simpleexpr ].
   //
   CToken t;
   EOperation relop;
@@ -224,7 +226,7 @@ CAstExpression* CParser::expression(CAstScope* s)
 CAstExpression* CParser::simpleexpr(CAstScope *s)
 {
   //
-  // simpleexpr ::= term { termOp term }.
+  // simpleexpr ::= ["+" | "-"] term { termOp term }.
   //
   CAstExpression *n = NULL;
 
@@ -275,9 +277,11 @@ CAstExpression* CParser::term(CAstScope *s)
 CAstExpression* CParser::factor(CAstScope *s)
 {
   //
-  // factor ::= number | "(" expression ")"
+  // factor ::= number | "(" expression ")" | boolean |
+  //            character | string | "!" factor |
+  //            qualident | subroutineCall(those two have to be concatenated).
   //
-  // FIRST(factor) = { tNumber, tLBrak }
+  // FIRST(factor) = { tNumber, tLBrak, tNot }
   //
 
   CToken t;
@@ -325,3 +329,34 @@ CAstConstant* CParser::number(void)
   return new CAstConstant(t, CTypeManager::Get()->GetInt(), v);
 }
 
+pair<bool, bool> strtobool(string s){
+  pair<bool, bool> retval(true, false);
+  if(s.compare("true") == 0){
+    retval.second = true;
+  }
+  else if(s.compare("false") == 0){
+    retval.second = false;
+  }
+  else
+    retval.first = false;
+  return retval;
+}
+
+CAstConstant* CParser::boolean(void)
+{
+  //
+  // boolean = "true" | "false".
+  //
+  // " \"true\" | \"false\" " is scanned as one token (tBool)
+  //
+
+  Ctoken t;
+
+  Consume(tBool, &t);
+
+  errno = 0;
+  pair<bool, bool> b = strtobool(t.GetValue());
+  if(!b.first) SetError(t, "invalid boolean.");
+
+  return new CAstConstant(t, CTypeManager::Get()->GetBool(), b.second);
+}
