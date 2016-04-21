@@ -106,6 +106,8 @@ class CParser {
     CAstExpression*   term(CAstScope *s);
     CAstExpression*   factor(CAstScope *s);
 
+    CAstProcedure*    subroutineDecl(CAstScope *s);
+
     CAstConstant*     number(void);
     CAstConstant*     boolean(void);
 

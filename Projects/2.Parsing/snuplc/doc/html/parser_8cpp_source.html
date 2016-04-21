@@ -141,267 +141,306 @@
 <div class="line"><a name="l00122"></a><span class="lineno"><a class="line" href="classCParser.html#a608abf6627862b02dff4e2146416d81e">  122</a></span>&#160;<a class="code" href="classCAstModule.html">CAstModule</a>* <a class="code" href="classCParser.html#a608abf6627862b02dff4e2146416d81e">CParser::module</a>(<span class="keywordtype">void</span>)</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;{</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="comment">// module ::= statSequence  &quot;.&quot;.</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <a class="code" href="classCToken.html">CToken</a> dummy;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <a class="code" href="classCAstModule.html">CAstModule</a> *m = <span class="keyword">new</span> <a class="code" href="classCAstModule.html">CAstModule</a>(dummy, <span class="stringliteral">&quot;placeholder&quot;</span>);</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <a class="code" href="classCAstStatement.html">CAstStatement</a> *statseq = NULL;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  statseq = statSequence(m);</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff">tDot</a>);</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  m-&gt;<a class="code" href="classCAstScope.html#a607f07bb3f287e24a52ec94fc124db47">SetStatementSequence</a>(statseq);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="keywordflow">return</span> m;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;}</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;</div>
-<div class="line"><a name="l00139"></a><span class="lineno"><a class="line" href="classCParser.html#ab80b3a1e6c92caee041d937a5c98b492">  139</a></span>&#160;<a class="code" href="classCAstStatement.html">CAstStatement</a>* <a class="code" href="classCParser.html#ab80b3a1e6c92caee041d937a5c98b492">CParser::statSequence</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;{</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <span class="comment">// statSequence ::= [ statement { &quot;;&quot; statement } ].</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="comment">// statement ::= assignment.</span></div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="comment">// FIRST(statSequence) = { tNumber }</span></div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="comment">// FOLLOW(statSequence) = { tDot }</span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <a class="code" href="classCAstStatement.html">CAstStatement</a> *head = NULL;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a> tt = _scanner-&gt;Peek().<a class="code" href="classCAstNode.html#a338a1b15b0257ad5ef91c690b42fea3d">GetType</a>();</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordflow">if</span> (!(tt == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff">tDot</a>)) {</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <a class="code" href="classCAstStatement.html">CAstStatement</a> *tail = NULL;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    <span class="keywordflow">do</span> {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;      <a class="code" href="classCToken.html">CToken</a> t;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a> tt = _scanner-&gt;Peek().<a class="code" href="classCToken.html#a07a01d5cedb9351c87192d3dc5f0564a">GetType</a>();</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      <a class="code" href="classCAstStatement.html">CAstStatement</a> *st = NULL;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      <span class="keywordflow">switch</span> (tt) {</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        <span class="comment">// statement ::= assignment</span></div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43">tNumber</a>:</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;          st = assignment(s);</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;          SetError(_scanner-&gt;Peek(), <span class="stringliteral">&quot;statement expected.&quot;</span>);</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;      }</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      assert(st != NULL);</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;      <span class="keywordflow">if</span> (head == NULL) head = st;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      <span class="keywordflow">else</span> tail-&gt;<a class="code" href="classCAstStatement.html#aeecd18f9129e4798c241d15125a09728">SetNext</a>(st);</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;      tail = st;</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      tt = _scanner-&gt;Peek().<a class="code" href="classCAstNode.html#a338a1b15b0257ad5ef91c690b42fea3d">GetType</a>();</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      <span class="keywordflow">if</span> (tt == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff">tDot</a>) <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;      Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a94a2999916c80551c1b474603bab69fc">tSemicolon</a>);</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    } <span class="keywordflow">while</span> (!_abort);</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  }</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keywordflow">return</span> head;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;}</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
-<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="classCParser.html#a2adfe259b73c4e3695eb3269ca6b83d8">  184</a></span>&#160;<a class="code" href="classCAstStatAssign.html">CAstStatAssign</a>* <a class="code" href="classCParser.html#a2adfe259b73c4e3695eb3269ca6b83d8">CParser::assignment</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;{</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="comment">// assignment ::= number &quot;:=&quot; expression.</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="comment">// module ::= &quot;module&quot; ident &quot;;&quot; varDeclaration { subroutineDecl }</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="comment">//            &quot;begin&quot; statSequence &quot;end&quot; ident &quot;.&quot;.</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <a class="code" href="classCToken.html">CToken</a> dummy;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <a class="code" href="classCAstModule.html">CAstModule</a> *m = <span class="keyword">new</span> <a class="code" href="classCAstModule.html">CAstModule</a>(dummy, <span class="stringliteral">&quot;placeholder&quot;</span>);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <a class="code" href="classCAstStatement.html">CAstStatement</a> *statseq = NULL;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  statseq = statSequence(m);</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff">tDot</a>);</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  m-&gt;<a class="code" href="classCAstScope.html#a607f07bb3f287e24a52ec94fc124db47">SetStatementSequence</a>(statseq);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordflow">return</span> m;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;}</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="line"><a name="l00140"></a><span class="lineno"><a class="line" href="classCParser.html#ab80b3a1e6c92caee041d937a5c98b492">  140</a></span>&#160;<a class="code" href="classCAstStatement.html">CAstStatement</a>* <a class="code" href="classCParser.html#ab80b3a1e6c92caee041d937a5c98b492">CParser::statSequence</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;{</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="comment">// statSequence ::= [ statement { &quot;;&quot; statement } ].</span></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="comment">// statement ::= assignment | subroutineCall | ifStatement |</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="comment">//                whileStatement | returnStatement.</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="comment">// FIRST(statSequence) = { tNumber }</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="comment">// FOLLOW(statSequence) = { tDot }</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <a class="code" href="classCAstStatement.html">CAstStatement</a> *head = NULL;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a> tt = _scanner-&gt;Peek().<a class="code" href="classCAstNode.html#a338a1b15b0257ad5ef91c690b42fea3d">GetType</a>();</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="keywordflow">if</span> (!(tt == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff">tDot</a>)) {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    <a class="code" href="classCAstStatement.html">CAstStatement</a> *tail = NULL;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <span class="keywordflow">do</span> {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      <a class="code" href="classCToken.html">CToken</a> t;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a> tt = _scanner-&gt;Peek().<a class="code" href="classCToken.html#a07a01d5cedb9351c87192d3dc5f0564a">GetType</a>();</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      <a class="code" href="classCAstStatement.html">CAstStatement</a> *st = NULL;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      <span class="keywordflow">switch</span> (tt) {</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        <span class="comment">// statement ::= assignment</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43">tNumber</a>:</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;          st = assignment(s);</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;          <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;          SetError(_scanner-&gt;Peek(), <span class="stringliteral">&quot;statement expected.&quot;</span>);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;          <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      }</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      assert(st != NULL);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;      <span class="keywordflow">if</span> (head == NULL) head = st;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;      <span class="keywordflow">else</span> tail-&gt;<a class="code" href="classCAstStatement.html#aeecd18f9129e4798c241d15125a09728">SetNext</a>(st);</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      tail = st;</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;      tt = _scanner-&gt;Peek().<a class="code" href="classCAstNode.html#a338a1b15b0257ad5ef91c690b42fea3d">GetType</a>();</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;      <span class="keywordflow">if</span> (tt == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff">tDot</a>) <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a94a2999916c80551c1b474603bab69fc">tSemicolon</a>);</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    } <span class="keywordflow">while</span> (!_abort);</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  }</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="keywordflow">return</span> head;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;}</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
+<div class="line"><a name="l00186"></a><span class="lineno"><a class="line" href="classCParser.html#a2adfe259b73c4e3695eb3269ca6b83d8">  186</a></span>&#160;<a class="code" href="classCAstStatAssign.html">CAstStatAssign</a>* <a class="code" href="classCParser.html#a2adfe259b73c4e3695eb3269ca6b83d8">CParser::assignment</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;{</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <a class="code" href="classCToken.html">CToken</a> t;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <a class="code" href="classCAstConstant.html">CAstConstant</a> *lhs = number();</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a31be042cf58eb5cddbc7eadedeb2cc0e">tAssign</a>, &amp;t);</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *rhs = expression(s);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="comment">// assignment ::= qualident &quot;:=&quot; expression.</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <a class="code" href="classCToken.html">CToken</a> t;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <a class="code" href="classCAstDesignator.html">CAstDesignator</a> *lhs;</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a31be042cf58eb5cddbc7eadedeb2cc0e">tAssign</a>, &amp;t);</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="classCAstStatAssign.html">CAstStatAssign</a>(t, lhs, rhs);</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;}</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;</div>
-<div class="line"><a name="l00199"></a><span class="lineno"><a class="line" href="classCParser.html#ab7852ab9a6c8bb432f771a578e26d36f">  199</a></span>&#160;<a class="code" href="classCAstExpression.html">CAstExpression</a>* <a class="code" href="classCParser.html#ab7852ab9a6c8bb432f771a578e26d36f">CParser::expression</a>(<a class="code" href="classCAstScope.html">CAstScope</a>* s)</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;{</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="comment">// expression ::= simpleexpr [ relOp simpleexpression ].</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *rhs = expression(s);</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="classCAstStatAssign.html">CAstStatAssign</a>(t, lhs, rhs);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;}</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
+<div class="line"><a name="l00201"></a><span class="lineno"><a class="line" href="classCParser.html#ab7852ab9a6c8bb432f771a578e26d36f">  201</a></span>&#160;<a class="code" href="classCAstExpression.html">CAstExpression</a>* <a class="code" href="classCParser.html#ab7852ab9a6c8bb432f771a578e26d36f">CParser::expression</a>(<a class="code" href="classCAstScope.html">CAstScope</a>* s)</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;{</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <a class="code" href="classCToken.html">CToken</a> t;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643">EOperation</a> relop;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *left = NULL, *right = NULL;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  left = simpleexpr(s);</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <span class="comment">// expression ::= simpleexpr [ relOp simpleexpr ].</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <a class="code" href="classCToken.html">CToken</a> t;</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643">EOperation</a> relop;</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *left = NULL, *right = NULL;</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  <span class="keywordflow">if</span> (_scanner-&gt;Peek().GetType() == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a7ff40ee5afb5b86c87e93d1c41f60a20">tRelOp</a>) {</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a7ff40ee5afb5b86c87e93d1c41f60a20">tRelOp</a>, &amp;t);</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    right = simpleexpr(s);</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    <span class="keywordflow">if</span> (t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>() == <span class="stringliteral">&quot;=&quot;</span>)       relop = <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643ac8503ec9b84c4cfcafd08c41ced2f9d0">opEqual</a>;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>() == <span class="stringliteral">&quot;#&quot;</span>)  relop = <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643a63c3e076a7618153e0540254ecb654de">opNotEqual</a>;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="keywordflow">else</span> SetError(t, <span class="stringliteral">&quot;invalid relation.&quot;</span>);</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="classCAstBinaryOp.html">CAstBinaryOp</a>(t, relop, left, right);</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="keywordflow">return</span> left;</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  }</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;}</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;</div>
-<div class="line"><a name="l00224"></a><span class="lineno"><a class="line" href="classCParser.html#af96bce53cd6e0a0093d6ceed571e6d72">  224</a></span>&#160;<a class="code" href="classCAstExpression.html">CAstExpression</a>* <a class="code" href="classCParser.html#af96bce53cd6e0a0093d6ceed571e6d72">CParser::simpleexpr</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;{</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="comment">// simpleexpr ::= term { termOp term }.</span></div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  left = simpleexpr(s);</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  <span class="keywordflow">if</span> (_scanner-&gt;Peek().GetType() == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a7ff40ee5afb5b86c87e93d1c41f60a20">tRelOp</a>) {</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a7ff40ee5afb5b86c87e93d1c41f60a20">tRelOp</a>, &amp;t);</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    right = simpleexpr(s);</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="keywordflow">if</span> (t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>() == <span class="stringliteral">&quot;=&quot;</span>)       relop = <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643ac8503ec9b84c4cfcafd08c41ced2f9d0">opEqual</a>;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>() == <span class="stringliteral">&quot;#&quot;</span>)  relop = <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643a63c3e076a7618153e0540254ecb654de">opNotEqual</a>;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keywordflow">else</span> SetError(t, <span class="stringliteral">&quot;invalid relation.&quot;</span>);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="classCAstBinaryOp.html">CAstBinaryOp</a>(t, relop, left, right);</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keywordflow">return</span> left;</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  }</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;}</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
+<div class="line"><a name="l00226"></a><span class="lineno"><a class="line" href="classCParser.html#af96bce53cd6e0a0093d6ceed571e6d72">  226</a></span>&#160;<a class="code" href="classCAstExpression.html">CAstExpression</a>* <a class="code" href="classCParser.html#af96bce53cd6e0a0093d6ceed571e6d72">CParser::simpleexpr</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;{</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *n = NULL;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  n = term(s);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  <span class="comment">// simpleexpr ::= [&quot;+&quot; | &quot;-&quot;] term { termOp term }.</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *n = NULL;</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <span class="keywordflow">while</span> (_scanner-&gt;Peek().GetType() == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ae6c68b5b5352fb48681dce352980d9df">tPlusMinus</a>) {</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <a class="code" href="classCToken.html">CToken</a> t;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    <a class="code" href="classCAstExpression.html">CAstExpression</a> *l = n, *r;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ae6c68b5b5352fb48681dce352980d9df">tPlusMinus</a>, &amp;t);</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  n = term(s);</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  <span class="keywordflow">while</span> (_scanner-&gt;Peek().GetType() == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ae6c68b5b5352fb48681dce352980d9df">tPlusMinus</a>) {</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <a class="code" href="classCToken.html">CToken</a> t;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    <a class="code" href="classCAstExpression.html">CAstExpression</a> *l = n, *r;</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    r = term(s);</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ae6c68b5b5352fb48681dce352980d9df">tPlusMinus</a>, &amp;t);</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    n = <span class="keyword">new</span> <a class="code" href="classCAstBinaryOp.html">CAstBinaryOp</a>(t, t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>() == <span class="stringliteral">&quot;+&quot;</span> ? <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643af36b2e44fb40b42c0f482a3e397f4fef">opAdd</a> : <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643a079ec39912609100f621209ce7d51a57">opSub</a>, l, r);</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  }</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  <span class="keywordflow">return</span> n;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;}</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;</div>
-<div class="line"><a name="l00248"></a><span class="lineno"><a class="line" href="classCParser.html#ad91bb89e981a45a0d9332ed0c1ce9537">  248</a></span>&#160;<a class="code" href="classCAstExpression.html">CAstExpression</a>* <a class="code" href="classCParser.html#ad91bb89e981a45a0d9332ed0c1ce9537">CParser::term</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;{</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  <span class="comment">// term ::= factor { (&quot;*&quot;|&quot;/&quot;) factor }.</span></div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    r = term(s);</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    n = <span class="keyword">new</span> <a class="code" href="classCAstBinaryOp.html">CAstBinaryOp</a>(t, t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>() == <span class="stringliteral">&quot;+&quot;</span> ? <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643af36b2e44fb40b42c0f482a3e397f4fef">opAdd</a> : <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643a079ec39912609100f621209ce7d51a57">opSub</a>, l, r);</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  }</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  <span class="keywordflow">return</span> n;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;}</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;</div>
+<div class="line"><a name="l00250"></a><span class="lineno"><a class="line" href="classCParser.html#ad91bb89e981a45a0d9332ed0c1ce9537">  250</a></span>&#160;<a class="code" href="classCAstExpression.html">CAstExpression</a>* <a class="code" href="classCParser.html#ad91bb89e981a45a0d9332ed0c1ce9537">CParser::term</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;{</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *n = NULL;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  n = factor(s);</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  <span class="comment">// term ::= factor { (&quot;*&quot; | &quot;/&quot; | &quot;&amp;&amp;&quot;) factor }.</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *n = NULL;</div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a> tt = _scanner-&gt;Peek().GetType();</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  n = factor(s);</div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  <span class="keywordflow">while</span> ((tt == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ac310ea8cd49261a561b1f3bc485a3a89">tMulDiv</a>)) {</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <a class="code" href="classCToken.html">CToken</a> t;</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <a class="code" href="classCAstExpression.html">CAstExpression</a> *l = n, *r;</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ac310ea8cd49261a561b1f3bc485a3a89">tMulDiv</a>, &amp;t);</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a> tt = _scanner-&gt;Peek().GetType();</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="keywordflow">while</span> ((tt == <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ac310ea8cd49261a561b1f3bc485a3a89">tMulDiv</a>)) {</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <a class="code" href="classCToken.html">CToken</a> t;</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <a class="code" href="classCAstExpression.html">CAstExpression</a> *l = n, *r;</div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    r = factor(s);</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ac310ea8cd49261a561b1f3bc485a3a89">tMulDiv</a>, &amp;t);</div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    n = <span class="keyword">new</span> <a class="code" href="classCAstBinaryOp.html">CAstBinaryOp</a>(t, t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>() == <span class="stringliteral">&quot;*&quot;</span> ? <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643aae59152a751e369674c82c263647c229">opMul</a> : <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643a1c6450e131e242e55cfc3e132d3f09ad">opDiv</a>, l, r);</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    r = factor(s);</div>
 <div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    tt = _scanner-&gt;Peek().<a class="code" href="classCAstBinaryOp.html#a0bf80d7a8c4b2ea927ce1bd235785c4b">GetType</a>();</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  }</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="keywordflow">return</span> n;</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;}</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;</div>
-<div class="line"><a name="l00275"></a><span class="lineno"><a class="line" href="classCParser.html#a3fb9499395df05708e93ac0e5c553411">  275</a></span>&#160;<a class="code" href="classCAstExpression.html">CAstExpression</a>* <a class="code" href="classCParser.html#a3fb9499395df05708e93ac0e5c553411">CParser::factor</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;{</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <span class="comment">// factor ::= number | &quot;(&quot; expression &quot;)&quot;</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    n = <span class="keyword">new</span> <a class="code" href="classCAstBinaryOp.html">CAstBinaryOp</a>(t, t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>() == <span class="stringliteral">&quot;*&quot;</span> ? <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643aae59152a751e369674c82c263647c229">opMul</a> : <a class="code" href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643a1c6450e131e242e55cfc3e132d3f09ad">opDiv</a>, l, r);</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    tt = _scanner-&gt;Peek().<a class="code" href="classCAstBinaryOp.html#a0bf80d7a8c4b2ea927ce1bd235785c4b">GetType</a>();</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  }</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="keywordflow">return</span> n;</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;}</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;</div>
+<div class="line"><a name="l00277"></a><span class="lineno"><a class="line" href="classCParser.html#a3fb9499395df05708e93ac0e5c553411">  277</a></span>&#160;<a class="code" href="classCAstExpression.html">CAstExpression</a>* <a class="code" href="classCParser.html#a3fb9499395df05708e93ac0e5c553411">CParser::factor</a>(<a class="code" href="classCAstScope.html">CAstScope</a> *s)</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;{</div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  <span class="comment">// FIRST(factor) = { tNumber, tLBrak }</span></div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <a class="code" href="classCToken.html">CToken</a> t;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a> tt = _scanner-&gt;Peek().<a class="code" href="classCToken.html#a07a01d5cedb9351c87192d3dc5f0564a">GetType</a>();</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *unary = NULL, *n = NULL;</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  <span class="comment">// factor ::= number | &quot;(&quot; expression &quot;)&quot; | boolean |</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  <span class="comment">//            character | string | &quot;!&quot; factor |</span></div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <span class="comment">//            qualident | subroutineCall(those two have to be concatenated).</span></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <span class="comment">// FIRST(factor) = { tNumber, tLBrak, tNot }</span></div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="comment">//</span></div>
 <div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <span class="keywordflow">switch</span> (tt) {</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    <span class="comment">// factor ::= number</span></div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43">tNumber</a>:</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;      n = number();</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="comment">// factor ::= &quot;(&quot; expression &quot;)&quot;</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a96acf131759c129c574902d764a8c62f">tLParens</a>:</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;      Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a96acf131759c129c574902d764a8c62f">tLParens</a>);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;      n = expression(s);</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;      Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a10aa734e29e57d24eb792822540e8b55">tRParens</a>);</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      cout &lt;&lt; <span class="stringliteral">&quot;got &quot;</span> &lt;&lt; _scanner-&gt;Peek() &lt;&lt; endl;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;      SetError(_scanner-&gt;Peek(), <span class="stringliteral">&quot;factor expected.&quot;</span>);</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  }</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <span class="keywordflow">return</span> n;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;}</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;</div>
-<div class="line"><a name="l00309"></a><span class="lineno"><a class="line" href="classCParser.html#a01c77fec4ed324078d63dda279597289">  309</a></span>&#160;<a class="code" href="classCAstConstant.html">CAstConstant</a>* <a class="code" href="classCParser.html#a01c77fec4ed324078d63dda279597289">CParser::number</a>(<span class="keywordtype">void</span>)</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;{</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  <span class="comment">// number ::= digit { digit }.</span></div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  <span class="comment">// &quot;digit { digit }&quot; is scanned as one token (tNumber)</span></div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <a class="code" href="classCToken.html">CToken</a> t;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a> tt = _scanner-&gt;Peek().<a class="code" href="classCToken.html#a07a01d5cedb9351c87192d3dc5f0564a">GetType</a>();</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <a class="code" href="classCAstExpression.html">CAstExpression</a> *unary = NULL, *n = NULL;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="keywordflow">switch</span> (tt) {</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="comment">// factor ::= number</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43">tNumber</a>:</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;      n = number();</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    <span class="comment">// factor ::= &quot;(&quot; expression &quot;)&quot;</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a899c9d058fdac019a3afadf5cf7e3773">tLParen</a>:</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;      Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a899c9d058fdac019a3afadf5cf7e3773">tLParen</a>);</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      n = expression(s);</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a602f2f4834edf344dd070dc2c0dbaade">tRParen</a>);</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;      cout &lt;&lt; <span class="stringliteral">&quot;got &quot;</span> &lt;&lt; _scanner-&gt;Peek() &lt;&lt; endl;</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;      SetError(_scanner-&gt;Peek(), <span class="stringliteral">&quot;factor expected.&quot;</span>);</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  }</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="keywordflow">return</span> n;</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;}</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;</div>
+<div class="line"><a name="l00313"></a><span class="lineno"><a class="line" href="classCParser.html#a01c77fec4ed324078d63dda279597289">  313</a></span>&#160;<a class="code" href="classCAstConstant.html">CAstConstant</a>* <a class="code" href="classCParser.html#a01c77fec4ed324078d63dda279597289">CParser::number</a>(<span class="keywordtype">void</span>)</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;{</div>
 <div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  <a class="code" href="classCToken.html">CToken</a> t;</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43">tNumber</a>, &amp;t);</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="comment">// number ::= digit { digit }.</span></div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  <span class="comment">// &quot;digit { digit }&quot; is scanned as one token (tNumber)</span></div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  <span class="comment">//</span></div>
 <div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  errno = 0;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  <span class="keywordtype">long</span> <span class="keywordtype">long</span> v = strtoll(t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>().c_str(), NULL, 10);</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  <span class="keywordflow">if</span> (errno != 0) SetError(t, <span class="stringliteral">&quot;invalid number.&quot;</span>);</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  <a class="code" href="classCToken.html">CToken</a> t;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43">tNumber</a>, &amp;t);</div>
 <div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="classCAstConstant.html">CAstConstant</a>(t, <a class="code" href="classCTypeManager.html#a7a6f5f8332a8570b6369faf38aa3b589">CTypeManager::Get</a>()-&gt;GetInt(), v);</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;}</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  errno = 0;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="keywordtype">long</span> <span class="keywordtype">long</span> v = strtoll(t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>().c_str(), NULL, 10);</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="keywordflow">if</span> (errno != 0) SetError(t, <span class="stringliteral">&quot;invalid number.&quot;</span>);</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="classCAstConstant.html">CAstConstant</a>(t, <a class="code" href="classCTypeManager.html#a7a6f5f8332a8570b6369faf38aa3b589">CTypeManager::Get</a>()-&gt;GetInt(), v);</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;}</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;</div>
+<div class="line"><a name="l00332"></a><span class="lineno"><a class="line" href="parser_8cpp.html#a065536483258cd95673b3015eee592bc">  332</a></span>&#160;pair&lt;bool, bool&gt; <a class="code" href="parser_8cpp.html#a065536483258cd95673b3015eee592bc">strtobool</a>(<span class="keywordtype">string</span> s){</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  pair&lt;bool, bool&gt; retval(<span class="keyword">true</span>, <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  <span class="keywordflow">if</span>(s.compare(<span class="stringliteral">&quot;true&quot;</span>) == 0){</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    retval.second = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  }</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="keywordflow">else</span> <span class="keywordflow">if</span>(s.compare(<span class="stringliteral">&quot;false&quot;</span>) == 0){</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    retval.second = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  }</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    retval.first = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  <span class="keywordflow">return</span> retval;</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;}</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
+<div class="line"><a name="l00345"></a><span class="lineno"><a class="line" href="classCParser.html#aa8518b4a2b8fa0b7e56a0b3eb6a6db0c">  345</a></span>&#160;<a class="code" href="classCAstConstant.html">CAstConstant</a>* <a class="code" href="classCParser.html#aa8518b4a2b8fa0b7e56a0b3eb6a6db0c">CParser::boolean</a>(<span class="keywordtype">void</span>)</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;{</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="comment">// boolean = &quot;true&quot; | &quot;false&quot;.</span></div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  <span class="comment">// &quot; \&quot;true\&quot; | \&quot;false\&quot; &quot; is scanned as one token (tBool)</span></div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  <a class="code" href="classCToken.html">CToken</a> t;</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  Consume(<a class="code" href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a7fdb790fb92a84d4e183588f699b67b3">tBool</a>, &amp;t);</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  errno = 0;</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  pair&lt;bool, bool&gt; b = <a class="code" href="parser_8cpp.html#a065536483258cd95673b3015eee592bc">strtobool</a>(t.<a class="code" href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">GetValue</a>());</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  <span class="keywordflow">if</span>(!b.first) SetError(t, <span class="stringliteral">&quot;invalid boolean.&quot;</span>);</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="classCAstConstant.html">CAstConstant</a>(t, <a class="code" href="classCTypeManager.html#a7a6f5f8332a8570b6369faf38aa3b589">CTypeManager::Get</a>()-&gt;GetBool(), b.second);</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;}</div>
 <div class="ttc" id="ir_8h_html_a3fd0e62c9d5ea82aa9db086075f76643a63c3e076a7618153e0540254ecb654de"><div class="ttname"><a href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643a63c3e076a7618153e0540254ecb654de">opNotEqual</a></div><div class="ttdoc">not equal</div><div class="ttdef"><b>Definition:</b> <a href="ir_8h_source.html#l00083">ir.h:83</a></div></div>
 <div class="ttc" id="classCParser_html_a8d3b3514bb26761dd840a43899a60c98"><div class="ttname"><a href="classCParser.html#a8d3b3514bb26761dd840a43899a60c98">CParser::SetError</a></div><div class="ttdeci">void SetError(CToken t, const string message)</div><div class="ttdoc">sets the token causing a parse error along with a message </div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00091">parser.cpp:91</a></div></div>
-<div class="ttc" id="classCAstStatement_html"><div class="ttname"><a href="classCAstStatement.html">CAstStatement</a></div><div class="ttdoc">AST statement node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00395">ast.h:395</a></div></div>
-<div class="ttc" id="classCAstStatAssign_html"><div class="ttname"><a href="classCAstStatAssign.html">CAstStatAssign</a></div><div class="ttdoc">AST assignment statement node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00450">ast.h:450</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff">tDot</a></div><div class="ttdoc">a dot </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00059">scanner.h:59</a></div></div>
-<div class="ttc" id="classCAstNode_html"><div class="ttname"><a href="classCAstNode.html">CAstNode</a></div><div class="ttdoc">AST base node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00063">ast.h:63</a></div></div>
+<div class="ttc" id="classCAstStatement_html"><div class="ttname"><a href="classCAstStatement.html">CAstStatement</a></div><div class="ttdoc">AST statement node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00396">ast.h:396</a></div></div>
+<div class="ttc" id="classCAstStatAssign_html"><div class="ttname"><a href="classCAstStatAssign.html">CAstStatAssign</a></div><div class="ttdoc">AST assignment statement node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00451">ast.h:451</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a3db027d103c3b06ba435d85b4c50feff">tDot</a></div><div class="ttdoc">a dot which represents EOF </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00067">scanner.h:67</a></div></div>
+<div class="ttc" id="classCAstNode_html"><div class="ttname"><a href="classCAstNode.html">CAstNode</a></div><div class="ttdoc">AST base node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00064">ast.h:64</a></div></div>
 <div class="ttc" id="classCParser_html_a5d9607221a9578b20be8e4ac41640ac8"><div class="ttname"><a href="classCParser.html#a5d9607221a9578b20be8e4ac41640ac8">CParser::Parse</a></div><div class="ttdeci">CAstNode * Parse(void)</div><div class="ttdoc">parse a module </div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00058">parser.cpp:58</a></div></div>
+<div class="ttc" id="classCParser_html_aa8518b4a2b8fa0b7e56a0b3eb6a6db0c"><div class="ttname"><a href="classCParser.html#aa8518b4a2b8fa0b7e56a0b3eb6a6db0c">CParser::boolean</a></div><div class="ttdeci">CAstConstant * boolean(void)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00345">parser.cpp:345</a></div></div>
 <div class="ttc" id="classCParser_html_a6b6b3e3141aa9cad9fd0945dbd545045"><div class="ttname"><a href="classCParser.html#a6b6b3e3141aa9cad9fd0945dbd545045">CParser::GetErrorMessage</a></div><div class="ttdeci">string GetErrorMessage(void) const </div><div class="ttdoc">returns a human-readable error message </div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00085">parser.cpp:85</a></div></div>
 <div class="ttc" id="classCSymtab_html"><div class="ttname"><a href="classCSymtab.html">CSymtab</a></div><div class="ttdoc">SnuPL symbol table. </div><div class="ttdef"><b>Definition:</b> <a href="symtab_8h_source.html#l00345">symtab.h:345</a></div></div>
 <div class="ttc" id="ir_8h_html_a3fd0e62c9d5ea82aa9db086075f76643af36b2e44fb40b42c0f482a3e397f4fef"><div class="ttname"><a href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643af36b2e44fb40b42c0f482a3e397f4fef">opAdd</a></div><div class="ttdef"><b>Definition:</b> <a href="ir_8h_source.html#l00054">ir.h:54</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08ae6c68b5b5352fb48681dce352980d9df"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ae6c68b5b5352fb48681dce352980d9df">tPlusMinus</a></div><div class="ttdoc">&#39;+&#39; or &#39;-&#39; </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00054">scanner.h:54</a></div></div>
-<div class="ttc" id="classCScanner_html"><div class="ttname"><a href="classCScanner.html">CScanner</a></div><div class="ttdoc">scanner </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00196">scanner.h:196</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a></div><div class="ttdeci">EToken</div><div class="ttdoc">SnuPL/0 token type. </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00052">scanner.h:52</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08ae6c68b5b5352fb48681dce352980d9df"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ae6c68b5b5352fb48681dce352980d9df">tPlusMinus</a></div><div class="ttdoc">&#39;+&#39; or &#39;-&#39; </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00058">scanner.h:58</a></div></div>
+<div class="ttc" id="classCScanner_html"><div class="ttname"><a href="classCScanner.html">CScanner</a></div><div class="ttdoc">scanner </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00222">scanner.h:222</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08">EToken</a></div><div class="ttdeci">EToken</div><div class="ttdoc">SnuPL/-1 token type. </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00051">scanner.h:51</a></div></div>
+<div class="ttc" id="parser_8cpp_html_a065536483258cd95673b3015eee592bc"><div class="ttname"><a href="parser_8cpp.html#a065536483258cd95673b3015eee592bc">strtobool</a></div><div class="ttdeci">pair&lt; bool, bool &gt; strtobool(string s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00332">parser.cpp:332</a></div></div>
 <div class="ttc" id="parser_8h_html"><div class="ttname"><a href="parser_8h.html">parser.h</a></div></div>
-<div class="ttc" id="classCParser_html_ab7852ab9a6c8bb432f771a578e26d36f"><div class="ttname"><a href="classCParser.html#ab7852ab9a6c8bb432f771a578e26d36f">CParser::expression</a></div><div class="ttdeci">CAstExpression * expression(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00199">parser.cpp:199</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a10aa734e29e57d24eb792822540e8b55"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a10aa734e29e57d24eb792822540e8b55">tRParens</a></div><div class="ttdoc">a right parenthesis </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00061">scanner.h:61</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a94a2999916c80551c1b474603bab69fc"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a94a2999916c80551c1b474603bab69fc">tSemicolon</a></div><div class="ttdoc">a semicolon </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00058">scanner.h:58</a></div></div>
+<div class="ttc" id="classCParser_html_ab7852ab9a6c8bb432f771a578e26d36f"><div class="ttname"><a href="classCParser.html#ab7852ab9a6c8bb432f771a578e26d36f">CParser::expression</a></div><div class="ttdeci">CAstExpression * expression(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00201">parser.cpp:201</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a94a2999916c80551c1b474603bab69fc"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a94a2999916c80551c1b474603bab69fc">tSemicolon</a></div><div class="ttdoc">a semicolon </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00064">scanner.h:64</a></div></div>
 <div class="ttc" id="ir_8h_html_a3fd0e62c9d5ea82aa9db086075f76643ac8503ec9b84c4cfcafd08c41ced2f9d0"><div class="ttname"><a href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643ac8503ec9b84c4cfcafd08c41ced2f9d0">opEqual</a></div><div class="ttdoc">= equal </div><div class="ttdef"><b>Definition:</b> <a href="ir_8h_source.html#l00082">ir.h:82</a></div></div>
 <div class="ttc" id="ir_8h_html_a3fd0e62c9d5ea82aa9db086075f76643aae59152a751e369674c82c263647c229"><div class="ttname"><a href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643aae59152a751e369674c82c263647c229">opMul</a></div><div class="ttdef"><b>Definition:</b> <a href="ir_8h_source.html#l00056">ir.h:56</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a31be042cf58eb5cddbc7eadedeb2cc0e"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a31be042cf58eb5cddbc7eadedeb2cc0e">tAssign</a></div><div class="ttdoc">assignment operator </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00057">scanner.h:57</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43">tNumber</a></div><div class="ttdoc">number </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00053">scanner.h:53</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a31be042cf58eb5cddbc7eadedeb2cc0e"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a31be042cf58eb5cddbc7eadedeb2cc0e">tAssign</a></div><div class="ttdoc">&quot;:=&quot; </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00063">scanner.h:63</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a72eac3695c1398ad6f1135fede455f43">tNumber</a></div><div class="ttdoc">an integer </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00052">scanner.h:52</a></div></div>
 <div class="ttc" id="ir_8h_html_a3fd0e62c9d5ea82aa9db086075f76643"><div class="ttname"><a href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643">EOperation</a></div><div class="ttdeci">EOperation</div><div class="ttdoc">SnuPL/0 intermediate representation. </div><div class="ttdef"><b>Definition:</b> <a href="ir_8h_source.html#l00051">ir.h:51</a></div></div>
 <div class="ttc" id="classCTypeManager_html_a7a6f5f8332a8570b6369faf38aa3b589"><div class="ttname"><a href="classCTypeManager.html#a7a6f5f8332a8570b6369faf38aa3b589">CTypeManager::Get</a></div><div class="ttdeci">static CTypeManager * Get(void)</div><div class="ttdoc">return the global type manager </div><div class="ttdef"><b>Definition:</b> <a href="type_8cpp_source.html#l00268">type.cpp:268</a></div></div>
 <div class="ttc" id="classCParser_html_af6adbe55b1ead5a60695f803e49a858b"><div class="ttname"><a href="classCParser.html#af6adbe55b1ead5a60695f803e49a858b">CParser::GetErrorToken</a></div><div class="ttdeci">const CToken * GetErrorToken(void) const </div><div class="ttdoc">returns the token that caused the error </div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00079">parser.cpp:79</a></div></div>
-<div class="ttc" id="classCAstModule_html"><div class="ttname"><a href="classCAstModule.html">CAstModule</a></div><div class="ttdoc">AST module scope. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00268">ast.h:268</a></div></div>
-<div class="ttc" id="classCParser_html_ad91bb89e981a45a0d9332ed0c1ce9537"><div class="ttname"><a href="classCParser.html#ad91bb89e981a45a0d9332ed0c1ce9537">CParser::term</a></div><div class="ttdeci">CAstExpression * term(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00248">parser.cpp:248</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a96acf131759c129c574902d764a8c62f"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a96acf131759c129c574902d764a8c62f">tLParens</a></div><div class="ttdoc">a left parenthesis </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00060">scanner.h:60</a></div></div>
+<div class="ttc" id="classCAstModule_html"><div class="ttname"><a href="classCAstModule.html">CAstModule</a></div><div class="ttdoc">AST module scope. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00269">ast.h:269</a></div></div>
+<div class="ttc" id="classCParser_html_ad91bb89e981a45a0d9332ed0c1ce9537"><div class="ttname"><a href="classCParser.html#ad91bb89e981a45a0d9332ed0c1ce9537">CParser::term</a></div><div class="ttdeci">CAstExpression * term(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00250">parser.cpp:250</a></div></div>
+<div class="ttc" id="classCAstDesignator_html"><div class="ttname"><a href="classCAstDesignator.html">CAstDesignator</a></div><div class="ttdoc">AST designator. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l01258">ast.h:1258</a></div></div>
 <div class="ttc" id="classCParser_html_af036593159f9387e1f9604e2790a8d86"><div class="ttname"><a href="classCParser.html#af036593159f9387e1f9604e2790a8d86">CParser::Consume</a></div><div class="ttdeci">bool Consume(EToken type, CToken *token=NULL)</div><div class="ttdoc">consume a token given type and optionally store the token </div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00099">parser.cpp:99</a></div></div>
-<div class="ttc" id="classCParser_html_a3fb9499395df05708e93ac0e5c553411"><div class="ttname"><a href="classCParser.html#a3fb9499395df05708e93ac0e5c553411">CParser::factor</a></div><div class="ttdeci">CAstExpression * factor(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00275">parser.cpp:275</a></div></div>
+<div class="ttc" id="classCParser_html_a3fb9499395df05708e93ac0e5c553411"><div class="ttname"><a href="classCParser.html#a3fb9499395df05708e93ac0e5c553411">CParser::factor</a></div><div class="ttdeci">CAstExpression * factor(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00277">parser.cpp:277</a></div></div>
 <div class="ttc" id="classCParser_html_a1ce2c31c3fab59fca2137e6547ca79f9"><div class="ttname"><a href="classCParser.html#a1ce2c31c3fab59fca2137e6547ca79f9">CParser::CParser</a></div><div class="ttdeci">CParser(CScanner *scanner)</div><div class="ttdoc">constructor </div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00052">parser.cpp:52</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08ac310ea8cd49261a561b1f3bc485a3a89"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ac310ea8cd49261a561b1f3bc485a3a89">tMulDiv</a></div><div class="ttdoc">&#39;*&#39; or &#39;/&#39; </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00055">scanner.h:55</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08ac310ea8cd49261a561b1f3bc485a3a89"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08ac310ea8cd49261a561b1f3bc485a3a89">tMulDiv</a></div><div class="ttdoc">&#39;*&#39; or &#39;/&#39; </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00059">scanner.h:59</a></div></div>
 <div class="ttc" id="classCAstScope_html_a607f07bb3f287e24a52ec94fc124db47"><div class="ttname"><a href="classCAstScope.html#a607f07bb3f287e24a52ec94fc124db47">CAstScope::SetStatementSequence</a></div><div class="ttdeci">void SetStatementSequence(CAstStatement *statement)</div><div class="ttdoc">set the statement sequence </div><div class="ttdef"><b>Definition:</b> <a href="ast_8cpp_source.html#l00156">ast.cpp:156</a></div></div>
 <div class="ttc" id="classCAstStatement_html_aeecd18f9129e4798c241d15125a09728"><div class="ttname"><a href="classCAstStatement.html#aeecd18f9129e4798c241d15125a09728">CAstStatement::SetNext</a></div><div class="ttdeci">void SetNext(CAstStatement *next)</div><div class="ttdoc">set the next statement </div><div class="ttdef"><b>Definition:</b> <a href="ast_8cpp_source.html#l00342">ast.cpp:342</a></div></div>
 <div class="ttc" id="classCAstBinaryOp_html_a0bf80d7a8c4b2ea927ce1bd235785c4b"><div class="ttname"><a href="classCAstBinaryOp.html#a0bf80d7a8c4b2ea927ce1bd235785c4b">CAstBinaryOp::GetType</a></div><div class="ttdeci">virtual const CType * GetType(void) const </div><div class="ttdoc">return (compute) the type of the expression. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8cpp_source.html#l00804">ast.cpp:804</a></div></div>
-<div class="ttc" id="classCAstBinaryOp_html"><div class="ttname"><a href="classCAstBinaryOp.html">CAstBinaryOp</a></div><div class="ttdoc">AST binary operation node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00914">ast.h:914</a></div></div>
+<div class="ttc" id="classCAstBinaryOp_html"><div class="ttname"><a href="classCAstBinaryOp.html">CAstBinaryOp</a></div><div class="ttdoc">AST binary operation node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00915">ast.h:915</a></div></div>
 <div class="ttc" id="ir_8h_html_a3fd0e62c9d5ea82aa9db086075f76643a1c6450e131e242e55cfc3e132d3f09ad"><div class="ttname"><a href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643a1c6450e131e242e55cfc3e132d3f09ad">opDiv</a></div><div class="ttdoc">/ division </div><div class="ttdef"><b>Definition:</b> <a href="ir_8h_source.html#l00057">ir.h:57</a></div></div>
-<div class="ttc" id="classCAstExpression_html"><div class="ttname"><a href="classCAstExpression.html">CAstExpression</a></div><div class="ttdoc">AST expression node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00845">ast.h:845</a></div></div>
-<div class="ttc" id="classCToken_html_a07a01d5cedb9351c87192d3dc5f0564a"><div class="ttname"><a href="classCToken.html#a07a01d5cedb9351c87192d3dc5f0564a">CToken::GetType</a></div><div class="ttdeci">EToken GetType(void) const </div><div class="ttdoc">return the token type </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00120">scanner.h:120</a></div></div>
-<div class="ttc" id="classCAstScope_html"><div class="ttname"><a href="classCAstScope.html">CAstScope</a></div><div class="ttdoc">AST scope node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00161">ast.h:161</a></div></div>
+<div class="ttc" id="classCAstExpression_html"><div class="ttname"><a href="classCAstExpression.html">CAstExpression</a></div><div class="ttdoc">AST expression node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00846">ast.h:846</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a7fdb790fb92a84d4e183588f699b67b3"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a7fdb790fb92a84d4e183588f699b67b3">tBool</a></div><div class="ttdoc">&quot;true&quot; value or &quot;false&quot; value </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00056">scanner.h:56</a></div></div>
+<div class="ttc" id="classCToken_html_a07a01d5cedb9351c87192d3dc5f0564a"><div class="ttname"><a href="classCToken.html#a07a01d5cedb9351c87192d3dc5f0564a">CToken::GetType</a></div><div class="ttdeci">EToken GetType(void) const </div><div class="ttdoc">return the token type </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00147">scanner.h:147</a></div></div>
+<div class="ttc" id="classCAstScope_html"><div class="ttname"><a href="classCAstScope.html">CAstScope</a></div><div class="ttdoc">AST scope node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l00162">ast.h:162</a></div></div>
 <div class="ttc" id="classCParser_html_a608abf6627862b02dff4e2146416d81e"><div class="ttname"><a href="classCParser.html#a608abf6627862b02dff4e2146416d81e">CParser::module</a></div><div class="ttdeci">CAstModule * module(void)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00122">parser.cpp:122</a></div></div>
-<div class="ttc" id="classCAstConstant_html"><div class="ttname"><a href="classCAstConstant.html">CAstConstant</a></div><div class="ttdoc">AST constant operand node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l01427">ast.h:1427</a></div></div>
-<div class="ttc" id="classCToken_html_a14cc3f3cc57965bb3414f62b370d7759"><div class="ttname"><a href="classCToken.html#a14cc3f3cc57965bb3414f62b370d7759">CToken::Name</a></div><div class="ttdeci">static const string Name(EToken type)</div><div class="ttdoc">return the name for a given token </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8cpp_source.html#l00133">scanner.cpp:133</a></div></div>
+<div class="ttc" id="classCAstConstant_html"><div class="ttname"><a href="classCAstConstant.html">CAstConstant</a></div><div class="ttdoc">AST constant operand node. </div><div class="ttdef"><b>Definition:</b> <a href="ast_8h_source.html#l01428">ast.h:1428</a></div></div>
+<div class="ttc" id="classCToken_html_a14cc3f3cc57965bb3414f62b370d7759"><div class="ttname"><a href="classCToken.html#a14cc3f3cc57965bb3414f62b370d7759">CToken::Name</a></div><div class="ttdeci">static const string Name(EToken type)</div><div class="ttdoc">return the name for a given token </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8cpp_source.html#l00197">scanner.cpp:197</a></div></div>
 <div class="ttc" id="classCTypeManager_html"><div class="ttname"><a href="classCTypeManager.html">CTypeManager</a></div><div class="ttdoc">type manager </div><div class="ttdef"><b>Definition:</b> <a href="type_8h_source.html#l00471">type.h:471</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a602f2f4834edf344dd070dc2c0dbaade"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a602f2f4834edf344dd070dc2c0dbaade">tRParen</a></div><div class="ttdoc">a right bracket </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00069">scanner.h:69</a></div></div>
 <div class="ttc" id="classCAstNode_html_a338a1b15b0257ad5ef91c690b42fea3d"><div class="ttname"><a href="classCAstNode.html#a338a1b15b0257ad5ef91c690b42fea3d">CAstNode::GetType</a></div><div class="ttdeci">virtual const CType * GetType(void) const </div><div class="ttdoc">return (compute) the type of this node </div><div class="ttdef"><b>Definition:</b> <a href="ast_8cpp_source.html#l00073">ast.cpp:73</a></div></div>
-<div class="ttc" id="classCToken_html"><div class="ttname"><a href="classCToken.html">CToken</a></div><div class="ttdoc">token </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00076">scanner.h:76</a></div></div>
-<div class="ttc" id="classCParser_html_af96bce53cd6e0a0093d6ceed571e6d72"><div class="ttname"><a href="classCParser.html#af96bce53cd6e0a0093d6ceed571e6d72">CParser::simpleexpr</a></div><div class="ttdeci">CAstExpression * simpleexpr(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00224">parser.cpp:224</a></div></div>
-<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a7ff40ee5afb5b86c87e93d1c41f60a20"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a7ff40ee5afb5b86c87e93d1c41f60a20">tRelOp</a></div><div class="ttdoc">relational operator </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00056">scanner.h:56</a></div></div>
-<div class="ttc" id="classCParser_html_ab80b3a1e6c92caee041d937a5c98b492"><div class="ttname"><a href="classCParser.html#ab80b3a1e6c92caee041d937a5c98b492">CParser::statSequence</a></div><div class="ttdeci">CAstStatement * statSequence(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00139">parser.cpp:139</a></div></div>
-<div class="ttc" id="classCToken_html_a06bfdd3197001f8c37cfdf93e135a836"><div class="ttname"><a href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">CToken::GetValue</a></div><div class="ttdeci">string GetValue(void) const </div><div class="ttdoc">return the token value </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00125">scanner.h:125</a></div></div>
+<div class="ttc" id="classCToken_html"><div class="ttname"><a href="classCToken.html">CToken</a></div><div class="ttdoc">token </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00103">scanner.h:103</a></div></div>
+<div class="ttc" id="classCParser_html_af96bce53cd6e0a0093d6ceed571e6d72"><div class="ttname"><a href="classCParser.html#af96bce53cd6e0a0093d6ceed571e6d72">CParser::simpleexpr</a></div><div class="ttdeci">CAstExpression * simpleexpr(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00226">parser.cpp:226</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a7ff40ee5afb5b86c87e93d1c41f60a20"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a7ff40ee5afb5b86c87e93d1c41f60a20">tRelOp</a></div><div class="ttdoc">&quot;=&quot;, &quot;#&quot;, &quot;&lt;&quot;, &quot;&lt;=&quot;, &quot;&gt;&quot;, or &quot;&gt;=&quot; </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00060">scanner.h:60</a></div></div>
+<div class="ttc" id="classCParser_html_ab80b3a1e6c92caee041d937a5c98b492"><div class="ttname"><a href="classCParser.html#ab80b3a1e6c92caee041d937a5c98b492">CParser::statSequence</a></div><div class="ttdeci">CAstStatement * statSequence(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00140">parser.cpp:140</a></div></div>
+<div class="ttc" id="classCToken_html_a06bfdd3197001f8c37cfdf93e135a836"><div class="ttname"><a href="classCToken.html#a06bfdd3197001f8c37cfdf93e135a836">CToken::GetValue</a></div><div class="ttdeci">string GetValue(void) const </div><div class="ttdoc">return the token value </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00152">scanner.h:152</a></div></div>
 <div class="ttc" id="ir_8h_html_a3fd0e62c9d5ea82aa9db086075f76643a079ec39912609100f621209ce7d51a57"><div class="ttname"><a href="ir_8h.html#a3fd0e62c9d5ea82aa9db086075f76643a079ec39912609100f621209ce7d51a57">opSub</a></div><div class="ttdef"><b>Definition:</b> <a href="ir_8h_source.html#l00055">ir.h:55</a></div></div>
 <div class="ttc" id="classCParser_html_a79fb208a17e733f5ce3ca866bce7387f"><div class="ttname"><a href="classCParser.html#a79fb208a17e733f5ce3ca866bce7387f">CParser::InitSymbolTable</a></div><div class="ttdeci">void InitSymbolTable(CSymtab *s)</div><div class="ttdoc">initialize symbol table s with predefined procedures and global variables </div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00115">parser.cpp:115</a></div></div>
-<div class="ttc" id="classCParser_html_a01c77fec4ed324078d63dda279597289"><div class="ttname"><a href="classCParser.html#a01c77fec4ed324078d63dda279597289">CParser::number</a></div><div class="ttdeci">CAstConstant * number(void)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00309">parser.cpp:309</a></div></div>
-<div class="ttc" id="classCParser_html_a2adfe259b73c4e3695eb3269ca6b83d8"><div class="ttname"><a href="classCParser.html#a2adfe259b73c4e3695eb3269ca6b83d8">CParser::assignment</a></div><div class="ttdeci">CAstStatAssign * assignment(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00184">parser.cpp:184</a></div></div>
-<div class="ttc" id="classCToken_html_a04765417b8649e0380b1ff1cf3988ada"><div class="ttname"><a href="classCToken.html#a04765417b8649e0380b1ff1cf3988ada">CToken::GetName</a></div><div class="ttdeci">const string GetName(void) const </div><div class="ttdoc">return the token name </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8cpp_source.html#l00138">scanner.cpp:138</a></div></div>
+<div class="ttc" id="scanner_8h_html_a9093554967c90043b2a4a74c028f3f08a899c9d058fdac019a3afadf5cf7e3773"><div class="ttname"><a href="scanner_8h.html#a9093554967c90043b2a4a74c028f3f08a899c9d058fdac019a3afadf5cf7e3773">tLParen</a></div><div class="ttdoc">a left bracket </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8h_source.html#l00068">scanner.h:68</a></div></div>
+<div class="ttc" id="classCParser_html_a01c77fec4ed324078d63dda279597289"><div class="ttname"><a href="classCParser.html#a01c77fec4ed324078d63dda279597289">CParser::number</a></div><div class="ttdeci">CAstConstant * number(void)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00313">parser.cpp:313</a></div></div>
+<div class="ttc" id="classCParser_html_a2adfe259b73c4e3695eb3269ca6b83d8"><div class="ttname"><a href="classCParser.html#a2adfe259b73c4e3695eb3269ca6b83d8">CParser::assignment</a></div><div class="ttdeci">CAstStatAssign * assignment(CAstScope *s)</div><div class="ttdef"><b>Definition:</b> <a href="parser_8cpp_source.html#l00186">parser.cpp:186</a></div></div>
+<div class="ttc" id="classCToken_html_a04765417b8649e0380b1ff1cf3988ada"><div class="ttname"><a href="classCToken.html#a04765417b8649e0380b1ff1cf3988ada">CToken::GetName</a></div><div class="ttdeci">const string GetName(void) const </div><div class="ttdoc">return the token name </div><div class="ttdef"><b>Definition:</b> <a href="scanner_8cpp_source.html#l00202">scanner.cpp:202</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 8 2016 19:50:19 for SnuPL Compiler by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 22 2016 01:11:34 for SnuPL Compiler by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
