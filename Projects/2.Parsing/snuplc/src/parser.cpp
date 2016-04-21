@@ -190,7 +190,7 @@ CAstStatAssign* CParser::assignment(CAstScope *s)
   //
   CToken t;
 
-  CAstConstant *lhs = number();
+  CAstDesignator *lhs;
   Consume(tAssign, &t);
 
   CAstExpression *rhs = expression(s);
@@ -350,7 +350,7 @@ CAstConstant* CParser::boolean(void)
   // " \"true\" | \"false\" " is scanned as one token (tBool)
   //
 
-  Ctoken t;
+  CToken t;
 
   Consume(tBool, &t);
 

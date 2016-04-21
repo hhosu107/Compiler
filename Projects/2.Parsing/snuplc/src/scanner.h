@@ -167,6 +167,19 @@ class CToken {
 
     /// @}
 
+    /// @brief escape special characters in a string
+    ///
+    /// @param text string
+    /// @retval escaped string
+    /// @Can read after NULL occurs
+    static string escape(const string text);
+
+    /// @brief unescape special characters in a string
+    ///
+    /// @param text string
+    /// @retval unescaped string
+    /// @Can read after NULL occurs
+    static string unescape(const string text);
 
     /// @brief print the token to an output stream
     ///
@@ -178,21 +191,6 @@ class CToken {
     string _value;                  ///< token value
     int    _line;                   ///< input stream position (line)
     int    _char;                   ///< input stream position (character pos)
-
-
-    /// @brief escape special characters in a string
-    ///
-    /// @param text string
-    /// @retval escaped string
-    /// @Can read after NULL occurs
-    string escape(const string text);
-
-    /// @brief unescape special characters in a string
-    ///
-    /// @param text string
-    /// @retval unescaped string
-    /// @Can read after NULL occurs
-    string escape(const string text);
 
 };
 
