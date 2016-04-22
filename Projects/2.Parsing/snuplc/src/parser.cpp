@@ -115,7 +115,10 @@ bool CParser::Consume(EToken type, CToken *token)
 void CParser::InitSymbolTable(CSymtab *s)
 {
   CTypeManager *tm = CTypeManager::Get();
-
+  // below three lines are wrong. Edit it.
+  //s->AddSymbol("DIM", stProcedure, /* how to put two parameters? */ ... );
+  //s->AddSymbol("DOFS", stProcedure, /* ptr to array */ ...);
+  //s->AddSymbol("ReadInt", stProcedure,
   // TODO: add predefined functions here
 }
 
