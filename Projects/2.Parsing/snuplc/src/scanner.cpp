@@ -361,7 +361,7 @@ CToken* CScanner::Scan()
   EToken token;
   string tokval;
   char c;
-
+  do{
   while (_in->good() && IsWhite(_in->peek())) GetChar();
 
   RecordStreamPosition();
@@ -644,6 +644,7 @@ CToken* CScanner::Scan()
       }
       break;
   }
+  }while(token == tComment);
 
   return NewToken(token, tokval);
 }

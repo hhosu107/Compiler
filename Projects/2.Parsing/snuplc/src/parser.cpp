@@ -194,39 +194,30 @@ CAstStatement* CParser::statSequence(CAstScope *s)
   // FIRST(statSequence) = { tIdent, tIf, tWhile, tReturn }
   // FOLLOW(statSequence) = { tElse, tEnd }
   //
-  // TODO: Fill areas which are still just commented
-  //
   CAstStatement *head = NULL;
 
   EToken tt = _scanner->Peek().GetType();
-  if (!(tt == tDot)) {
+  CSymtab *tbl = s->GetSymbolTable();
+  if (!(tt == tElse || tt == tEnd)) {
     CAstStatement *tail = NULL;
 
     do {
       CToken t;
-      EToken tt = _scanner->Peek().GetType();
       CAstStatement *st = NULL;
 
       switch (tt) {
         // statement ::= assignment / subroutineCall
         case tIdent:
-          // send that ident on qualident/subroutineCall recognizer
-          /*
-          CToken temp = _scanner->Get();
-          EToken tempt = _scanner->Peek().GetType();
-          if(tempt == tAssign || tempt == tLBracket)
-          {
-            st = assignment(s);
-          }
-          else if(tempt == tLParen)
+          if(tbl->FindSymbol(_scanner->Peek().GetValue())->GetSymbolType() == stProcedure)
+            // Since a procedure has to be declared before it is called,
+            // this statement is valid.
           {
             st = statementSubroutineCall(s);
           }
           else
           {
-            SetError(_scanner->Peek(), "assign/subroutineCall expected.");
+            st = assignment(s);
           }
-          */
           break;
 
         case tIf:
