@@ -166,23 +166,14 @@ CAstModule* CParser::module(void)
 
   Consume(tEnd);
 
-  /* check it is ident with same name or not
-  tt = _scanner->Peek().GetType();
-  if(tt != tIdent)
-  {
-    SetError(_scanner->Peek(), "module name expected");
+  CToken idEnd; // To match with id
+  Consume(tIdent, &idEnd);
+
+  if((id->GetValue()).compare(idEnd->GetValue()) != 0){
+    SetError(idEnd, "module name is not equal to the original");
     delete m;
-    m = new CAstModule(_scanner->Peek(), "");
+    m = net CAstModule(idEnd, "");
   }
-  else{
-    string lastName = _scanner->Get().GetValue();
-    if(lastName.compare(id.GetValue()) != 0){
-      SetError(_scanner->Peek(), "module name is not same btwn start and end");
-      delete m;
-      m = new CAstModule(_scanner->Peek(), "");
-    }
-  }
-  */
 
   Consume(tDot);
   return m;
@@ -265,7 +256,8 @@ CAstStatAssign* CParser::assignment(CAstScope *s)
   CToken t;
 
   CAstDesignator *lhs;
-  Consume(tAssign, &t);
+  lhs = qualident(s);
+  Consume(tAssign);
 
   CAstExpression *rhs = expression(s);
 
@@ -332,8 +324,9 @@ CAstExpression* CParser::simpleexpr(CAstScope *s)
         n = new CAstBinaryOp(t, t.GetValue() == "+" ? opAdd : opSub, l, r);
         break;
 
-      case tOr:
-        Consume(tOr, &t);
+      case tAndOr:
+        // Have to check whether or not it is "&&" or "||"
+        Consume(tAndOr, &t);
         r = term(s);
         n = new CAstBinaryOp(t, opOr, l, r);
         break;
@@ -366,8 +359,9 @@ CAstExpression* CParser::term(CAstScope *s)
         n = new CAstBinaryOp(t, t.GetValue() == "*" ? opMul : opDiv, l, r);
         break;
 
-      case tAnd:
-        Consume(tAnd, &t);
+      case tAndOr:
+        // Have to check whether or not it is "&&" or "||"
+        Consume(tAndOr, &t);
         r = factor(s);
         n = new CAstBinaryOp(t, opAnd, l, r);
         break;
@@ -387,7 +381,7 @@ CAstExpression* CParser::factor(CAstScope *s)
   //            (these two requires lookahead 2. Also thissubroutineCall calls
   //            another function which differes to statementSubroutineCall.
   //
-  // FIRST(factor) = { tNumber, tLBrak, tNot }
+  // FIRST(factor) = { tNumber, tBool, tCharacter, tString, tIdent, tLParen, tNot }
   //
 
   // TODO: Not Edited yet
@@ -407,6 +401,34 @@ CAstExpression* CParser::factor(CAstScope *s)
       Consume(tLParen);
       n = expression(s);
       Consume(tRParen);
+      break;
+
+    case tBool:
+      n = boolean();
+      break;
+
+    case tChar:
+      n = character();
+      break;
+
+    case tNot:
+      Consume(tNot);
+      CAstExpression *r = NULL;
+      r = factor(s);
+      n = new CAstUnaryOp(tNot, opNot, r);
+      break;
+
+    case tIdent:
+      if(tbl->FindSymbol(_scanner->Peek().GetValue())->GetSymbolType() == stProcedure)
+        // Since a procedure has to be declared before it is called,
+        // this statement is valid.
+      {
+        st = expSubroutineCall(s);
+      }
+      else
+      {
+        st = qualident(s);
+      }
       break;
 
     default:
