@@ -128,55 +128,144 @@ CAstModule* CParser::module(void)
   // module ::= "module" ident ";" varDeclaration { subroutineDecl }
   //            "begin" statSequence "end" ident ".".
   //
-  // TODO: Fill areas which are still just commented
-  //
   CToken dummy;
+  CAstModule *m = NULL;
+  CAstStatement *statseq = NULL;
 
   Consume(tModule);
-  CToken id; // prepare ident token: either hard coded or function
-  CSymtab *symbol;
-  InitSymbolTable(symbol);
-  CAstModule *m;
-  /* check it is ident or not
-  EToken tt = _scanner->Peek().GetType();
-  if(tt != tIdent)
-  {
-    SetError(_scanner->Peek(), "module name expected");
-    m = new CAstModule(_scanner->Peek(), "");
-    return m;
-  }
-  else
-  {
-    id = _scanner->Get();
-    m = new CAstModule(dummy, id.GetValue());
-  } */ // Replace by ident recognizer with empty scope
-  Consume(tSemicolon);
-  // varDeclaration method -> update the symbol table of module
-  /* do{
-   * ... match with subroutineDecl
-   * }while(!_abort); -> symbol table update
-   */
-  Consume(tBegin);
 
-  CAstStatement *statseq = NULL;
+  CToken idBegin, idEnd;
+  Consume(tIdent, &idBegin);
+
+  m = new CAstModule(dummy, idBegin.GetValue());
+
+  Consume(tSemicolon);
+
+  CSymtab *symbols;
+  InitSymbolTable(symbols);
+  symbols = varDeclaration(symbols, stGlobal);
+
+  // TODO: subroutineDecl
+
+  Consume(tBegin);
 
   statseq = statSequence(m);
 
-  m->SetStatementSequence(statseq);
-
   Consume(tEnd);
 
-  CToken idEnd; // To match with id
   Consume(tIdent, &idEnd);
 
-  if((id->GetValue()).compare(idEnd->GetValue()) != 0){
-    SetError(idEnd, "module name is not equal to the original");
-    delete m;
-    m = net CAstModule(idEnd, "");
+  if(idBegin.GetValue() != idEnd.GetValue()){
+    SetError(idEnd, "module name is not matched");
   }
 
   Consume(tDot);
+
+  m->SetSymbolTable(symbols);
+  m->SetStatementSequence(statseq);
   return m;
+}
+
+CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType s_type){
+  EToken tt = _scanner->Peek().GetType();
+
+  if(tt == tVar){
+    Consume(tVar);
+
+    symbols = varDeclSequence(symbols, s_type);
+
+    Consume(tDot);
+  }
+
+  return symbols;
+}
+
+CSymtab* CParser::varDeclSequence(CSymtab* symbols, ESymbolType s_type){
+  symbols = varDecl(symbols, s_type);
+
+  for(;;){
+    EToken tt = _scanner->Peek().GetType();
+    if(tt != tSemicolon) break;
+
+    Consume(tSemicolon);
+
+    symbols = varDecl(symbols, s_type);
+  }
+
+  return symbols;
+}
+
+CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type){
+  vector<string> var_names;
+
+  CToken id;
+  Consume(tIdent, &id);
+  var_names.push_back(id.GetValue());
+
+  for(;;){
+    EToken tt = _scanner->Peek().GetType();
+    if(tt != tComma) break;
+
+    Consume(tComma);
+
+    Consume(tIdent, &id);
+    var_names.push_back(id.GetValue());
+  }
+
+  Consume(tColon);
+
+  CType *datatype;
+  datatype = read_type();
+
+  // CSymbol(name, ESymbolType symboltype, CType *datatype)
+  for(string name : var_names){
+    symbols->AddSymbol(new CSymbol(name, symboltype, datatype));
+  }
+  return symbols;
+}
+
+CType* read_type(CType *datatype){
+  // TODO : implement
+  // basetype { "[" [number] "]" }
+
+  EToken tt = _scanner->Peek().GetType();
+  CToken typeToken;
+
+  if(tt == tBoolean){
+    Consume(tBoolean, &typeToken);
+  }
+  else if(tt == tChar){
+    Consume(tChar, &typeToken);
+  }
+  else if(tt == tInteger){
+    Consume(tInteger, &typeToken);
+  }
+  else{
+    // TODO: non-type error
+  }
+
+  stack<int> NElems;
+
+  for(;;){ // array check
+    tt = _scanner->Peek().GetType();
+
+    if(tt == tLBracket){
+      Consume(tLBracket);
+
+      CToken intToken;
+      Consume(tNumber, &intToken);
+      NElems.push(atoi(intToken.GetValue().c_str()));
+
+      Consume(tRBracket);
+    }
+    else break;
+  }
+
+  if(!(NElems.empty())){
+    // TODO: make array type
+  }
+
+  return datatype;
 }
 
 CAstStatement* CParser::statSequence(CAstScope *s)
@@ -451,63 +540,70 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   //
   // TODO: Fill commented areas
 
-  CToken t; // error returning token
   EToken tt = _scanner->Peek().GetType();
-  CSymProc *symbol; // make a new symtab and edit in below switch?
-  InitSymbolTable(symbol);
 
-  string procName; // contain procedure/function name
-  // edit symbol table by formalPram
-  switch (tt) {
-    // subroutineCall ::= "procedure" ... [formalParam] ...
-    case tProcedure:
-      break;
+  bool isProcedure = false;
 
-    // subroutineCall ::= "function" ... [formalParam] ...
-    case tFunction:
-      break;
-
-    default:
-      cout << "got " << _scanner->Peek() << endl;
-      SetError(_scanner->Peek(), "subroutineCall expected.");
-      break;
+  if(tt == tProcedure){
+    Consume(tProcedure);
+    isProcedure = true;
   }
+  else if(tt == tFunction){
+    Consume(tFunction);
+  }
+  else return NULL; // not subroutineDecl
 
-  CAstProcedure *m = new CAstProcedure(t, procName, s, symbol);
+  CToken dummy;
+  CAstProcedure *m = NULL;
+  CToken idBegin, idEnd;
+  CSymtab *symbols;
+  InitSymbolTable(symbols);
 
-  // subroutineBody part.
-  // subroutineBody = varDeclaration "begin" statSequence "end"
-  // No proper CAstNode type exists for varDeclaration...
-  // therefore, make CSymtab* varDeclaration function to make symbol table.
-  // but statSequence has CAstStatement* type.
+  Consume(tIdent, &idBegin);
+  m = new CAstModule(dummy, idBegin.GetValue());
+
+  Consume(tLParen);
 
   tt = _scanner->Peek().GetType();
-  switch (tt) {
-    // varDeclaration is empty
-    case tBegin:
-      Consume(tBegin);
-      break;
 
-    // varDeclaration is not empty
-    // edit symbol table by varDeclaration
-    case tVar:
-      // varDeclaration (gets symbol as symbol table and edit it)
-      Consume(tBegin);
-      break;
-
-    default:
-      cout << "got " << _scanner->Peek() << endl;
-      SetError(_scanner->Peek(), "subroutineBody expected.");
-      break;
+  if(tt == tIdent){
+    varDeclSequence(symbols, stParam);
   }
 
+  Consume(tRParen);
+
+  if(isProcedure){
+    Consume(tSemicolon);
+  }
+  else{ // function
+    Consume(tColon);
+
+    // TODO: type
+
+    Consume(tSemicolon);
+  }
+
+  CSymtab *symbols;
+  InitSymbolTable(symbols);
+  symbols = varDeclaration(symbols, stLocal);
+
   Consume(tBegin);
-  CAstStatement* statseq = statSequence(m); // Give original scope
-  m->SetStatementSequence(statseq); // set statseq
+
+  CAstStatement *statseq = NULL;
+  statseq = statSequence(m);
+
   Consume(tEnd);
-  // get ident and compare to procName
+
+  Consume(tIdent, &idEnd);
+
+  if(idBegin.GetValue() != idEnd.GetValue()){
+    SetError(idEnd, "module name is not mached");
+  }
+
   Consume(tSemicolon);
 
+  m->SetSymbolTable(symbols);
+  m->SetStatementSequence(statseq);
   return m;
 }
 
