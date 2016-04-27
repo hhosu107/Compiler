@@ -49,6 +49,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 // CParser
 //
+// TODO: check each tokens before consume it.
+//
 CParser::CParser(CScanner *scanner)
 {
   _scanner = scanner;
@@ -241,6 +243,8 @@ CType* read_type(CType *datatype){
     Consume(tInteger, &typeToken);
   }
   else{
+    SetError(_scanner->Peek(), "basetype expected.");
+    return NULL;
     // TODO: non-type error
   }
 
@@ -291,7 +295,7 @@ CAstStatement* CParser::statSequence(CAstScope *s)
       switch (tt) {
         // statement ::= assignment / subroutineCall
         case tIdent:
-          if(tbl->FindSymbol(_scanner->Peek().GetValue())->GetSymbolType() == stProcedure)
+          if(tbl->FindSymbol(_scanner->Peek().GetValue(), sGlobal)->GetSymbolType() == stProcedure)
             // Since a procedure has to be declared before it is called,
             // this statement is valid.
           {
@@ -351,6 +355,49 @@ CAstStatAssign* CParser::assignment(CAstScope *s)
   CAstExpression *rhs = expression(s);
 
   return new CAstStatAssign(t, lhs, rhs);
+}
+
+CAstDesignator* CParser::qualident(CAstScope* s)
+{
+  //
+  // qualident ::= ident { "[ expression "]" }.
+  //
+
+  CSymtab* symbols = s->GetSymbolTable();
+  CToken id;
+
+  /* We have to make ident(CAstScope *s) since it will be duplicated in many
+   * ftns. */
+  Consume(tIdent, &id);
+  const CSymbol* idsym = symbols->FindSymbol(id.GetValue(), sLocal);
+  if(idsym == NULL){
+    idsym = symtab->FindSymbol(id.GetValue(), sGlobal);
+  }
+  if(idsym == NULL){
+    SetError(id, "undeclared variable");
+  }
+
+  CAstDesignator n;
+  n = new CAstDesignator(id, idsym);
+  /* ident(s) end */
+
+  EToken tt = _scanner->Peek().GetType();
+  if(tt != tLBracket) return n;
+
+  /* get tLBracket */
+
+  CAstArrayDesignator *an = new CAstArrayDesignator(id, idsym);
+  tt = _scanner->Peek().GetType();
+
+  do{
+    Consume(tLBracket);
+    CAstExpression *idx = expression(s);
+    an->AddIndex(idx);
+    Consume(tRBracket);
+    tt = _scanner->Peek().GetType();
+  }while(tt == tLBracket);
+
+  return an;
 }
 
 CAstExpression* CParser::expression(CAstScope* s)
@@ -544,62 +591,115 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
 
   bool isProcedure = false;
 
+  // subroutineDecl -> "procedure" ...
   if(tt == tProcedure){
     Consume(tProcedure);
     isProcedure = true;
   }
+
+  // subroutineDecl -> "function" ...
   else if(tt == tFunction){
     Consume(tFunction);
   }
-  else return NULL; // not subroutineDecl
+
+  else {
+    SetError(_scanner->Peek(), "procedure/function expected");
+  }
 
   CToken dummy;
-  CAstProcedure *m = NULL;
-  CToken idBegin, idEnd;
-  CSymtab *symbols;
+  CAstProcedure *m = NULL; // will contain Procedure AST
+  CToken idBegin, idEnd; // to check these two are the same
+  CSymtab *symbols; //
+  CType *return_type = NULL;
   InitSymbolTable(symbols);
+
+  // subroutineDecl -> ... ident ...
+  tt = _scanner->Peek().GetType();
+  if(tt != tIdent){
+    SetError(_scanner->Peek(), "ident expected");
+  }
 
   Consume(tIdent, &idBegin);
-  m = new CAstModule(dummy, idBegin.GetValue());
+  const string &idName = idBegin.GetName();
+  if(s->GetSymbolTable()->FindSymbol(idName, sGlobal)){
+    SetError(idBegin, "this proc/func is redeclared");
+  }
 
-  Consume(tLParen);
-
+  // subroutineDecl -> ... formalParam ... : start
   tt = _scanner->Peek().GetType();
+  if(tt == tLParen) {
+    // TODO: check w.o.n it is tLParen
+    Consume(tLParen);
 
-  if(tt == tIdent){
-    varDeclSequence(symbols, stParam);
+    tt = _scanner->Peek().GetType();
+
+    if(tt == tIdent){
+      varDeclSequence(symbols, stParam);
+    }
+    else{
+      // TODO: check w.o.n. it is tRParen.
+    }
+
+    // subroutineDecl -> ... formalParam ... : end
+    Consume(tRParen);
+
+    // subroutineDecl -> ";" | ":" type ";"
+    if(isProcedure){
+      return_type = CNullType();
+      // TODO: check w.o.n. it is tSemicolon.
+      Consume(tSemicolon);
+    }
+    else{ // function
+      // check w.o.n. it is tColon.
+      Consume(tColon);
+
+      return_type = read_type(return_type);
+      // TODO: type
+
+      // TODO: check w.o.n. it is tSemicolon.
+      Consume(tSemicolon);
+    }
   }
-
-  Consume(tRParen);
-
-  if(isProcedure){
+  else if(tt == tSemicolon){
     Consume(tSemicolon);
   }
-  else{ // function
-    Consume(tColon);
-
-    // TODO: type
-
-    Consume(tSemicolon);
+  else{
+    SetError(_scanner->Peek(), "tLParen or tSemicolon expected");
   }
 
   CSymtab *symbols;
+  CSymProc *symproc;
+  symproc = new CSymProc(idBegin.GetValue(), return_type);
+
   InitSymbolTable(symbols);
+
+  m = new CAstProcedure(idBegin, idBegin.GetValue(), s, symproc);
+  // 3rd element sets parent scope. In here, it is s.
+  // Still, its symbol table has to be set, in the below code.
+
+  // subroutineDecl -> ... subroutineBody : varDeclaration
   symbols = varDeclaration(symbols, stLocal);
 
+  // subroutineDecl -> ... subroutineBody : "begin" ...
+  // TODO: check tBegin
   Consume(tBegin);
 
+  // subroutineDecl -> ... subroutineBody : statSequence
+  // TODO:
   CAstStatement *statseq = NULL;
   statseq = statSequence(m);
 
+  // TODO: check tEnd
   Consume(tEnd);
 
+  // TODO: check tIdent
   Consume(tIdent, &idEnd);
 
   if(idBegin.GetValue() != idEnd.GetValue()){
     SetError(idEnd, "module name is not mached");
   }
 
+  // TODO: check tSemicolon
   Consume(tSemicolon);
 
   m->SetSymbolTable(symbols);
