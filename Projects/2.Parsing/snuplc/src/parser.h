@@ -111,8 +111,8 @@ class CParser {
     CSymtab* varDeclaration(CSymtab* symbols, ESymbolType s_type);
     CSymtab* varDeclSequence(CSymtab* symbols, ESymbolType s_type);
     CSymtab* varDecl(CSymtab* symbols, ESymbolType s_type);
-    CType* read_type(CType *datatype);
- 
+    const CType* read_type(void);
+
     CAstStatCall* statementSubroutineCall(CAstScope *s);
 
     CAstStatIf* ifStatement(CAstScope *s);
@@ -122,9 +122,10 @@ class CParser {
     CAstDesignator* qualident(CAstScope* s);
     CAstFunctionCall* expSubroutineCall(CAstScope *s);
 
- 
+
     CAstConstant*     number(void);
     CAstConstant*     boolean(void);
+    CAstConstant*     character(void);
 
     /// @}
 

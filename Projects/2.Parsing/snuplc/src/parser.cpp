@@ -144,7 +144,7 @@ CAstModule* CParser::module(void)
 
   Consume(tSemicolon);
 
-  CSymtab *symbols;
+  CSymtab *symbols = m->GetSymbolTable();
   InitSymbolTable(symbols);
   symbols = varDeclaration(symbols, stGlobal);
 
@@ -164,7 +164,6 @@ CAstModule* CParser::module(void)
 
   Consume(tDot);
 
-  m->SetSymbolTable(symbols);
   m->SetStatementSequence(statseq);
   return m;
 }
@@ -217,8 +216,8 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type){
 
   Consume(tColon);
 
-  CType *datatype;
-  datatype = read_type(datatype);
+  const CType *datatype;
+  datatype = read_type();
 
   // CSymbol(name, ESymbolType symboltype, CType *datatype)
   for(string name : var_names){
@@ -227,12 +226,13 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type){
   return symbols;
 }
 
-CType* CParser::read_type(CType *datatype){
+const CType* CParser::read_type(void){
   // TODO : implement
   // basetype { "[" [number] "]" }
 
   EToken tt = _scanner->Peek().GetType();
   CToken typeToken;
+  CType* datatype;
 
   if(tt == tBoolean){
     Consume(tBoolean, &typeToken);
@@ -344,7 +344,7 @@ CAstStatCall* CParser::statementSubroutineCall(CAstScope *s){
   // TODO: implement
   return NULL;
 }
- 
+
 CAstStatIf* CParser::ifStatement(CAstScope *s){
   // TODO: implement
   return NULL;
@@ -546,7 +546,7 @@ CAstExpression* CParser::factor(CAstScope *s)
   CToken t;
   EToken tt = _scanner->Peek().GetType();
   CAstExpression *unary = NULL, *n = NULL;
-
+  CSymtab *symbols = s->GetSymbolTable();
   switch (tt) {
     // factor ::= number
     case tNumber:
@@ -578,7 +578,7 @@ CAstExpression* CParser::factor(CAstScope *s)
       break;
 
     case tIdent:
-      if(tbl->FindSymbol(_scanner->Peek().GetValue())->GetSymbolType() == stProcedure)
+      if(symbols->FindSymbol(_scanner->Peek().GetValue(), sGlobal)->GetSymbolType() == stProcedure)
         // Since a procedure has to be declared before it is called,
         // this statement is valid.
       {
@@ -631,15 +631,18 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   }
 
   else {
-    SetError(_scanner->Peek(), "procedure/function expected");
+    return NULL;
   }
+
 
   CToken dummy;
   CAstProcedure *m = NULL; // will contain Procedure AST
+  CAstProcedure *tempm = NULL;
   CToken idBegin, idEnd; // to check these two are the same
   CSymtab *symbols; //
-  CType *return_type = NULL;
+  const CType *return_type = NULL;
   InitSymbolTable(symbols);
+  CTypeManager *tm = CTypeManager::Get();
 
   // subroutineDecl -> ... ident ...
   tt = _scanner->Peek().GetType();
@@ -673,7 +676,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
 
     // subroutineDecl -> ";" | ":" type ";"
     if(isProcedure){
-      return_type = CNullType();
+      return_type = tm->GetNull();
       // TODO: check w.o.n. it is tSemicolon.
       Consume(tSemicolon);
     }
@@ -681,7 +684,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
       // check w.o.n. it is tColon.
       Consume(tColon);
 
-      return_type = read_type(return_type);
+      return_type = read_type();
       // TODO: type
 
       // TODO: check w.o.n. it is tSemicolon.
@@ -705,12 +708,15 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   // subroutineDecl -> ... subroutineBody : varDeclaration
   symbols = varDeclaration(symbols, stLocal);
 
+  // TODO: make vector<CSymbol*> symbolList
+  vector<CSymbol*> symbolList = symbols->GetSymbols();
+  for(int i=0; i<symbolList.size(); i++){
+    (m->GetSymbolTable())->AddSymbol(symbolList[i]);
+  }
   // subroutineDecl -> ... subroutineBody : "begin" ...
-  // TODO: check tBegin
   Consume(tBegin);
 
   // subroutineDecl -> ... subroutineBody : statSequence
-  // TODO:
   CAstStatement *statseq = NULL;
   statseq = statSequence(m);
 
@@ -727,7 +733,6 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   // TODO: check tSemicolon
   Consume(tSemicolon);
 
-  m->SetSymbolTable(symbols);
   m->SetStatementSequence(statseq);
   return m;
 }
@@ -788,4 +793,20 @@ CAstConstant* CParser::boolean(void)
   return new CAstConstant(t, CTypeManager::Get()->GetBool(), b.second);
 }
 
+CAstConstant* CParser::character(void)
+{
+  //
+  // character = ...
+  // char = "'" character "'"
+  //
+  // char is scanned as one token (tCharacter)
+  //
+
+  CToken t;
+
+  Consume(tCharacter, &t);
+  errno = 0;
+  long long c = (long long) CToken::unescape(t.GetValue())[0];
+  return new CAstConstant(t, CTypeManager::Get()->GetChar(), c);
+}
 // TODO: string / null type / pointer type / array type.

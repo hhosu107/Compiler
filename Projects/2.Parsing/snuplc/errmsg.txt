@@ -1,0 +1,1 @@
+g++ -std=c++0x -g -O0 -c -o obj/parser.o src/parser.cpp
