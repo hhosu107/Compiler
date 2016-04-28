@@ -39,6 +39,7 @@
 #include <errno.h>
 #include <cstdlib>
 #include <vector>
+#include <stack>
 #include <iostream>
 #include <exception>
 
@@ -217,16 +218,16 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type){
   Consume(tColon);
 
   CType *datatype;
-  datatype = read_type();
+  datatype = read_type(datatype);
 
   // CSymbol(name, ESymbolType symboltype, CType *datatype)
   for(string name : var_names){
-    symbols->AddSymbol(new CSymbol(name, symboltype, datatype));
+    symbols->AddSymbol(new CSymbol(name, s_type, datatype));
   }
   return symbols;
 }
 
-CType* read_type(CType *datatype){
+CType* CParser::read_type(CType *datatype){
   // TODO : implement
   // basetype { "[" [number] "]" }
 
@@ -300,7 +301,7 @@ CAstStatement* CParser::statSequence(CAstScope *s)
             // this statement is valid.
           {
             st = statementSubroutineCall(s);
-          }
+         }
           else
           {
             st = assignment(s);
@@ -339,6 +340,26 @@ CAstStatement* CParser::statSequence(CAstScope *s)
   return head;
 }
 
+CAstStatCall* CParser::statementSubroutineCall(CAstScope *s){
+  // TODO: implement
+  return NULL;
+}
+ 
+CAstStatIf* CParser::ifStatement(CAstScope *s){
+  // TODO: implement
+  return NULL;
+}
+
+CAstStatWhile* CParser::whileStatement(CAstScope *s){
+  // TODO: implement
+  return NULL;
+}
+
+CAstStatReturn* CParser::returnStatement(CAstScope *s){
+  // TODO: implement
+  return NULL;
+}
+
 CAstStatAssign* CParser::assignment(CAstScope *s)
 {
   //
@@ -371,13 +392,13 @@ CAstDesignator* CParser::qualident(CAstScope* s)
   Consume(tIdent, &id);
   const CSymbol* idsym = symbols->FindSymbol(id.GetValue(), sLocal);
   if(idsym == NULL){
-    idsym = symtab->FindSymbol(id.GetValue(), sGlobal);
+    idsym = symbols->FindSymbol(id.GetValue(), sGlobal);
   }
   if(idsym == NULL){
     SetError(id, "undeclared variable");
   }
 
-  CAstDesignator n;
+  CAstDesignator* n;
   n = new CAstDesignator(id, idsym);
   /* ident(s) end */
 
@@ -450,7 +471,7 @@ CAstExpression* CParser::simpleexpr(CAstScope *s)
   }
 
   tt = _scanner->Peek().GetType();
-  while (tt == tPlusMinus || tt == tOr) {
+  while (tt == tPlusMinus || tt == tAndOr) {
     CToken t;
     CAstExpression *l = n, *r = NULL;
     switch(tt){
@@ -484,7 +505,7 @@ CAstExpression* CParser::term(CAstScope *s)
 
   EToken tt = _scanner->Peek().GetType();
 
-  while ((tt == tMulDiv) || (tt == tAnd)) {
+  while ((tt == tMulDiv) || (tt == tAndOr)) {
     CToken t;
     CAstExpression *l = n, *r = NULL;
 
@@ -548,10 +569,12 @@ CAstExpression* CParser::factor(CAstScope *s)
       break;
 
     case tNot:
-      Consume(tNot);
+    {
+      Consume(tNot, &t);
       CAstExpression *r = NULL;
       r = factor(s);
-      n = new CAstUnaryOp(tNot, opNot, r);
+      n = new CAstUnaryOp(t, opNot, r);
+    }
       break;
 
     case tIdent:
@@ -559,11 +582,11 @@ CAstExpression* CParser::factor(CAstScope *s)
         // Since a procedure has to be declared before it is called,
         // this statement is valid.
       {
-        st = expSubroutineCall(s);
+        n = expSubroutineCall(s);
       }
       else
       {
-        st = qualident(s);
+        n = qualident(s);
       }
       break;
 
@@ -574,6 +597,11 @@ CAstExpression* CParser::factor(CAstScope *s)
   }
 
   return n;
+}
+
+CAstFunctionCall* CParser::expSubroutineCall(CAstScope *s){
+  // TODO: implement
+  return NULL;
 }
 
 CAstProcedure* CParser::subroutineDecl(CAstScope *s)
@@ -667,11 +695,8 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
     SetError(_scanner->Peek(), "tLParen or tSemicolon expected");
   }
 
-  CSymtab *symbols;
   CSymProc *symproc;
   symproc = new CSymProc(idBegin.GetValue(), return_type);
-
-  InitSymbolTable(symbols);
 
   m = new CAstProcedure(idBegin, idBegin.GetValue(), s, symproc);
   // 3rd element sets parent scope. In here, it is s.
