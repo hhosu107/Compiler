@@ -414,7 +414,7 @@ CAstStatement* CParser::statement(CAstScope *s){
       SetError(t, "not declared from statement");
     }
     if(found->GetSymbolType() == stProcedure){
-      st = statementSubroutineCall(s);
+      st = subroutineCall(s);
     }
     else{
       st = assignment(s);
@@ -437,9 +437,37 @@ CAstStatement* CParser::statement(CAstScope *s){
 }
 
 
-CAstStatCall* CParser::statementSubroutineCall(CAstScope *s){
-  // TODO: implement
-  return NULL;
+CAstStatCall* CParser::subroutineCall(CAstScope *s){
+  CSymtab* symbols = s->GetSymbolTable();
+
+  CToken id;
+  Consume(tIdent, &id);
+
+  const CSymbol* symbol = symbols->FindSymbol(id.GetValue(), sGlobal);
+  if(symbol == NULL){
+    SetError(id, "no such subroutine");
+  }
+
+  CToken dummy;
+  CAstFunctionCall* fc = new CAstFunctionCall(dummy, (CSymProc*)symbol);
+
+  Consume(tLParen);
+  
+  CAstExpression *ex = expression(s);
+  fc->AddArg(ex);
+
+  for(;;){
+    EToken tt = _scanner->Peek().GetType();
+    if(tt != tComma) break;
+
+    Consume(tComma);
+    ex = expression(s);
+    fc->AddArg(ex);
+  }
+
+  Consume(tRParen);
+
+  return new CAstStatCall(dummy, fc);
 }
 
 CAstStatIf* CParser::ifStatement(CAstScope *s){
