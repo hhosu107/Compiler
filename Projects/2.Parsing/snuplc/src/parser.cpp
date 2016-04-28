@@ -145,8 +145,8 @@ void CParser::InitSymbolTable(CSymtab *s)
   func->AddParam(new CSymParam(0, "c", tm->GetChar()));
   s->AddSymbol(func);
 
-  // procedure WriteString(str: char[])
-  func = new CSymProc("WriteString", tm->GetNull());
+  // procedure WriteStr(str: char[])
+  func = new CSymProc("WriteStr", tm->GetNull());
   func->AddParam(new CSymParam(0, "str", tm->GetPointer(tm->GetArray(CArrayType::OPEN, tm->GetChar()))));
   s->AddSymbol(func);
 
@@ -207,14 +207,14 @@ CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType s_type){
   if(tt == tVar){
     Consume(tVar);
 
-    symbols = varDecl(symbols, s_type);
+    symbols = varDecl(symbols, s_type, NULL);
     Consume(tSemicolon);
 
     for(;;){
       tt = _scanner->Peek().GetType();
       if(tt != tIdent) break;
 
-      symbols = varDecl(symbols, s_type);
+      symbols = varDecl(symbols, s_type, NULL);
       Consume(tSemicolon);
     }
   }
@@ -239,7 +239,7 @@ CSymtab* CParser::varDeclSequence(CSymtab* symbols, ESymbolType s_type){
 }
 */
 
-CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type){
+CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params){
   vector<string> var_names;
 
   CToken id;
@@ -276,8 +276,25 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type){
   datatype = read_type();
 
   // CSymbol(name, ESymbolType symboltype, CType *datatype)
+  // have to give each methods refer to s_type
   for(string name : var_names){
-    symbols->AddSymbol(new CSymbol(name, s_type, datatype));
+    if(s_type == stGlobal){
+      symbols->AddSymbol(new CSymGlobal(name, datatype));
+    }
+    else if(s_type == stLocal){
+      symbols->AddSymbol(new CSymLocal(name, datatype));
+    }
+    else if(s_type == stProcedure){
+      symbols->AddSymbol(new CSymProc(name, datatype));
+    }
+    else if(s_type == stParam && params != NULL){
+      int size = params->size();
+      symbols->AddSymbol(new CSymParam(size, name, datatype));
+      params->push_back(new CSymParam(size, name, datatype));
+    }
+    else{
+      symbols->AddSymbol(new CSymbol(name, s_type, datatype));
+    }
     // in this step, if it returns false, make an error
   }
   return symbols;
@@ -442,7 +459,7 @@ CAstStatIf* CParser::ifStatement(CAstScope *s){
 
   // ifStatement -> ... [ "else" statSequence2 ] "end"
   EToken tt;
-  CAstStatement *elsestat = new CAstStatement(dummy);
+  CAstStatement *elsestat = NULL;
   tt = _scanner->Peek().GetType();
   if(tt == tElse){
     Consume(tElse);
@@ -720,6 +737,8 @@ CAstExpression* CParser::factor(CAstScope *s)
       break;
 
     case tIdent:
+      // cout << _scanner->Peek().GetValue() << endl;
+      // symbols->print(cout, 0);
       if(symbols->FindSymbol(_scanner->Peek().GetValue(), sGlobal)->GetSymbolType() == stProcedure)
         // Since a procedure has to be declared before it is called,
         // this statement is valid.
@@ -787,6 +806,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
     SetError(idBegin, "this proc/func is redeclared");
   }
 
+  vector<CSymParam*> params;
   // subroutineDecl -> ... formalParam ... : start
   tt = _scanner->Peek().GetType();
   if(tt == tLParen) { // formalParam
@@ -795,12 +815,12 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
     tt = _scanner->Peek().GetType();
 
     if(tt == tIdent){
-      symbols = varDecl(symbols, stParam);
+      symbols = varDecl(symbols, stParam, &params);
       for(;;){
         tt = _scanner->Peek().GetType();
         if(tt != tSemicolon) break;
         Consume(tSemicolon);
-        symbols = varDecl(symbols, stParam);
+        symbols = varDecl(symbols, stParam, &params);
       }
     }
 
@@ -817,8 +837,14 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
     Consume(tSemicolon);
   }
 
+  // make CSymProc* for this function and add it into parent symtab
   CSymProc *symproc;
   symproc = new CSymProc(idBegin.GetValue(), return_type);
+  int idx = 0;
+  for(CSymParam* param : params){
+    symproc->AddParam(param);
+  }
+  (s->GetSymbolTable())->AddSymbol(symproc);
 
   m = new CAstProcedure(idBegin, idBegin.GetValue(), s, symproc);
   // 3rd element sets parent scope. In here, it is s.
@@ -852,6 +878,10 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   Consume(tSemicolon);
 
   m->SetStatementSequence(statseq);
+
+  // Add this symbol into function itself to able recursive call
+  (m->GetSymbolTable())->AddSymbol(symproc);
+
   return m;
 }
 
@@ -870,6 +900,7 @@ CAstConstant* CParser::number(void)
   errno = 0;
   long long v = strtoll(t.GetValue().c_str(), NULL, 10);
   if (errno != 0) SetError(t, "invalid number.");
+  if(v > (1LL << 31)) SetError(t, "tNumber received token exceeding MAX_INT");
 
   return new CAstConstant(t, CTypeManager::Get()->GetInt(), v);
 }
