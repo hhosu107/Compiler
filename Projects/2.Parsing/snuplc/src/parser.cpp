@@ -241,6 +241,7 @@ CSymtab* CParser::varDeclSequence(CSymtab* symbols, ESymbolType s_type){
 
 CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params){
   vector<string> var_names;
+  CTypeManager *tm = CTypeManager::Get();
 
   CToken id;
   Consume(tIdent, &id);
@@ -289,8 +290,15 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam
     }
     else if(s_type == stParam && params != NULL){
       int size = params->size();
-      symbols->AddSymbol(new CSymParam(size, name, datatype));
-      params->push_back(new CSymParam(size, name, datatype));
+      const CType* ptrtype;
+      if(datatype->IsArray()){
+        ptrtype = tm->GetPointer(datatype);
+      }
+      else{
+        ptrtype = datatype;
+      }
+      symbols->AddSymbol(new CSymParam(size, name, ptrtype));
+      params->push_back(new CSymParam(size, name, ptrtype));
     }
     else{
       symbols->AddSymbol(new CSymbol(name, s_type, datatype));
@@ -302,6 +310,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam
 
 const CType* CParser::read_type(void){
 
+  // Have to change into CAsyType*
   CTypeManager *tm = CTypeManager::Get();
   EToken tt = _scanner->Peek().GetType();
   CToken typeToken;
@@ -350,14 +359,16 @@ const CType* CParser::read_type(void){
     else break;
   }
 
-  if(!(NElems.empty())){
+  while(!(NElems.empty())){
     long long size = NElems.top();
     NElems.pop();
     if(size >= 0){
-      datatype = tm->GetPointer(tm->GetArray(size, datatype));
+      // datatype = tm->GetPointer(tm->GetArray(size, datatype));
+      datatype = tm->GetArray(size, datatype);
     }
     else{
-      datatype = tm->GetPointer(tm->GetArray(CArrayType::OPEN, datatype));
+      // datatype = tm->GetPointer(tm->GetArray(CArrayType::OPEN, datatype));
+      datatype = tm->GetArray(CArrayType::OPEN, datatype);
     }
   }
 
@@ -452,19 +463,21 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
   CAstFunctionCall* fc = new CAstFunctionCall(dummy, (CSymProc*)symbol);
 
   Consume(tLParen);
-  
-  CAstExpression *ex = expression(s);
-  fc->AddArg(ex);
 
-  for(;;){
-    EToken tt = _scanner->Peek().GetType();
-    if(tt != tComma) break;
-
-    Consume(tComma);
-    ex = expression(s);
+  EToken tt = _scanner->Peek().GetType();
+  if(tt == tPlusMinus || tt == tIdent || tt == tNumber || tt == tBool || tt == tCharacter || tt == tString || tt == tLParen || tt == tNot){ // expression
+    CAstExpression *ex = expression(s);
     fc->AddArg(ex);
-  }
 
+    for(;;){
+      EToken tt = _scanner->Peek().GetType();
+      if(tt != tComma) break;
+
+      Consume(tComma);
+      ex = expression(s);
+      fc->AddArg(ex);
+    }
+  }
   Consume(tRParen);
 
   return new CAstStatCall(dummy, fc);
@@ -553,7 +566,7 @@ CAstStatAssign* CParser::assignment(CAstScope *s)
   Consume(tAssign);
 
   CAstExpression *rhs = expression(s);
-
+  // cout << (rhs != NULL) << endl;
   return new CAstStatAssign(dummy, lhs, rhs);
 }
 
@@ -751,7 +764,7 @@ CAstExpression* CParser::factor(CAstScope *s)
       n = boolean();
       break;
 
-    case tChar:
+    case tCharacter:
       n = character();
       break;
 
@@ -789,8 +802,40 @@ CAstExpression* CParser::factor(CAstScope *s)
 }
 
 CAstFunctionCall* CParser::expSubroutineCall(CAstScope *s){
-  // TODO: implement
-  return NULL;
+  CSymtab* symbols = s->GetSymbolTable();
+
+  CToken id;
+  Consume(tIdent, &id);
+
+  const CSymbol* symbol = symbols->FindSymbol(id.GetValue(), sGlobal);
+  cout << "Find subroutine " << id.GetValue() << '\n';
+  if(symbol == NULL){
+    SetError(id, "no such subroutine");
+  }
+
+  CToken dummy;
+  CAstFunctionCall* fc = new CAstFunctionCall(dummy, (CSymProc*)symbol);
+
+  Consume(tLParen);
+  EToken tt = _scanner->Peek().GetType();
+  if(tt == tPlusMinus || tt == tIdent || tt == tNumber || tt == tBool || tt == tCharacter || tt == tString || tt == tLParen || tt == tNot){ // expression
+
+    CAstExpression *ex = expression(s);
+    fc->AddArg(ex);
+
+    for(;;){
+      EToken tt = _scanner->Peek().GetType();
+      if(tt != tComma) break;
+
+      Consume(tComma);
+      ex = expression(s);
+      fc->AddArg(ex);
+    }
+  }
+
+  Consume(tRParen);
+
+  return fc;
 }
 
 CAstProcedure* CParser::subroutineDecl(CAstScope *s)
