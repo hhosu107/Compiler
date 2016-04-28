@@ -121,6 +121,7 @@ class CParser {
 
     CAstDesignator* qualident(CAstScope* s);
     CAstFunctionCall* expSubroutineCall(CAstScope *s);
+    CAstStatement* statement(CAstScope *s);
 
 
     CAstConstant*     number(void);
