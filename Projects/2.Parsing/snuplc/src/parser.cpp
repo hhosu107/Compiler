@@ -356,63 +356,69 @@ CAstStatement* CParser::statSequence(CAstScope *s)
   // FIRST(statSequence) = { tIdent, tIf, tWhile, tReturn }
   // FOLLOW(statSequence) = { tElse, tEnd }
   //
-  CAstStatement *head = NULL;
+  CAstStatement *head = NULL, *tail = NULL;
 
   EToken tt = _scanner->Peek().GetType();
-  CSymtab *symbols = s->GetSymbolTable();
-  if (!(tt == tElse || tt == tEnd)) {
-    CAstStatement *tail = NULL;
 
-    do {
-      CToken t;
-      CAstStatement *st = NULL;
+  CAstStatement *st = NULL;
 
-      switch (tt) {
-        // statement ::= assignment / subroutineCall
-        case tIdent:
-          if(symbols->FindSymbol(_scanner->Peek().GetValue(), sGlobal)->GetSymbolType() == stProcedure)
-            // Since a procedure has to be declared before it is called,
-            // this statement is valid.
-          {
-            st = statementSubroutineCall(s);
-         }
-          else
-          {
-            st = assignment(s);
-          }
-          break;
+  if(tt == tIdent || tt == tIf || tt == tWhile || tt == tReturn){
+    st = statement(s);
+    head = tail = st;
 
-        case tIf:
-          st = ifStatement(s); // Make this function
-          break;
-
-        case tWhile:
-          st = whileStatement(s); // Make this function
-          break;
-
-        case tReturn:
-          st = returnStatement(s); // Make this function
-          break;
-
-        default:
-          SetError(_scanner->Peek(), "statement expected.");
-          break;
-      }
-
-      assert(st != NULL);
-      if (head == NULL) head = st;
-      else tail->SetNext(st);
-      tail = st;
-
+    for(;;){
       tt = _scanner->Peek().GetType();
-      if (tt != tSemicolon) break;
+      if(tt != tSemicolon) break;
 
       Consume(tSemicolon);
-    } while (!_abort);
+      st = statement(s);
+
+      tail->SetNext(st);
+      tail = st;
+    }
   }
 
   return head;
 }
+
+CAstStatement* CParser::statement(CAstScope *s){
+  CToken t = _scanner->Peek();
+  EToken tt = t.GetType();
+
+  CAstStatement *st = NULL;
+
+  CSymtab *symbols = s->GetSymbolTable();
+
+  if(tt == tIdent){ // assignment, subroutineCall
+    const CSymbol* found = symbols->FindSymbol(t.GetValue(), sGlobal);
+    if(found == NULL){
+      cout << t.GetValue() << endl;
+      symbols->print(cout, 0);
+      SetError(t, "not declared from statement");
+    }
+    if(found->GetSymbolType() == stProcedure){
+      st = statementSubroutineCall(s);
+    }
+    else{
+      st = assignment(s);
+    }
+  }
+  else if(tt == tIf){
+    st = ifStatement(s);
+  }
+  else if(tt == tWhile){
+    st = whileStatement(s);
+  }
+  else if(tt == tReturn){
+    st = returnStatement(s);
+  }
+  else{
+    SetError(t, "not statement");
+  }
+
+  return st;
+}
+
 
 CAstStatCall* CParser::statementSubroutineCall(CAstScope *s){
   // TODO: implement
@@ -425,15 +431,27 @@ CAstStatIf* CParser::ifStatement(CAstScope *s){
 }
 
 CAstStatWhile* CParser::whileStatement(CAstScope *s){
-  // TODO: implement
-  return NULL;
+  Consume(tWhile);
+  Consume(tLParen);
+
+  CAstExpression *cond_expr = expression(s);
+
+  Consume(tRParen);
+  Consume(tDo);
+
+  CAstStatement *statseq = statSequence(s);
+
+  Consume(tEnd);
+
+  CToken dummy;
+  CAstStatWhile* ret = new CAstStatWhile(dummy, cond_expr, statseq);
+  return ret;
 }
 
 CAstStatReturn* CParser::returnStatement(CAstScope *s){
   CToken dummy;
 
   Consume(tReturn);
-  // TODO: implement
 
   CAstExpression *ret_expr = NULL;
 
@@ -456,15 +474,19 @@ CAstStatAssign* CParser::assignment(CAstScope *s)
   //
   // TODO: Have to edit more for the qualident
   //
-  CToken t;
+
+  // cout << "assignment" << endl;
+
+  CToken dummy;
 
   CAstDesignator *lhs;
   lhs = qualident(s);
+
   Consume(tAssign);
 
   CAstExpression *rhs = expression(s);
 
-  return new CAstStatAssign(t, lhs, rhs);
+  return new CAstStatAssign(dummy, lhs, rhs);
 }
 
 CAstDesignator* CParser::qualident(CAstScope* s)
@@ -474,17 +496,19 @@ CAstDesignator* CParser::qualident(CAstScope* s)
   //
 
   CSymtab* symbols = s->GetSymbolTable();
-  CToken id;
+   // symbols->print(cout, 0);
+
+ CToken id;
 
   /* We have to make ident(CAstScope *s) since it will be duplicated in many
    * ftns. */
   Consume(tIdent, &id);
-  const CSymbol* idsym = symbols->FindSymbol(id.GetValue(), sLocal);
+
+  // cout << id.GetValue() << endl;
+
+  const CSymbol* idsym = symbols->FindSymbol(id.GetValue(), sGlobal);
   if(idsym == NULL){
-    idsym = symbols->FindSymbol(id.GetValue(), sGlobal);
-  }
-  if(idsym == NULL){
-    SetError(id, "undeclared variable");
+    SetError(id, "undeclared variable from qualident");
   }
 
   CAstDesignator* n;
@@ -497,15 +521,18 @@ CAstDesignator* CParser::qualident(CAstScope* s)
   /* get tLBracket */
 
   CAstArrayDesignator *an = new CAstArrayDesignator(id, idsym);
-  tt = _scanner->Peek().GetType();
 
-  do{
-    Consume(tLBracket);
-    CAstExpression *idx = expression(s);
-    an->AddIndex(idx);
-    Consume(tRBracket);
+  for(;;){
     tt = _scanner->Peek().GetType();
-  }while(tt == tLBracket);
+    if(tt != tLBracket) break;
+
+    Consume(tLBracket);
+
+    CAstExpression* idx = expression(s);
+    an->AddIndex(idx);
+
+    Consume(tRBracket);
+  }
 
   return an;
 }
