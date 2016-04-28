@@ -17,8 +17,10 @@
 module test03;
 
 // change "foox" -> "foo" to eliminate
-function foo(): integer;
+function foo(i: integer): char[];
+var c: char[2];
 begin
+  return c
 end foo;
 
 // change "procedure" -> "function" to eliminate
@@ -35,4 +37,4 @@ end foobar;
 
 // add "begin" to eliminate
 begin
-end test03_wrong.
+end test03.

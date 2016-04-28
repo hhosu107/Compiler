@@ -199,19 +199,30 @@ CAstModule* CParser::module(void)
 }
 
 CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType s_type){
+  //
+  // varDeclaration ::= [ "var" varDecl ";" { varDecl ";"} ]
+
   EToken tt = _scanner->Peek().GetType();
 
   if(tt == tVar){
     Consume(tVar);
 
-    symbols = varDeclSequence(symbols, s_type);
+    symbols = varDecl(symbols, s_type);
+    Consume(tSemicolon);
 
-    Consume(tDot);
+    for(;;){
+      tt = _scanner->Peek().GetType();
+      if(tt != tIdent) break;
+
+      symbols = varDecl(symbols, s_type);
+      Consume(tSemicolon);
+    }
   }
 
   return symbols;
 }
 
+/*
 CSymtab* CParser::varDeclSequence(CSymtab* symbols, ESymbolType s_type){
   symbols = varDecl(symbols, s_type);
 
@@ -226,6 +237,7 @@ CSymtab* CParser::varDeclSequence(CSymtab* symbols, ESymbolType s_type){
 
   return symbols;
 }
+*/
 
 CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type){
   vector<string> var_names;
@@ -235,12 +247,26 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type){
   var_names.push_back(id.GetValue());
 
   for(;;){
+    const CSymbol *duplicate;
     EToken tt = _scanner->Peek().GetType();
     if(tt != tComma) break;
 
     Consume(tComma);
 
     Consume(tIdent, &id);
+
+    duplicate = symbols->FindSymbol(id.GetValue(), sLocal);
+    if(duplicate != NULL){
+      SetError(id, "ident was duplicated in local");
+      return NULL;
+    }
+
+    for(string name : var_names){
+      if(name == id.GetValue()){
+        SetError(id, "ident was duplicated in varDecl statement");
+        return NULL;
+      }
+    }
     var_names.push_back(id.GetValue());
   }
 
@@ -252,34 +278,35 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type){
   // CSymbol(name, ESymbolType symboltype, CType *datatype)
   for(string name : var_names){
     symbols->AddSymbol(new CSymbol(name, s_type, datatype));
+    // in this step, if it returns false, make an error
   }
   return symbols;
 }
 
 const CType* CParser::read_type(void){
-  // TODO : implement
-  // basetype { "[" [number] "]" }
 
+  CTypeManager *tm = CTypeManager::Get();
   EToken tt = _scanner->Peek().GetType();
   CToken typeToken;
-  CType* datatype;
+  const CType* datatype;
 
   if(tt == tBoolean){
     Consume(tBoolean, &typeToken);
+    datatype = tm->GetBool();
   }
   else if(tt == tChar){
     Consume(tChar, &typeToken);
+    datatype = tm->GetChar();
   }
   else if(tt == tInteger){
     Consume(tInteger, &typeToken);
+    datatype = tm->GetInt();
   }
   else{
     SetError(_scanner->Peek(), "basetype expected.");
     return NULL;
-    // TODO: non-type error
   }
-
-  stack<int> NElems;
+  stack<long long> NElems;
 
   for(;;){ // array check
     tt = _scanner->Peek().GetType();
@@ -287,9 +314,19 @@ const CType* CParser::read_type(void){
     if(tt == tLBracket){
       Consume(tLBracket);
 
-      CToken intToken;
-      Consume(tNumber, &intToken);
-      NElems.push(atoi(intToken.GetValue().c_str()));
+      tt = _scanner->Peek().GetType();
+      if(tt == tNumber){
+        CToken intToken;
+        Consume(tNumber, &intToken);
+        NElems.push(strtoll(intToken.GetValue().c_str(), NULL, 10));
+      }
+      else if(tt == tRBracket){
+        NElems.push(-1LL);
+      }
+      else{
+        SetError(_scanner->Peek(), "[number] \"]\" expected");
+        return NULL;
+      }
 
       Consume(tRBracket);
     }
@@ -297,7 +334,14 @@ const CType* CParser::read_type(void){
   }
 
   if(!(NElems.empty())){
-    // TODO: make array type
+    long long size = NElems.top();
+    NElems.pop();
+    if(size >= 0){
+      datatype = tm->GetPointer(tm->GetArray(size, datatype));
+    }
+    else{
+      datatype = tm->GetPointer(tm->GetArray(CArrayType::OPEN, datatype));
+    }
   }
 
   return datatype;
@@ -698,7 +742,13 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
     tt = _scanner->Peek().GetType();
 
     if(tt == tIdent){
-      varDeclSequence(symbols, stParam);
+      symbols = varDecl(symbols, stParam);
+      for(;;){
+        tt = _scanner->Peek().GetType();
+        if(tt != tSemicolon) break;
+        Consume(tSemicolon);
+        symbols = varDecl(symbols, stParam);
+      }
     }
 
     Consume(tRParen);
