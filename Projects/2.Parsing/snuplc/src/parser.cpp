@@ -441,7 +441,7 @@ CAstStatement* CParser::statement(CAstScope *s){
     st = returnStatement(s);
   }
   else{
-    SetError(t, "not statement");
+    SetError(t, "statement expected.");
   }
 
   return st;
@@ -670,8 +670,9 @@ CAstExpression* CParser::simpleexpr(CAstScope *s)
     n = term(s);
   }
 
-  tt = _scanner->Peek().GetType();
-  while (tt == tPlusMinus || tt == tAndOr) {
+  CToken t = _scanner->Peek();
+  tt = t.GetType();
+  while (tt == tPlusMinus || (tt == tAndOr && t.GetValue() == "||")) {
     CToken t;
     CAstExpression *l = n, *r = NULL;
     switch(tt){
@@ -703,9 +704,10 @@ CAstExpression* CParser::term(CAstScope *s)
 
   n = factor(s);
 
-  EToken tt = _scanner->Peek().GetType();
+  CToken t = _scanner->Peek();
+  EToken tt = t.GetType();
 
-  while ((tt == tMulDiv) || (tt == tAndOr)) {
+  while ((tt == tMulDiv) || (tt == tAndOr && t.GetValue() == "&&")) {
     CToken t;
     CAstExpression *l = n, *r = NULL;
 
@@ -768,6 +770,10 @@ CAstExpression* CParser::factor(CAstScope *s)
       n = character();
       break;
 
+    case tString:
+      n = stringConst(s);
+      break;
+
     case tNot:
     {
       Consume(tNot, &t);
@@ -808,7 +814,7 @@ CAstFunctionCall* CParser::expSubroutineCall(CAstScope *s){
   Consume(tIdent, &id);
 
   const CSymbol* symbol = symbols->FindSymbol(id.GetValue(), sGlobal);
-  cout << "Find subroutine " << id.GetValue() << '\n';
+  // cout << "Find subroutine " << id.GetValue() << '\n';
   if(symbol == NULL){
     SetError(id, "no such subroutine");
   }
@@ -1031,4 +1037,13 @@ CAstConstant* CParser::character(void)
   long long c = (long long) CToken::unescape(t.GetValue())[0];
   return new CAstConstant(t, CTypeManager::Get()->GetChar(), c);
 }
+
+CAstStringConstant* CParser::stringConst(CAstScope *s){
+  CToken t;
+
+  Consume(tString, &t);
+
+  return new CAstStringConstant(t, t.GetValue(), s);
+}
+
 // TODO: string / null type / pointer type / array type.
