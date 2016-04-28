@@ -19,19 +19,20 @@ module test03;
 // change "foox" -> "foo" to eliminate
 function foo(): integer;
 begin
-end foox;
+end foo;
 
 // change "procedure" -> "function" to eliminate
-procedure bar: integer;
+function bar: integer;
 begin
 end bar;
 
 // add return type to eliminate
-function foobar();
+function foobar(): integer;
 begin
   // remove semicolon to eliminate
-  return 1;
+  return 1
 end foobar;
 
 // add "begin" to eliminate
+begin
 end test03_wrong.

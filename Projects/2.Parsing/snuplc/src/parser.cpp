@@ -118,11 +118,41 @@ bool CParser::Consume(EToken type, CToken *token)
 void CParser::InitSymbolTable(CSymtab *s)
 {
   CTypeManager *tm = CTypeManager::Get();
-  // below three lines are wrong. Edit it.
-  //s->AddSymbol("DIM", stProcedure, /* how to put two parameters? */ ... );
-  //s->AddSymbol("DOFS", stProcedure, /* ptr to array */ ...);
-  //s->AddSymbol("ReadInt", stProcedure,
-  // TODO: add predefined functions here
+  CSymProc *func;
+
+  // function DIM (arr: pointer to array; dim: integer): integer
+  func = new CSymProc("DIM", tm->GetInt());
+  func->AddParam(new CSymParam(0, "arr", tm->GetPointer(tm->GetNull())));
+  func->AddParam(new CSymParam(1, "dim", tm->GetInt()));
+  s->AddSymbol(func);
+
+  // function DOFS (a: pointer to array): integer
+  func = new CSymProc("DOFS", tm->GetInt());
+  func->AddParam(new CSymParam(0, "a", tm->GetPointer(tm->GetNull())));
+  s->AddSymbol(func);
+
+  // funcion ReadInt (): integer
+  func = new CSymProc("ReadInt", tm->GetInt());
+  s->AddSymbol(func);
+
+  // procedure WriteInt(i: integer)
+  func = new CSymProc("WriteInt", tm->GetNull());
+  func->AddParam(new CSymParam(0, "i", tm->GetInt()));
+  s->AddSymbol(func);
+
+  // procedure WriteChar(c: char)
+  func = new CSymProc("WriteChar", tm->GetNull());
+  func->AddParam(new CSymParam(0, "c", tm->GetChar()));
+  s->AddSymbol(func);
+
+  // procedure WriteString(str: char[])
+  func = new CSymProc("WriteString", tm->GetNull());
+  func->AddParam(new CSymParam(0, "str", tm->GetPointer(tm->GetArray(CArrayType::OPEN, tm->GetChar()))));
+  s->AddSymbol(func);
+
+  // procedure WriteLn()
+  func = new CSymProc("WriteLn", tm->GetNull());
+  s->AddSymbol(func);
 }
 
 CAstModule* CParser::module(void)
@@ -148,7 +178,7 @@ CAstModule* CParser::module(void)
   InitSymbolTable(symbols);
   symbols = varDeclaration(symbols, stGlobal);
 
-  // TODO: subroutineDecl
+  while(subroutineDecl(m) != NULL) ;
 
   Consume(tBegin);
 
@@ -285,7 +315,7 @@ CAstStatement* CParser::statSequence(CAstScope *s)
   CAstStatement *head = NULL;
 
   EToken tt = _scanner->Peek().GetType();
-  CSymtab *tbl = s->GetSymbolTable();
+  CSymtab *symbols = s->GetSymbolTable();
   if (!(tt == tElse || tt == tEnd)) {
     CAstStatement *tail = NULL;
 
@@ -296,7 +326,7 @@ CAstStatement* CParser::statSequence(CAstScope *s)
       switch (tt) {
         // statement ::= assignment / subroutineCall
         case tIdent:
-          if(tbl->FindSymbol(_scanner->Peek().GetValue(), sGlobal)->GetSymbolType() == stProcedure)
+          if(symbols->FindSymbol(_scanner->Peek().GetValue(), sGlobal)->GetSymbolType() == stProcedure)
             // Since a procedure has to be declared before it is called,
             // this statement is valid.
           {
@@ -538,7 +568,7 @@ CAstExpression* CParser::factor(CAstScope *s)
   //            (these two requires lookahead 2. Also thissubroutineCall calls
   //            another function which differes to statementSubroutineCall.
   //
-  // FIRST(factor) = { tNumber, tBool, tCharacter, tString, tIdent, tLParen, tNot }
+  // FIRST(factor) = { tNumber, tBool, tCharacter, tString, tIdent, tLParen, tNot, tPlusMinus }
   //
 
   // TODO: Not Edited yet
@@ -651,8 +681,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   }
 
   Consume(tIdent, &idBegin);
-  const string &idName = idBegin.GetName();
-  if(s->GetSymbolTable()->FindSymbol(idName, sGlobal)){
+  if(s->GetSymbolTable()->FindSymbol(idBegin.GetValue(), sGlobal)){
     SetError(idBegin, "this proc/func is redeclared");
   }
 
@@ -707,7 +736,6 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
 
   // subroutineDecl -> ... subroutineBody : varDeclaration
   symbols = varDeclaration(symbols, stLocal);
-
   // TODO: make vector<CSymbol*> symbolList
   vector<CSymbol*> symbolList = symbols->GetSymbols();
   for(int i=0; i<symbolList.size(); i++){
