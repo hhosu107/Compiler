@@ -953,7 +953,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   m->SetStatementSequence(statseq);
 
   // Add this symbol into function itself to able recursive call
-  (m->GetSymbolTable())->AddSymbol(symproc);
+  //(m->GetSymbolTable())->AddSymbol(symproc);
 
   return m;
 }
