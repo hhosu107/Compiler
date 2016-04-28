@@ -386,8 +386,23 @@ CAstStatWhile* CParser::whileStatement(CAstScope *s){
 }
 
 CAstStatReturn* CParser::returnStatement(CAstScope *s){
+  CToken dummy;
+
+  Consume(tReturn);
   // TODO: implement
-  return NULL;
+
+  CAstExpression *ret_expr = NULL;
+
+  EToken tt;
+  tt = _scanner->Peek().GetType();
+
+  if(tt == tPlusMinus || tt == tIdent || tt == tNumber || tt == tBool || tt == tCharacter || tt == tString || tt == tLParen || tt == tNot){ // expression
+    ret_expr = expression(s);
+  }
+
+  CAstStatReturn *ret = new CAstStatReturn(dummy, s, ret_expr);
+
+  return ret;
 }
 
 CAstStatAssign* CParser::assignment(CAstScope *s)
@@ -664,21 +679,11 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
     return NULL;
   }
 
-
-  CToken dummy;
-  CAstProcedure *m = NULL; // will contain Procedure AST
-  CAstProcedure *tempm = NULL;
-  CToken idBegin, idEnd; // to check these two are the same
-  CSymtab *symbols; //
-  const CType *return_type = NULL;
-  InitSymbolTable(symbols);
+  CToken idBegin, idEnd;
+  CSymtab* symbols = new CSymtab();
+  CAstProcedure *m = NULL;
+  const CType* return_type;
   CTypeManager *tm = CTypeManager::Get();
-
-  // subroutineDecl -> ... ident ...
-  tt = _scanner->Peek().GetType();
-  if(tt != tIdent){
-    SetError(_scanner->Peek(), "ident expected");
-  }
 
   Consume(tIdent, &idBegin);
   if(s->GetSymbolTable()->FindSymbol(idBegin.GetValue(), sGlobal)){
@@ -687,8 +692,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
 
   // subroutineDecl -> ... formalParam ... : start
   tt = _scanner->Peek().GetType();
-  if(tt == tLParen) {
-    // TODO: check w.o.n it is tLParen
+  if(tt == tLParen) { // formalParam
     Consume(tLParen);
 
     tt = _scanner->Peek().GetType();
@@ -696,35 +700,18 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
     if(tt == tIdent){
       varDeclSequence(symbols, stParam);
     }
-    else{
-      // TODO: check w.o.n. it is tRParen.
-    }
 
-    // subroutineDecl -> ... formalParam ... : end
     Consume(tRParen);
-
-    // subroutineDecl -> ";" | ":" type ";"
-    if(isProcedure){
-      return_type = tm->GetNull();
-      // TODO: check w.o.n. it is tSemicolon.
-      Consume(tSemicolon);
-    }
-    else{ // function
-      // check w.o.n. it is tColon.
-      Consume(tColon);
-
-      return_type = read_type();
-      // TODO: type
-
-      // TODO: check w.o.n. it is tSemicolon.
-      Consume(tSemicolon);
-    }
   }
-  else if(tt == tSemicolon){
+
+  if(isProcedure){
+    return_type = tm->GetNull();
     Consume(tSemicolon);
   }
   else{
-    SetError(_scanner->Peek(), "tLParen or tSemicolon expected");
+    Consume(tColon);
+    return_type = read_type();
+    Consume(tSemicolon);
   }
 
   CSymProc *symproc;
