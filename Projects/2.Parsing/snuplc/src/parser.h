@@ -111,7 +111,7 @@ class CParser {
     CSymtab* varDeclaration(CSymtab* symbols, ESymbolType s_type);
     CSymtab* varDeclSequence(CSymtab* symbols, ESymbolType s_type);
     CSymtab* varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params);
-    const CType* read_type(void);
+    const CAstType* read_type(void);
 
     CAstStatCall* subroutineCall(CAstScope *s);
 

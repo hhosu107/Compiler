@@ -274,7 +274,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam
   Consume(tColon);
 
   const CType *datatype;
-  datatype = read_type();
+  datatype = read_type()->GetType();
 
   // CSymbol(name, ESymbolType symboltype, CType *datatype)
   // have to give each methods refer to s_type
@@ -308,7 +308,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam
   return symbols;
 }
 
-const CType* CParser::read_type(void){
+const CAstType* CParser::read_type(void){
 
   // Have to change into CAsyType*
   CTypeManager *tm = CTypeManager::Get();
@@ -372,7 +372,7 @@ const CType* CParser::read_type(void){
     }
   }
 
-  return datatype;
+  return new CAstType(typeToken, datatype);
 }
 
 CAstStatement* CParser::statSequence(CAstScope *s)
@@ -906,7 +906,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   }
   else{
     Consume(tColon);
-    return_type = read_type();
+    return_type = read_type()->GetType();
     Consume(tSemicolon);
   }
 
