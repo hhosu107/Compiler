@@ -395,6 +395,7 @@ CAstStatement* CParser::statSequence(CAstScope *s)
           break;
 
         default:
+
           SetError(_scanner->Peek(), "statement expected.");
           break;
       }
@@ -420,8 +421,31 @@ CAstStatCall* CParser::statementSubroutineCall(CAstScope *s){
 }
 
 CAstStatIf* CParser::ifStatement(CAstScope *s){
-  // TODO: implement
-  return NULL;
+  CToken dummy;
+
+  // ifStatement -> if ...
+  Consume(tIf, &dummy);
+
+  // ifStatement -> ... "(" expression ")" ...
+  Consume(tLParen);
+  CAstExpression *ifcond = expression(s);
+  Consume(tRParen);
+
+  // ifStatement -> ... "then" statSequence1 ...
+  Consume(tThen);
+  CAstStatement *ifstat = statSequence(s);
+
+  // ifStatement -> ... [ "else" statSequence2 ] "end"
+  EToken tt;
+  CAstStatement *elsestat = new CAstStatement(dummy);
+  tt = _scanner->Peek().GetType();
+  if(tt == tElse){
+    Consume(tElse);
+    elsestat = statSequence(s);
+  }
+  Consume(tEnd);
+
+  return new CAstStatIf(dummy, ifcond, ifstat, elsestat);
 }
 
 CAstStatWhile* CParser::whileStatement(CAstScope *s){
@@ -531,7 +555,10 @@ CAstExpression* CParser::expression(CAstScope* s)
     else if (t.GetValue() == ">")  relop = opBiggerThan;
     else if (t.GetValue() == "<=") relop = opLessEqual;
     else if (t.GetValue() == ">=") relop = opBiggerEqual;
-    else SetError(t, "invalid relation.");
+    else {
+      cout << "got " << t << endl;
+      SetError(t, "invalid relation.");
+    }
 
     return new CAstBinaryOp(t, relop, left, right);
   } else {
