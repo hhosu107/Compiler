@@ -1,5 +1,4 @@
 parsing 'array02.mod'...
-Find subroutine ReadInt
 successfully parsed.
   AST:
     CAstScope: 'array02'

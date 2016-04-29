@@ -1,40 +1,35 @@
-2,5d1
-< Find subroutine DIM
-< Find subroutine DIM
-< Find subroutine DIM
-< Find subroutine DIM
-49c45
+45c45
 <               < <int>
 ---
 >               < <bool>
-57c53
+53c53
 <                 < <int>
 ---
 >                 < <bool>
-62c58
+58c58
 <                   [ %A        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
 ---
 >                   [ %A        <ptr(4) to <array  of <array  of <int>>>> ] <int>
-107c103
+103c103
 <               < <int>
 ---
 >               < <bool>
-115c111
+111c111
 <                 < <int>
 ---
 >                 < <bool>
-119,120c115,116
+115,116c115,116
 <                 := <INVALID>
 <                   [ %a        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
 ---
 >                 := <int>
 >                   [ %a        <ptr(4) to <array  of <array  of <int>>>> ] <int>
-154c150,151
+150c150,151
 <               [ $x        <array 3  of <array 3  of <int>>> ] <array 3  of <array 3  of <int>>>
 ---
 >               &() <ptr(4) to <array 3  of <array 3  of <int>>>>
 >                 [ $x        <array 3  of <array 3  of <int>>> ] <array 3  of <array 3  of <int>>>
-159c156,157
+155c156,157
 <               [ $x        <array 3  of <array 3  of <int>>> ] <array 3  of <array 3  of <int>>>
 ---
 >               &() <ptr(4) to <array 3  of <array 3  of <int>>>>

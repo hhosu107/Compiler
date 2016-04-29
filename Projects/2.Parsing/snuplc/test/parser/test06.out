@@ -1,6 +1,4 @@
 parsing 'test06.mod'...
-Find subroutine binop
-Find subroutine intop
 successfully parsed.
   AST:
     CAstScope: 'test06'
@@ -70,20 +68,20 @@ successfully parsed.
           statement list:
             return <int>
               not <int>
-                and <int>
+                or <int>
+                  > <int>
+                    add <int>
+                      neg <int>
+                        [ %p0       <int> ] <int>
+                      [ %p1       <int> ] <int>
+                    0 <int>
                   and <int>
-                    > <int>
-                      add <int>
-                        neg <int>
-                          [ %p0       <int> ] <int>
-                        [ %p1       <int> ] <int>
-                      0 <int>
                     > <int>
                       [ %p0       <int> ] <int>
                       0 <int>
-                  < <int>
-                    [ %p1       <int> ] <int>
-                    0 <int>
+                    < <int>
+                      [ %p1       <int> ] <int>
+                      0 <int>
           nested scopes:
             empty.
         

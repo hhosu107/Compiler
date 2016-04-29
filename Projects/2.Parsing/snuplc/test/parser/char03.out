@@ -1,5 +1,4 @@
 parsing 'char03.mod'...
-Find subroutine ReadInt
 successfully parsed.
   AST:
     CAstScope: 'char03'

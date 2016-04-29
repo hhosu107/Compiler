@@ -1,6 +1,33 @@
 parsing 'string01.mod'...
-got 8:12: tString (Hello, world\n)
-parse error : at 8:12 : factor expected.
+successfully parsed.
+  AST:
+    CAstScope: 'string01'
+      symbol table:
+        [[
+          [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+          [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+          [ *ReadInt() --> <int>           ]
+          [ *WriteChar(<char>) --> <NULL>           ]
+          [ *WriteInt(<int>) --> <NULL>           ]
+          [ *WriteLn() --> <NULL>           ]
+          [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>           ]
+          [ @_str_1   <array 14  of <char>>           ]
+            [ data: 'Hello, world\n' ]
+          [ @_str_2   <array 23  of <char>>           ]
+            [ data: 'This is pretty nice!\n\n' ]
+        ]]
+      statement list:
+        call [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL> ] <NULL>
+          "Hello, world\n" <array 14  of <char>>
+        call [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL> ] <NULL>
+          "This is pretty nice!\n\n" <array 23  of <char>>
+      nested scopes:
+        empty.
+    
+
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -ostring01.mod.ast.pdf string01.mod.ast.dot
 
 
 Done.

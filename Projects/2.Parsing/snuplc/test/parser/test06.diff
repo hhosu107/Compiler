@@ -1,53 +1,38 @@
-2,3d1
-< Find subroutine binop
-< Find subroutine intop
-59c57
+57c57
 <               not <int>
 ---
 >               not <bool>
-71,81c69,79
+69,72c69,72
 <             return <int>
 <               not <int>
-<                 and <int>
-<                   and <int>
-<                     > <int>
-<                       add <int>
-<                         neg <int>
-<                           [ %p0       <int> ] <int>
-<                         [ %p1       <int> ] <int>
-<                       0 <int>
-<                     > <int>
+<                 or <int>
+<                   > <int>
 ---
 >             return <INVALID>
 >               not <INVALID>
 >                 or <INVALID>
 >                   > <bool>
->                     add <int>
->                       neg <int>
->                         [ %p0       <int> ] <int>
->                       [ %p1       <int> ] <int>
->                     0 <int>
+78,79c78,79
+<                   and <int>
+<                     > <int>
+---
 >                   and <INVALID>
 >                     > <bool>
-84,86c82,84
-<                   < <int>
-<                     [ %p1       <int> ] <int>
-<                     0 <int>
+82c82
+<                     < <int>
 ---
 >                     < <bool>
->                       [ %p1       <int> ] <int>
->                       0 <int>
-114,115c112,113
+112,113c112,113
 <               and <int>
 <                 and <int>
 ---
 >               and <INVALID>
 >                 and <INVALID>
-119c117
+117c117
 <                   < <int>
 ---
 >                   < <bool>
-124c122
+122c122
 <                 # <int>
 ---
 >                 # <bool>

@@ -1,10 +1,4 @@
 parsing 'array07.mod'...
-Find subroutine DIM
-Find subroutine DIM
-Find subroutine DIM
-Find subroutine DIM
-Find subroutine DIM
-Find subroutine DIM
 successfully parsed.
   AST:
     CAstScope: 'array07'
