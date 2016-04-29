@@ -1,0 +1,6 @@
+parsing 'string01.mod'...
+got 8:12: tString (Hello, world\n)
+parse error : at 8:12 : factor expected.
+
+
+Done.

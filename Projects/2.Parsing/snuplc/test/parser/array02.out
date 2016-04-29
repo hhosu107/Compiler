@@ -1,0 +1,44 @@
+parsing 'array02.mod'...
+Find subroutine ReadInt
+successfully parsed.
+  AST:
+    CAstScope: 'array02'
+      symbol table:
+        [[
+          [ @A        <array 5  of <array 5  of <int>>>           ]
+          [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+          [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+          [ *ReadInt() --> <int>           ]
+          [ *WriteChar(<char>) --> <NULL>           ]
+          [ *WriteInt(<int>) --> <NULL>           ]
+          [ *WriteLn() --> <NULL>           ]
+          [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>           ]
+        ]]
+      statement list:
+        := <INVALID>
+          [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+            2 <int>
+            3 <int>
+          call [ *ReadInt() --> <int> ] <int>
+        := <INVALID>
+          [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+            0 <int>
+            1 <int>
+          [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+            2 <int>
+            3 <int>
+        call [ *WriteInt(<int>) --> <NULL> ] <NULL>
+          [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+            0 <int>
+            1 <int>
+        call [ *WriteLn() --> <NULL> ] <NULL>
+      nested scopes:
+        empty.
+    
+
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -oarray02.mod.ast.pdf array02.mod.ast.dot
+
+
+Done.

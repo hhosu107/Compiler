@@ -87,50 +87,125 @@ class CParser {
     /// @retval false otherwise
     bool Consume(EToken type, CToken *token=NULL);
 
-
-    /// @brief initialize symbol table @a s with predefined procedures and
-    ///        global variables
+    /// @brief initialize symbol table
+    /// @param s with predefined procedures and global variables
     void InitSymbolTable(CSymtab *s);
 
     /// @name methods for recursive-descent parsing
     /// @{
 
+    /// @brief takes entire module and make AST node
+    /// @retval CAstModule* node
     CAstModule*       module(void);
 
+    /// @brief takes a sequence of statements to make a linked list of them
+    /// @param s parent scope
+    /// @retval head of linked list of statements if it is non-empty
+    /// @retval NULL otherwise
     CAstStatement*    statSequence(CAstScope *s);
 
+    /// @brief takes each statement
+    /// @param s parent scope
+    /// @retval CAstStatement* node if exists
+    /// @retval NULL otherwise
+    CAstStatement*    statement(CAstScope *s);
+
+    /// @brief takes an assignment statement
+    /// @param s parent scope
+    /// @retval CAstStatAssign* node with lhs and rhs
     CAstStatAssign*   assignment(CAstScope *s);
 
-    CAstExpression*   expression(CAstScope *s);
-    CAstExpression*   simpleexpr(CAstScope *s);
-    CAstExpression*   term(CAstScope *s);
-    CAstExpression*   factor(CAstScope *s);
-
-    CAstProcedure*    subroutineDecl(CAstScope *s);
-
-    CSymtab* varDeclaration(CSymtab* symbols, ESymbolType s_type);
-    CSymtab* varDeclSequence(CSymtab* symbols, ESymbolType s_type);
-    CSymtab* varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params);
-    const CAstType* read_type(void);
-
+    /// @brief takes a subroutine call statement
+    /// @param s parent scope
+    /// @retval CAstStatCall* node with an CAstFunctionCall* node fc
     CAstStatCall* subroutineCall(CAstScope *s);
 
+    /// @brief takes an if statement
+    /// @param s parent scope
+    /// @retval CAstStatIf* node with ifcondition, ifstat and elsestat
     CAstStatIf* ifStatement(CAstScope *s);
+
+    /// @brief takes a while loop statement
+    /// @param s parent scope
+    /// @retval CAstStatWhile* node with whilecondition, whilebody
     CAstStatWhile* whileStatement(CAstScope *s);
+
+    /// @brief takes a return statement
+    /// @param s parent scope
+    /// @retval CAstStateReturn* node with a return statement
     CAstStatReturn* returnStatement(CAstScope *s);
 
-    CAstDesignator* qualident(CAstScope* s);
+    /// @brief takes an expression as "simpleexpr [ relOp simpleexpr ]"
+    /// @param s parent scope
+    /// @retval CAstExpression* node with an expression
+    CAstExpression*   expression(CAstScope *s);
+
+    /// @brief takes a simpleexpr as "[ + | - ] term { termOp term }"
+    /// @param s parent scope
+    /// @retval CAstExpression* node with a simpleexpr
+    CAstExpression*   simpleexpr(CAstScope *s);
+
+    /// @brief takes a term as "factor { termOp factor }"
+    /// @param s parent scope
+    /// @retval CAstExpression* node with a term
+    CAstExpression*   term(CAstScope *s);
+
+    /// @brief takes a factor like constants, qualident, parenthesized expression, negated factor
+    /// @param s
+    /// @retval CAstExpression* node with a factor
+    CAstExpression*   factor(CAstScope *s);
+
+    /// @brief takes a subroutine call expression
+    /// @param s parent scope
+    /// @retval CAstFunctionCall* node with a procedure symbol
     CAstFunctionCall* expSubroutineCall(CAstScope *s);
-    CAstStatement* statement(CAstScope *s);
 
+    /// @brief takes a declaration part of subroutine and add it into global symbol table
+    /// @param s parent scope
+    /// @retval CAstProcedure node with its name, procedure symbol and its parent scope
+    CAstProcedure*    subroutineDecl(CAstScope *s);
 
+    /// @brief takes a set of variable declaration and add them into the given symbol table
+    /// @param symbols a given symbol table
+    /// @param s_type a symbol type depend on the location of variable declaration
+    /// @retval CSymtab* symbols which saves newly declared symbols
+    CSymtab* varDeclaration(CSymtab* symbols, ESymbolType s_type);
+
+    /// @brief takes an one type of the variable declaration and add them into the given symbol table
+    /// @param symbols a given symbol table
+    /// @param s_type a symbol type depend on the location of variable declaration
+    /// @param *params a pointer to vector<CSymParam*> which contains formal parameters of the subroutine, NULL otherwise
+    /// @retval CSymtab* symbols which saves newly declared symbols
+    /// @retval vector<CSymParam*>* as a parameter
+    CSymtab* varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params);
+
+    /// @brief takes a type definition
+    /// @retval CAstType* node with its type
+    const CAstType* read_type(void);
+
+    /// @brief takes a qualident as ident { "[" [ number ] "]" }
+    /// @param s parent scope
+    /// @retval CAstDesignator* node with the qualident's symbol
+    CAstDesignator* qualident(CAstScope* s);
+
+    /// @brief takes a number constant and check w.o.n it exceeds a boundary
+    /// @retval CAstConstant* node with integer type and value
     CAstConstant*     number(void);
+
+    /// @brief takes "true" or "false"
+    /// @retval CAstConstant* node with boolean type and 1 if true, 0 if false
     CAstConstant*     boolean(void);
+
+    /// @brief takes a character constant and unescape it
+    /// @retval CAstConstant* node with character type and its value
     CAstConstant*     character(void);
+
+    /// @brief takes a string constant
+    /// @param s parent scope
+    /// @retval CAstStringConstant* node with its value and parent scope
     CAstStringConstant* stringConst(CAstScope *s);
 
     /// @}
-
 
     CScanner     *_scanner;       ///< CScanner instance
     CAstModule   *_module;        ///< root node of the program

@@ -1,0 +1,37 @@
+parsing 'char01.mod'...
+successfully parsed.
+  AST:
+    CAstScope: 'char01'
+      symbol table:
+        [[
+          [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+          [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+          [ *ReadInt() --> <int>           ]
+          [ *WriteChar(<char>) --> <NULL>           ]
+          [ *WriteInt(<int>) --> <NULL>           ]
+          [ *WriteLn() --> <NULL>           ]
+          [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>           ]
+          [ @c        <char>           ]
+        ]]
+      statement list:
+        := <char>
+          [ @c        <char> ] <char>
+          49 <char>
+        := <char>
+          [ @c        <char> ] <char>
+          9 <char>
+        call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+          [ @c        <char> ] <char>
+        call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+          33 <char>
+        call [ *WriteLn() --> <NULL> ] <NULL>
+      nested scopes:
+        empty.
+    
+
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -ochar01.mod.ast.pdf char01.mod.ast.dot
+
+
+Done.

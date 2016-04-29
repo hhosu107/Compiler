@@ -1,0 +1,5 @@
+parsing 'test03.mod'...
+parse error : at 20:32 : expected 'tNumber', got 'tRBrak'
+
+
+Done.

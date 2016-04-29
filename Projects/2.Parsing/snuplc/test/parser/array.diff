@@ -1,0 +1,67 @@
+16c16
+<           [ *addB(<ptr(4) to <array  of <array  of <int>>>>,<ptr(4) to <array  of <array  of <int>>>>,<ptr(4) to <array  of <array  of <int>>>>) --> <NULL>           ]
+---
+>           [ *addB(<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>) --> <NULL>           ]
+22,24c22,27
+<           [ @a        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+<           [ @b        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+<           [ @c        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+---
+>           &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+>             [ @a        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+>           &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+>             [ @b        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+>           &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+>             [ @c        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+40c43
+<               < <int>
+---
+>               < <bool>
+48c51
+<                 < <int>
+---
+>                 < <bool>
+52,53c55,56
+<                 := <INVALID>
+<                   [ %C        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <INVALID>
+---
+>                 := <int>
+>                   [ %C        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+57c60
+<                     [ %A        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <INVALID>
+---
+>                     [ %A        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+60c63
+<                     [ %B        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <INVALID>
+---
+>                     [ %B        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+69,71c72,74
+<               [ %A        <ptr(4) to <array  of <array  of <int>>>>               ]
+<               [ %B        <ptr(4) to <array  of <array  of <int>>>>               ]
+<               [ %C        <ptr(4) to <array  of <array  of <int>>>>               ]
+---
+>               [ %A        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
+>               [ %B        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
+>               [ %C        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
+80c83
+<               < <int>
+---
+>               < <bool>
+88c91
+<                 < <int>
+---
+>                 < <bool>
+92,93c95,96
+<                 := <INVALID>
+<                   [ %C        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                 := <int>
+>                   [ %C        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+97c100
+<                     [ %A        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                     [ %A        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+100c103
+<                     [ %B        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                     [ %B        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>

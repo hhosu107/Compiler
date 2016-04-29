@@ -1,0 +1,4 @@
+2c2
+< parse error : at 18:1 : not statement
+---
+> parse error : at 18:1 : statement expected.

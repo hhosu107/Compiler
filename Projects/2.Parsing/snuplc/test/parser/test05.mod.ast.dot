@@ -5,11 +5,9 @@ digraph AST {
 
   node0 [label="m test05",shape=box];
   node4 [label=":=",shape=box];
-  node1 [label="min",shape=ellipse];
-  node4->node1;
-  node3 [label="neg",shape=box];
-  node2 [label="2147483648",shape=ellipse];
-  node3->node2;
+  node2 [label="min",shape=ellipse];
+  node4->node2;
+  node3 [label="-2147483648",shape=ellipse];
   node4->node3;
   node0 -> node4 [style=dotted];
   node7 [label=":=",shape=box];

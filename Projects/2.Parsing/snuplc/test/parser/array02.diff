@@ -1,0 +1,22 @@
+2d1
+< Find subroutine ReadInt
+18,19c17,18
+<         := <INVALID>
+<           [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+---
+>         := <int>
+>           [ @A        <array 5  of <array 5  of <int>>> ] <int>
+23,24c22,23
+<         := <INVALID>
+<           [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+---
+>         := <int>
+>           [ @A        <array 5  of <array 5  of <int>>> ] <int>
+27c26
+<           [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+---
+>           [ @A        <array 5  of <array 5  of <int>>> ] <int>
+31c30
+<           [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+---
+>           [ @A        <array 5  of <array 5  of <int>>> ] <int>

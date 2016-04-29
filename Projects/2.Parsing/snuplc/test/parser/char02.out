@@ -1,0 +1,57 @@
+parsing 'char02.mod'...
+successfully parsed.
+  AST:
+    CAstScope: 'char02'
+      symbol table:
+        [[
+          [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+          [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+          [ *ReadInt() --> <int>           ]
+          [ *WriteChar(<char>) --> <NULL>           ]
+          [ *WriteInt(<int>) --> <NULL>           ]
+          [ *WriteLn() --> <NULL>           ]
+          [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>           ]
+          [ @c        <char>           ]
+          [ *compare(<char>) --> <NULL>           ]
+        ]]
+      statement list:
+        := <char>
+          [ @c        <char> ] <char>
+          49 <char>
+        call [ *compare(<char>) --> <NULL> ] <NULL>
+          [ @c        <char> ] <char>
+        call [ *compare(<char>) --> <NULL> ] <NULL>
+          97 <char>
+        call [ *compare(<char>) --> <NULL> ] <NULL>
+          49 <char>
+        call [ *compare(<char>) --> <NULL> ] <NULL>
+          0 <char>
+      nested scopes:
+        CAstScope: 'compare'
+          symbol table:
+            [[
+              [ %c        <char>               ]
+            ]]
+          statement list:
+            if cond
+              >= <int>
+                [ %c        <char> ] <char>
+                49 <char>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                49 <char>
+            else-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                48 <char>
+            call [ *WriteLn() --> <NULL> ] <NULL>
+          nested scopes:
+            empty.
+        
+    
+
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -ochar02.mod.ast.pdf char02.mod.ast.dot
+
+
+Done.

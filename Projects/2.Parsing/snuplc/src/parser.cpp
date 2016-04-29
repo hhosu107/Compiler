@@ -155,6 +155,7 @@ void CParser::InitSymbolTable(CSymtab *s)
   s->AddSymbol(func);
 }
 
+// module
 CAstModule* CParser::module(void)
 {
   //
@@ -165,6 +166,7 @@ CAstModule* CParser::module(void)
   CAstModule *m = NULL;
   CAstStatement *statseq = NULL;
 
+  // module -> "module" ideBegin ";" ...
   Consume(tModule);
 
   CToken idBegin, idEnd;
@@ -174,18 +176,24 @@ CAstModule* CParser::module(void)
 
   Consume(tSemicolon);
 
+  // module -> ... varDeclaration ...
   CSymtab *symbols = m->GetSymbolTable();
   InitSymbolTable(symbols);
   symbols = varDeclaration(symbols, stGlobal);
 
+  // module -> ... { subroutineDecl }
+  // m will be edited in subroutineDecl,
+  // so we don't have to save each return value of subroutineDecl.
   while(subroutineDecl(m) != NULL) ;
 
+  // module -> ... "begin" statSequence "end" ...
   Consume(tBegin);
 
   statseq = statSequence(m);
 
   Consume(tEnd);
 
+  // module -> ... idEnd "."
   Consume(tIdent, &idEnd);
 
   if(idBegin.GetValue() != idEnd.GetValue()){
@@ -198,18 +206,23 @@ CAstModule* CParser::module(void)
   return m;
 }
 
+// varDeclaration
 CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType s_type){
   //
-  // varDeclaration ::= [ "var" varDecl ";" { varDecl ";"} ]
+  // varDeclaration ::= [ "var" varDecl ";" { varDecl ";" } ].
 
   EToken tt = _scanner->Peek().GetType();
 
+  // varDeclaration -> [ "var" ...
+  // Is it an empty declaration or not?
   if(tt == tVar){
     Consume(tVar);
 
+    // varDeclaration -> [ ... varDecl ";" ... ]
     symbols = varDecl(symbols, s_type, NULL);
     Consume(tSemicolon);
 
+    // varDeclaration -> [ ... { varDecl ";" } ]
     for(;;){
       tt = _scanner->Peek().GetType();
       if(tt != tIdent) break;
@@ -222,6 +235,9 @@ CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType s_type){
   return symbols;
 }
 
+// Since varDeclSequence EBNF definition in the syntax definition makes
+// ambiguity, we have to deprecate it. Instead, replace varDeclSequence into
+// its read definition.
 /*
 CSymtab* CParser::varDeclSequence(CSymtab* symbols, ESymbolType s_type){
   symbols = varDecl(symbols, s_type);
@@ -239,14 +255,20 @@ CSymtab* CParser::varDeclSequence(CSymtab* symbols, ESymbolType s_type){
 }
 */
 
+// varDecl
 CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params){
+  //
+  // varDecl : ident { "," ident } ":" type.
+  //
   vector<string> var_names;
   CTypeManager *tm = CTypeManager::Get();
 
+  // varDecl -> ident ...
   CToken id;
   Consume(tIdent, &id);
   var_names.push_back(id.GetValue());
 
+  // varDecl -> ... { "," identNext } ":" ...
   for(;;){
     const CSymbol *duplicate;
     EToken tt = _scanner->Peek().GetType();
@@ -273,6 +295,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam
 
   Consume(tColon);
 
+  // varDecl : .. type
   const CType *datatype;
   datatype = read_type()->GetType();
 
@@ -289,33 +312,43 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam
       symbols->AddSymbol(new CSymProc(name, datatype));
     }
     else if(s_type == stParam && params != NULL){
+      // for the formalParam definition, each declaration has also to be saved
+      // into the procedure parameter list, so save it seperatedly
       int size = params->size();
       const CType* ptrtype;
+
+      // only if it is an array as a parameter, it has to be a pointer
       if(datatype->IsArray()){
         ptrtype = tm->GetPointer(datatype);
       }
       else{
         ptrtype = datatype;
       }
+
       symbols->AddSymbol(new CSymParam(size, name, ptrtype));
       params->push_back(new CSymParam(size, name, ptrtype));
     }
     else{
       symbols->AddSymbol(new CSymbol(name, s_type, datatype));
     }
-    // in this step, if it returns false, make an error
   }
   return symbols;
 }
 
+// read_type
 const CAstType* CParser::read_type(void){
-
-  // Have to change into CAsyType*
+  //
+  // type ::= basetype | type "[" [ number ] "]".
+  //  <=>
+  // type ::= basetype type'
+  // type' ::= epsilon | "[" [ number ] "]" type'
+  //
   CTypeManager *tm = CTypeManager::Get();
   EToken tt = _scanner->Peek().GetType();
   CToken typeToken;
   const CType* datatype;
 
+  // type -> basetype
   if(tt == tBoolean){
     Consume(tBoolean, &typeToken);
     datatype = tm->GetBool();
@@ -332,6 +365,9 @@ const CAstType* CParser::read_type(void){
     SetError(_scanner->Peek(), "basetype expected.");
     return NULL;
   }
+
+  // type -> ... type'
+  // we used stack since we have to make CType* node from the last dimension
   stack<long long> NElems;
 
   for(;;){ // array check
@@ -359,15 +395,14 @@ const CAstType* CParser::read_type(void){
     else break;
   }
 
+  // make CType* node iteratively
   while(!(NElems.empty())){
     long long size = NElems.top();
     NElems.pop();
     if(size >= 0){
-      // datatype = tm->GetPointer(tm->GetArray(size, datatype));
       datatype = tm->GetArray(size, datatype);
     }
     else{
-      // datatype = tm->GetPointer(tm->GetArray(CArrayType::OPEN, datatype));
       datatype = tm->GetArray(CArrayType::OPEN, datatype);
     }
   }
@@ -375,6 +410,7 @@ const CAstType* CParser::read_type(void){
   return new CAstType(typeToken, datatype);
 }
 
+// statSequence
 CAstStatement* CParser::statSequence(CAstScope *s)
 {
   //
@@ -384,16 +420,23 @@ CAstStatement* CParser::statSequence(CAstScope *s)
   // FIRST(statSequence) = { tIdent, tIf, tWhile, tReturn }
   // FOLLOW(statSequence) = { tElse, tEnd }
   //
+  // this subroutineCall will call subroutineCall()
+  // which is a closure of expSubroutineCall().
+  //
   CAstStatement *head = NULL, *tail = NULL;
 
   EToken tt = _scanner->Peek().GetType();
 
   CAstStatement *st = NULL;
 
+  // statSequence -> [ statement ...
+  // Is it empty or not?
   if(tt == tIdent || tt == tIf || tt == tWhile || tt == tReturn){
+    // statSequence -> [ statement ...
     st = statement(s);
     head = tail = st;
 
+    // statSequence -> [ ... { ";" statement } ]
     for(;;){
       tt = _scanner->Peek().GetType();
       if(tt != tSemicolon) break;
@@ -409,7 +452,12 @@ CAstStatement* CParser::statSequence(CAstScope *s)
   return head;
 }
 
+// statement
 CAstStatement* CParser::statement(CAstScope *s){
+  //
+  // statement ::= assignment | subroutineCall | ifStatement | whileStatement
+  //              | returnStatement
+  //
   CToken t = _scanner->Peek();
   EToken tt = t.GetType();
 
@@ -417,6 +465,7 @@ CAstStatement* CParser::statement(CAstScope *s){
 
   CSymtab *symbols = s->GetSymbolTable();
 
+  // check first tokens of each candidates
   if(tt == tIdent){ // assignment, subroutineCall
     const CSymbol* found = symbols->FindSymbol(t.GetValue(), sGlobal);
     if(found == NULL){
@@ -449,8 +498,11 @@ CAstStatement* CParser::statement(CAstScope *s){
 
 
 CAstStatCall* CParser::subroutineCall(CAstScope *s){
+  //
+  // subroutineCall ::= ident "(" [ expression { "," expression } ] ")"
   CSymtab* symbols = s->GetSymbolTable();
 
+  // subroutineCall -> ident "(" ...
   CToken id;
   Consume(tIdent, &id);
 
@@ -464,11 +516,15 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
 
   Consume(tLParen);
 
+  // subroutineCall -> ... [ expression ...
+  // is expression exists or not?
   EToken tt = _scanner->Peek().GetType();
   if(tt == tPlusMinus || tt == tIdent || tt == tNumber || tt == tBool || tt == tCharacter || tt == tString || tt == tLParen || tt == tNot){ // expression
+    // subroutineCall -> ... [ expression ...
     CAstExpression *ex = expression(s);
     fc->AddArg(ex);
 
+    // subroutineCall -> ... [ ... { "," expression } ] ...
     for(;;){
       EToken tt = _scanner->Peek().GetType();
       if(tt != tComma) break;
@@ -478,6 +534,7 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
       fc->AddArg(ex);
     }
   }
+  // subroutineCall -> ... ")"
   Consume(tRParen);
 
   return new CAstStatCall(dummy, fc);
@@ -724,6 +781,8 @@ CAstExpression* CParser::term(CAstScope *s)
         r = factor(s);
         n = new CAstBinaryOp(t, opAnd, l, r);
         break;
+
+
     }
     tt = _scanner->Peek().GetType();
   }
@@ -784,17 +843,25 @@ CAstExpression* CParser::factor(CAstScope *s)
       break;
 
     case tIdent:
+      {
+        const CSymbol* sym = symbols->FindSymbol(_scanner->Peek().GetValue(), sGlobal);
       // cout << _scanner->Peek().GetValue() << endl;
       // symbols->print(cout, 0);
-      if(symbols->FindSymbol(_scanner->Peek().GetValue(), sGlobal)->GetSymbolType() == stProcedure)
-        // Since a procedure has to be declared before it is called,
-        // this statement is valid.
-      {
-        n = expSubroutineCall(s);
-      }
-      else
-      {
-        n = qualident(s);
+        if(sym){
+          if(sym->GetSymbolType() == stProcedure)
+          // Since a procedure has to be declared before it is called,
+          // this statement is valid.
+          {
+            n = expSubroutineCall(s);
+          }
+          else
+          {
+            n = qualident(s);
+          }
+        }
+        else{
+          SetError(_scanner->Peek(), "variable \"" + _scanner->Peek().GetValue() + "\" is undeclared");
+        }
       }
       break;
 
@@ -979,7 +1046,8 @@ CAstConstant* CParser::number(void)
   errno = 0;
   long long v = strtoll(t.GetValue().c_str(), NULL, 10);
   if (errno != 0) SetError(t, "invalid number.");
-  if(v > (1LL << 31)) SetError(t, "tNumber received token exceeding MAX_INT");
+  long long absv = (v > 0 ? v : (-v));
+  if(absv > (1LL << 31)) SetError(t, "tNumber received token exceeding MAX_INT");
 
   return new CAstConstant(t, CTypeManager::Get()->GetInt(), v);
 }

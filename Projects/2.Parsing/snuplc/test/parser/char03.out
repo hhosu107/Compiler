@@ -1,0 +1,164 @@
+parsing 'char03.mod'...
+Find subroutine ReadInt
+successfully parsed.
+  AST:
+    CAstScope: 'char03'
+      symbol table:
+        [[
+          [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+          [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+          [ *PrintInt(<int>) --> <NULL>           ]
+          [ *ReadInt() --> <int>           ]
+          [ *WriteChar(<char>) --> <NULL>           ]
+          [ *WriteInt(<int>) --> <NULL>           ]
+          [ *WriteLn() --> <NULL>           ]
+          [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>           ]
+          [ @i        <int>           ]
+        ]]
+      statement list:
+        := <int>
+          [ @i        <int> ] <int>
+          1 <int>
+        while cond
+          # <int>
+            [ @i        <int> ] <int>
+            0 <int>
+        while-body
+          := <int>
+            [ @i        <int> ] <int>
+            call [ *ReadInt() --> <int> ] <int>
+          call [ *PrintInt(<int>) --> <NULL> ] <NULL>
+            [ @i        <int> ] <int>
+          call [ *WriteLn() --> <NULL> ] <NULL>
+      nested scopes:
+        CAstScope: 'PrintInt'
+          symbol table:
+            [[
+              [ $r        <int>               ]
+              [ %v        <int>               ]
+            ]]
+          statement list:
+            := <int>
+              [ $r        <int> ] <int>
+              sub <int>
+                [ %v        <int> ] <int>
+                mul <int>
+                  div <int>
+                    [ %v        <int> ] <int>
+                    10 <int>
+                  10 <int>
+            := <int>
+              [ %v        <int> ] <int>
+              div <int>
+                [ %v        <int> ] <int>
+                10 <int>
+            if cond
+              > <int>
+                [ %v        <int> ] <int>
+                0 <int>
+            if-body
+              call [ *PrintInt(<int>) --> <NULL> ] <NULL>
+                [ %v        <int> ] <int>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                0 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                48 <char>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                1 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                49 <char>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                2 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                50 <char>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                3 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                51 <char>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                4 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                52 <char>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                5 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                53 <char>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                6 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                54 <char>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                7 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                55 <char>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                8 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                56 <char>
+            else-body
+              empty.
+            if cond
+              = <int>
+                [ $r        <int> ] <int>
+                9 <int>
+            if-body
+              call [ *WriteChar(<char>) --> <NULL> ] <NULL>
+                57 <char>
+            else-body
+              empty.
+          nested scopes:
+            empty.
+        
+    
+
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -ochar03.mod.ast.pdf char03.mod.ast.dot
+
+
+Done.

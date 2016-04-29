@@ -1,0 +1,58 @@
+2,56c2
+< successfully parsed.
+<   AST:
+<     CAstScope: 'test03'
+<       symbol table:
+<         [[
+<           [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+<           [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+<           [ *ReadInt() --> <int>           ]
+<           [ *WriteChar(<char>) --> <NULL>           ]
+<           [ *WriteInt(<int>) --> <NULL>           ]
+<           [ *WriteLn() --> <NULL>           ]
+<           [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>           ]
+<           [ *bar() --> <int>           ]
+<           [ *foo(<int>) --> <array  of <char>>           ]
+<           [ *foobar() --> <int>           ]
+<         ]]
+<       statement list:
+<         empty.
+<       nested scopes:
+<         CAstScope: 'foo'
+<           symbol table:
+<             [[
+<               [ $c        <array 2  of <char>>               ]
+<               [ %i        <int>               ]
+<             ]]
+<           statement list:
+<             return <array 2  of <char>>
+<               [ $c        <array 2  of <char>> ] <array 2  of <char>>
+<           nested scopes:
+<             empty.
+<         
+<         CAstScope: 'bar'
+<           symbol table:
+<             [[
+<             ]]
+<           statement list:
+<             empty.
+<           nested scopes:
+<             empty.
+<         
+<         CAstScope: 'foobar'
+<           symbol table:
+<             [[
+<             ]]
+<           statement list:
+<             return <int>
+<               1 <int>
+<           nested scopes:
+<             empty.
+<         
+<     
+< 
+< 
+< run the following command to convert the .dot file into a PDF:
+<   dot -Tpdf -otest03.mod.ast.pdf test03.mod.ast.dot
+---
+> parse error : at 20:32 : expected 'tNumber', got 'tRBrak'

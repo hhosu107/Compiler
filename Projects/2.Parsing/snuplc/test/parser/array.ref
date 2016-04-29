@@ -1,0 +1,116 @@
+parsing 'array.mod'...
+successfully parsed.
+  AST:
+    CAstScope: 'array'
+      symbol table:
+        [[
+          [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+          [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+          [ *ReadInt() --> <int>           ]
+          [ *WriteChar(<char>) --> <NULL>           ]
+          [ *WriteInt(<int>) --> <NULL>           ]
+          [ *WriteLn() --> <NULL>           ]
+          [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>           ]
+          [ @a        <array 5  of <array 5  of <int>>>           ]
+          [ *add(<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>) --> <NULL>           ]
+          [ *addB(<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>) --> <NULL>           ]
+          [ @b        <array 5  of <array 5  of <int>>>           ]
+          [ @c        <array 5  of <array 5  of <int>>>           ]
+        ]]
+      statement list:
+        call [ *add(<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>) --> <NULL> ] <NULL>
+          &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+            [ @a        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+          &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+            [ @b        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+          &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+            [ @c        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+      nested scopes:
+        CAstScope: 'add'
+          symbol table:
+            [[
+              [ %A        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
+              [ %B        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
+              [ %C        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
+              [ $i        <int>               ]
+              [ $j        <int>               ]
+            ]]
+          statement list:
+            := <int>
+              [ $i        <int> ] <int>
+              0 <int>
+            while cond
+              < <bool>
+                [ $i        <int> ] <int>
+                5 <int>
+            while-body
+              := <int>
+                [ $j        <int> ] <int>
+                0 <int>
+              while cond
+                < <bool>
+                  [ $j        <int> ] <int>
+                  5 <int>
+              while-body
+                := <int>
+                  [ %C        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+                    [ $i        <int> ] <int>
+                    [ $j        <int> ] <int>
+                  add <int>
+                    [ %A        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+                      [ $i        <int> ] <int>
+                      [ $j        <int> ] <int>
+                    [ %B        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+                      [ $i        <int> ] <int>
+                      [ $j        <int> ] <int>
+          nested scopes:
+            empty.
+        
+        CAstScope: 'addB'
+          symbol table:
+            [[
+              [ %A        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
+              [ %B        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
+              [ %C        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
+              [ $i        <int>               ]
+              [ $j        <int>               ]
+            ]]
+          statement list:
+            := <int>
+              [ $i        <int> ] <int>
+              0 <int>
+            while cond
+              < <bool>
+                [ $i        <int> ] <int>
+                5 <int>
+            while-body
+              := <int>
+                [ $j        <int> ] <int>
+                0 <int>
+              while cond
+                < <bool>
+                  [ $j        <int> ] <int>
+                  5 <int>
+              while-body
+                := <int>
+                  [ %C        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+                    [ $i        <int> ] <int>
+                    [ $j        <int> ] <int>
+                  add <int>
+                    [ %A        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+                      [ $i        <int> ] <int>
+                      [ $j        <int> ] <int>
+                    [ %B        <ptr(4) to <array 5  of <array 5  of <int>>>> ] <int>
+                      [ $i        <int> ] <int>
+                      [ $j        <int> ] <int>
+          nested scopes:
+            empty.
+        
+    
+
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -oarray.mod.ast.pdf array.mod.ast.dot
+
+
+Done.

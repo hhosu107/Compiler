@@ -1,0 +1,81 @@
+2,7d1
+< Find subroutine DIM
+< Find subroutine DIM
+< Find subroutine DIM
+< Find subroutine DIM
+< Find subroutine DIM
+< Find subroutine DIM
+29c23,24
+<           [ @sum      <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+---
+>           &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+>             [ @sum      <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+55c50
+<               < <int>
+---
+>               < <bool>
+63c58
+<                 < <int>
+---
+>                 < <bool>
+68c63
+<                   [ %a        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                   [ %a        <ptr(4) to <array  of <array  of <int>>>> ] <int>
+112c107
+<               < <int>
+---
+>               < <bool>
+120c115
+<                 < <int>
+---
+>                 < <bool>
+124,125c119,120
+<                 := <INVALID>
+<                   [ %a        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                 := <int>
+>                   [ %a        <ptr(4) to <array  of <array  of <int>>>> ] <int>
+177c172
+<               < <int>
+---
+>               < <bool>
+185c180
+<                 < <int>
+---
+>                 < <bool>
+189,190c184,185
+<                 := <INVALID>
+<                   [ %d        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                 := <int>
+>                   [ %d        <ptr(4) to <array  of <array  of <int>>>> ] <int>
+194c189
+<                     [ %s1       <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                     [ %s1       <ptr(4) to <array  of <array  of <int>>>> ] <int>
+197c192
+<                     [ %s2       <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                     [ %s2       <ptr(4) to <array  of <array  of <int>>>> ] <int>
+227c222,223
+<               [ $a        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+---
+>               &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+>                 [ $a        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+229c225,226
+<               [ $b        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+---
+>               &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+>                 [ $b        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+231,233c228,233
+<               [ $a        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+<               [ $b        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+<               [ @sum      <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+---
+>               &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+>                 [ $a        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+>               &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+>                 [ $b        <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>
+>               &() <ptr(4) to <array 5  of <array 5  of <int>>>>
+>                 [ @sum      <array 5  of <array 5  of <int>>> ] <array 5  of <array 5  of <int>>>

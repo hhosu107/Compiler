@@ -1,0 +1,33 @@
+parsing 'array01.mod'...
+successfully parsed.
+  AST:
+    CAstScope: 'array01'
+      symbol table:
+        [[
+          [ @A        <array 5  of <array 5  of <int>>>           ]
+          [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+          [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+          [ *ReadInt() --> <int>           ]
+          [ *WriteChar(<char>) --> <NULL>           ]
+          [ *WriteInt(<int>) --> <NULL>           ]
+          [ *WriteLn() --> <NULL>           ]
+          [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>           ]
+        ]]
+      statement list:
+        := <int>
+          [ @A        <array 5  of <array 5  of <int>>> ] <int>
+            0 <int>
+            1 <int>
+          [ @A        <array 5  of <array 5  of <int>>> ] <int>
+            2 <int>
+            3 <int>
+      nested scopes:
+        empty.
+    
+
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -oarray01.mod.ast.pdf array01.mod.ast.dot
+
+
+Done.

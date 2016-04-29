@@ -1,0 +1,10 @@
+17,18c17,18
+<         := <INVALID>
+<           [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+---
+>         := <int>
+>           [ @A        <array 5  of <array 5  of <int>>> ] <int>
+21c21
+<           [ @A        <array 5  of <array 5  of <int>>> ] <INVALID>
+---
+>           [ @A        <array 5  of <array 5  of <int>>> ] <int>

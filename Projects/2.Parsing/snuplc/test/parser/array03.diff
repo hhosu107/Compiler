@@ -1,0 +1,29 @@
+24,25c24,25
+<         := <INVALID>
+<           [ @A        <array 5  of <int>> ] <INVALID>
+---
+>         := <int>
+>           [ @A        <array 5  of <int>> ] <int>
+30c30
+<           [ @A        <array 5  of <int>> ] <INVALID>
+---
+>           [ @A        <array 5  of <int>> ] <int>
+33c33,34
+<           [ @A        <array 5  of <int>> ] <array 5  of <int>>
+---
+>           &() <ptr(4) to <array 5  of <int>>>
+>             [ @A        <array 5  of <int>> ] <array 5  of <int>>
+47,48c48,49
+<             := <INVALID>
+<               [ %P        <ptr(4) to <array  of <int>>> ] <INVALID>
+---
+>             := <int>
+>               [ %P        <ptr(4) to <array  of <int>>> ] <int>
+64c65
+<               < <int>
+---
+>               < <bool>
+69c70
+<                 [ @A        <array 5  of <int>> ] <INVALID>
+---
+>                 [ @A        <array 5  of <int>> ] <int>

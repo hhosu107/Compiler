@@ -1,0 +1,50 @@
+2d1
+< Find subroutine ReadInt
+23c22
+<           # <int>
+---
+>           # <bool>
+56c55
+<               > <int>
+---
+>               > <bool>
+65c64
+<               = <int>
+---
+>               = <bool>
+74c73
+<               = <int>
+---
+>               = <bool>
+83c82
+<               = <int>
+---
+>               = <bool>
+92c91
+<               = <int>
+---
+>               = <bool>
+101c100
+<               = <int>
+---
+>               = <bool>
+110c109
+<               = <int>
+---
+>               = <bool>
+119c118
+<               = <int>
+---
+>               = <bool>
+128c127
+<               = <int>
+---
+>               = <bool>
+137c136
+<               = <int>
+---
+>               = <bool>
+146c145
+<               = <int>
+---
+>               = <bool>

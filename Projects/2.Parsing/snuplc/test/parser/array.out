@@ -1,4 +1,4 @@
-parsing './test/parser/array.mod'...
+parsing 'array.mod'...
 successfully parsed.
   AST:
     CAstScope: 'array'
@@ -29,7 +29,6 @@ successfully parsed.
               [ %A        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
               [ %B        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
               [ %C        <ptr(4) to <array 5  of <array 5  of <int>>>>               ]
-              [ *add(<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>,<ptr(4) to <array 5  of <array 5  of <int>>>>) --> <NULL>               ]
               [ $i        <int>               ]
               [ $j        <int>               ]
             ]]
@@ -70,7 +69,6 @@ successfully parsed.
               [ %A        <ptr(4) to <array  of <array  of <int>>>>               ]
               [ %B        <ptr(4) to <array  of <array  of <int>>>>               ]
               [ %C        <ptr(4) to <array  of <array  of <int>>>>               ]
-              [ *addB(<ptr(4) to <array  of <array  of <int>>>>,<ptr(4) to <array  of <array  of <int>>>>,<ptr(4) to <array  of <array  of <int>>>>) --> <NULL>               ]
               [ $i        <int>               ]
               [ $j        <int>               ]
             ]]
@@ -109,7 +107,7 @@ successfully parsed.
 
 
 run the following command to convert the .dot file into a PDF:
-  dot -Tpdf -o./test/parser/array.mod.ast.pdf ./test/parser/array.mod.ast.dot
+  dot -Tpdf -oarray.mod.ast.pdf array.mod.ast.dot
 
 
 Done.

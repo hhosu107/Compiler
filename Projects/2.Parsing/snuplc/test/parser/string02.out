@@ -1,0 +1,6 @@
+parsing 'string02.mod'...
+got 10:12: tString (Enter your age: )
+parse error : at 10:12 : factor expected.
+
+
+Done.

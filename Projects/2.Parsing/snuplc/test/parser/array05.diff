@@ -1,0 +1,47 @@
+2,5d1
+< Find subroutine DIM
+< Find subroutine DIM
+< Find subroutine DIM
+< Find subroutine DIM
+29c25,26
+<           [ @A        <array 3  of <array 3  of <int>>> ] <array 3  of <array 3  of <int>>>
+---
+>           &() <ptr(4) to <array 3  of <array 3  of <int>>>>
+>             [ @A        <array 3  of <array 3  of <int>>> ] <array 3  of <array 3  of <int>>>
+34c31,32
+<           [ @A        <array 3  of <array 3  of <int>>> ] <array 3  of <array 3  of <int>>>
+---
+>           &() <ptr(4) to <array 3  of <array 3  of <int>>>>
+>             [ @A        <array 3  of <array 3  of <int>>> ] <array 3  of <array 3  of <int>>>
+43,44c41,42
+<             := <INVALID>
+<               [ %P        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>             := <int>
+>               [ %P        <ptr(4) to <array  of <array  of <int>>>> ] <int>
+75c73
+<               < <int>
+---
+>               < <bool>
+83c81
+<                 < <int>
+---
+>                 < <bool>
+88c86
+<                   [ %A        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                   [ %A        <ptr(4) to <array  of <array  of <int>>>> ] <int>
+133c131
+<               < <int>
+---
+>               < <bool>
+141c139
+<                 < <int>
+---
+>                 < <bool>
+145,146c143,144
+<                 := <INVALID>
+<                   [ %a        <ptr(4) to <array  of <array  of <int>>>> ] <INVALID>
+---
+>                 := <int>
+>                   [ %a        <ptr(4) to <array  of <array  of <int>>>> ] <int>

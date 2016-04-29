@@ -1,0 +1,141 @@
+parsing 'test06.mod'...
+successfully parsed.
+  AST:
+    CAstScope: 'test06'
+      symbol table:
+        [[
+          [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+          [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+          [ *ReadInt() --> <int>           ]
+          [ *WriteChar(<char>) --> <NULL>           ]
+          [ *WriteInt(<int>) --> <NULL>           ]
+          [ *WriteLn() --> <NULL>           ]
+          [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>           ]
+          [ @a        <int>           ]
+          [ @b        <int>           ]
+          [ @b0       <bool>           ]
+          [ @b1       <bool>           ]
+          [ *binop(<int>,<int>) --> <bool>           ]
+          [ @c        <int>           ]
+          [ *compare(<int>,<int>) --> <bool>           ]
+          [ *foo(<int>) --> <NULL>           ]
+          [ *intop(<int>,<int>) --> <int>           ]
+          [ *unary() --> <NULL>           ]
+        ]]
+      statement list:
+        empty.
+      nested scopes:
+        CAstScope: 'foo'
+          symbol table:
+            [[
+              [ %a        <int>               ]
+              [ $b        <int>               ]
+            ]]
+          statement list:
+            := <int>
+              [ $b        <int> ] <int>
+              [ @c        <int> ] <int>
+            := <int>
+              [ @c        <int> ] <int>
+              add <int>
+                [ %a        <int> ] <int>
+                [ $b        <int> ] <int>
+          nested scopes:
+            empty.
+        
+        CAstScope: 'unary'
+          symbol table:
+            [[
+            ]]
+          statement list:
+            := <int>
+              [ @a        <int> ] <int>
+              neg <int>
+                [ @b        <int> ] <int>
+            := <bool>
+              [ @b0       <bool> ] <bool>
+              not <bool>
+                [ @b1       <bool> ] <bool>
+          nested scopes:
+            empty.
+        
+        CAstScope: 'binop'
+          symbol table:
+            [[
+              [ %p0       <int>               ]
+              [ %p1       <int>               ]
+            ]]
+          statement list:
+            return <INVALID>
+              not <INVALID>
+                or <INVALID>
+                  > <bool>
+                    add <int>
+                      neg <int>
+                        [ %p0       <int> ] <int>
+                      [ %p1       <int> ] <int>
+                    0 <int>
+                  and <INVALID>
+                    > <bool>
+                      [ %p0       <int> ] <int>
+                      0 <int>
+                    < <bool>
+                      [ %p1       <int> ] <int>
+                      0 <int>
+          nested scopes:
+            empty.
+        
+        CAstScope: 'intop'
+          symbol table:
+            [[
+              [ %p0       <int>               ]
+              [ %p1       <int>               ]
+            ]]
+          statement list:
+            return <int>
+              add <int>
+                neg <int>
+                  [ %p0       <int> ] <int>
+                pos <int>
+                  [ %p1       <int> ] <int>
+          nested scopes:
+            empty.
+        
+        CAstScope: 'compare'
+          symbol table:
+            [[
+              [ %a        <int>               ]
+              [ %b        <int>               ]
+            ]]
+          statement list:
+            if cond
+              and <INVALID>
+                and <INVALID>
+                  call [ *binop(<int>,<int>) --> <bool> ] <bool>
+                    [ %a        <int> ] <int>
+                    [ %b        <int> ] <int>
+                  < <bool>
+                    call [ *intop(<int>,<int>) --> <int> ] <int>
+                      [ %b        <int> ] <int>
+                      [ %a        <int> ] <int>
+                    [ %a        <int> ] <int>
+                # <bool>
+                  [ %a        <int> ] <int>
+                  [ %b        <int> ] <int>
+            if-body
+              return <bool>
+                true <bool>
+            else-body
+              return <bool>
+                false <bool>
+          nested scopes:
+            empty.
+        
+    
+
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -otest06.mod.ast.pdf test06.mod.ast.dot
+
+
+Done.
