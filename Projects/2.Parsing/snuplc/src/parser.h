@@ -98,6 +98,29 @@ class CParser {
     /// @retval CAstModule* node
     CAstModule*       module(void);
 
+    /// @brief takes a set of variable declaration and add them into the given symbol table
+    /// @param symbols a given symbol table
+    /// @param s_type a symbol type depend on the location of variable declaration
+    /// @retval CSymtab* symbols which saves newly declared symbols
+    CSymtab* varDeclaration(CSymtab* symbols, ESymbolType s_type);
+
+    /// @brief takes an one type of the variable declaration and add them into the given symbol table
+    /// @param symbols a given symbol table
+    /// @param s_type a symbol type depend on the location of variable declaration
+    /// @param *params a pointer to vector<CSymParam*> which contains formal parameters of the subroutine, NULL otherwise
+    /// @retval CSymtab* symbols which saves newly declared symbols
+    /// @retval vector<CSymParam*>* as a parameter
+    CSymtab* varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params);
+
+    /// @brief takes a declaration part of subroutine and add it into global symbol table
+    /// @param s parent scope
+    /// @retval CAstProcedure node with its name, procedure symbol and its parent scope
+    CAstProcedure*    subroutineDecl(CAstScope *s);
+
+    /// @brief takes a type definition
+    /// @retval CAstType* node with its type
+    const CAstType* ReadType(void);
+
     /// @brief takes a sequence of statements to make a linked list of them
     /// @param s parent scope
     /// @retval head of linked list of statements if it is non-empty
@@ -134,59 +157,35 @@ class CParser {
     /// @param s parent scope
     /// @retval CAstStateReturn* node with a return statement
     CAstStatReturn* returnStatement(CAstScope *s);
-
-    /// @brief takes an expression as "simpleexpr [ relOp simpleexpr ]"
-    /// @param s parent scope
-    /// @retval CAstExpression* node with an expression
-    CAstExpression*   expression(CAstScope *s);
-
-    /// @brief takes a simpleexpr as "[ + | - ] term { termOp term }"
-    /// @param s parent scope
-    /// @retval CAstExpression* node with a simpleexpr
-    CAstExpression*   simpleexpr(CAstScope *s);
-
-    /// @brief takes a term as "factor { termOp factor }"
-    /// @param s parent scope
-    /// @retval CAstExpression* node with a term
-    CAstExpression*   term(CAstScope *s);
-
     /// @brief takes a factor like constants, qualident, parenthesized expression, negated factor
     /// @param s
     /// @retval CAstExpression* node with a factor
     CAstExpression*   factor(CAstScope *s);
+
+    /// @brief takes a qualident as ident { "[" [ number ] "]" }
+    /// @param s parent scope
+    /// @retval CAstDesignator* node with the qualident's symbol
+    CAstDesignator* qualident(CAstScope* s);
 
     /// @brief takes a subroutine call expression
     /// @param s parent scope
     /// @retval CAstFunctionCall* node with a procedure symbol
     CAstFunctionCall* expSubroutineCall(CAstScope *s);
 
-    /// @brief takes a declaration part of subroutine and add it into global symbol table
+    /// @brief takes a term as "factor { termOp factor }"
     /// @param s parent scope
-    /// @retval CAstProcedure node with its name, procedure symbol and its parent scope
-    CAstProcedure*    subroutineDecl(CAstScope *s);
+    /// @retval CAstExpression* node with a term
+    CAstExpression*   term(CAstScope *s);
 
-    /// @brief takes a set of variable declaration and add them into the given symbol table
-    /// @param symbols a given symbol table
-    /// @param s_type a symbol type depend on the location of variable declaration
-    /// @retval CSymtab* symbols which saves newly declared symbols
-    CSymtab* varDeclaration(CSymtab* symbols, ESymbolType s_type);
-
-    /// @brief takes an one type of the variable declaration and add them into the given symbol table
-    /// @param symbols a given symbol table
-    /// @param s_type a symbol type depend on the location of variable declaration
-    /// @param *params a pointer to vector<CSymParam*> which contains formal parameters of the subroutine, NULL otherwise
-    /// @retval CSymtab* symbols which saves newly declared symbols
-    /// @retval vector<CSymParam*>* as a parameter
-    CSymtab* varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params);
-
-    /// @brief takes a type definition
-    /// @retval CAstType* node with its type
-    const CAstType* read_type(void);
-
-    /// @brief takes a qualident as ident { "[" [ number ] "]" }
+    /// @brief takes a simpleexpr as "[ + | - ] term { termOp term }"
     /// @param s parent scope
-    /// @retval CAstDesignator* node with the qualident's symbol
-    CAstDesignator* qualident(CAstScope* s);
+    /// @retval CAstExpression* node with a simpleexpr
+    CAstExpression*   simpleexpr(CAstScope *s);
+
+    /// @brief takes an expression as "simpleexpr [ relOp simpleexpr ]"
+    /// @param s parent scope
+    /// @retval CAstExpression* node with an expression
+    CAstExpression*   expression(CAstScope *s);
 
     /// @brief takes a number constant and check w.o.n it exceeds a boundary
     /// @retval CAstConstant* node with integer type and value
