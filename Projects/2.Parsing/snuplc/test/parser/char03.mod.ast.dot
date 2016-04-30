@@ -30,7 +30,7 @@ digraph AST {
   node108 [label="call WriteLn",shape=box];
   node105 -> node108 [style=dotted];
   node98 -> node110 [style=dotted];
-  node2 [label="p/f PrintInt",shape=box];
+  node3 [label="p/f PrintInt",shape=box];
   node13 [label=":=",shape=box];
   node5 [label="r",shape=ellipse];
   node13->node5;
@@ -48,7 +48,7 @@ digraph AST {
   node11->node10;
   node12->node11;
   node13->node12;
-  node2 -> node13 [style=dotted];
+  node3 -> node13 [style=dotted];
   node18 [label=":=",shape=box];
   node14 [label="v",shape=ellipse];
   node18->node14;
@@ -191,5 +191,5 @@ digraph AST {
   node92->node93;
   node95 -> node92 [style=dotted];
   node88 -> node95 [style=dotted];
-  node0 -> node2;
+  node0 -> node3;
 }

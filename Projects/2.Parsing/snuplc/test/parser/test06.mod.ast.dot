@@ -4,13 +4,13 @@ digraph AST {
   edge  [fontname="Times New Roman",fontsize=10];
 
   node0 [label="m test06",shape=box];
-  node3 [label="p/f foo",shape=box];
+  node4 [label="p/f foo",shape=box];
   node8 [label=":=",shape=box];
   node6 [label="b",shape=ellipse];
   node8->node6;
   node7 [label="c",shape=ellipse];
   node8->node7;
-  node3 -> node8 [style=dotted];
+  node4 -> node8 [style=dotted];
   node13 [label=":=",shape=box];
   node9 [label="c",shape=ellipse];
   node13->node9;
@@ -21,7 +21,7 @@ digraph AST {
   node12->node11;
   node13->node12;
   node8 -> node13 [style=dotted];
-  node0 -> node3;
+  node0 -> node4;
   node14 [label="p/f unary",shape=box];
   node18 [label=":=",shape=box];
   node15 [label="a",shape=ellipse];
@@ -40,7 +40,7 @@ digraph AST {
   node22->node21;
   node18 -> node22 [style=dotted];
   node0 -> node14;
-  node23 [label="p/f binop",shape=box];
+  node25 [label="p/f binop",shape=box];
   node41 [label="return",shape=box];
   node40 [label="not",shape=box];
   node39 [label="or",shape=box];
@@ -72,9 +72,9 @@ digraph AST {
   node39->node38;
   node40->node39;
   node41->node40;
-  node23 -> node41 [style=dotted];
-  node0 -> node23;
-  node42 [label="p/f intop",shape=box];
+  node25 -> node41 [style=dotted];
+  node0 -> node25;
+  node44 [label="p/f intop",shape=box];
   node50 [label="return",shape=box];
   node49 [label="add",shape=box];
   node46 [label="neg",shape=box];
@@ -86,9 +86,9 @@ digraph AST {
   node48->node47;
   node49->node48;
   node50->node49;
-  node42 -> node50 [style=dotted];
-  node0 -> node42;
-  node51 [label="p/f compare",shape=box];
+  node44 -> node50 [style=dotted];
+  node0 -> node44;
+  node53 [label="p/f compare",shape=box];
   node71 [label="if",shape=box];
   node66 [label="and",shape=box];
   node62 [label="and",shape=box];
@@ -124,6 +124,6 @@ digraph AST {
   node69 [label="false",shape=ellipse];
   node70->node69;
   node71 -> node70 [style=dotted];
-  node51 -> node71 [style=dotted];
-  node0 -> node51;
+  node53 -> node71 [style=dotted];
+  node0 -> node53;
 }

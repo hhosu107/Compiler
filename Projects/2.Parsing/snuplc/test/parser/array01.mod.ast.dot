@@ -5,12 +5,12 @@ digraph AST {
 
   node0 [label="m array01",shape=box];
   node10 [label=":=",shape=box];
-  node4 [label="A[]",shape=ellipse];
-  node5 [label="0",shape=ellipse];
-  node4-> node5;
-  node6 [label="1",shape=ellipse];
-  node4-> node6;
-  node10->node4;
+  node3 [label="A[]",shape=ellipse];
+  node4 [label="0",shape=ellipse];
+  node3-> node4;
+  node5 [label="1",shape=ellipse];
+  node3-> node5;
+  node10->node3;
   node7 [label="A[]",shape=ellipse];
   node8 [label="2",shape=ellipse];
   node7-> node8;
