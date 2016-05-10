@@ -394,21 +394,22 @@ CAstExpression* CAstStatAssign::GetRHS(void) const
 
 bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
 {
-  if(!GetLHS()->TypeCheck(t, msg)) return false;
-  if(!GetRHS()->TypeCheck(t, msg)) return false;
+  CAstExpression *lhs = GetLHS();
+  CAstExpression *rhs = GetRHS();
 
-  const CType *lhsType = GetLHS()->GetType();
-  const CType *rhsType = GetRHS()->GetType();
+  if(!lhs->TypeCheck(t, msg)) return false;
+  if(!rhs->TypeCheck(t, msg)) return false;
 
-  cout << "LHS : ";
-  lhsType->print(cout, 0);
-  cout << ", RHS : ";
-  rhsType->print(cout, 0);
-  cout << endl;
-
-  if(!lhsType->Match(rhsType)){
+  if(!lhs->GetType()->Match(rhs->GetType())){
     if(t != NULL) *t = GetToken();
     if(msg != NULL) *msg = "incompatible types in assignment.";
+    return false;
+  }
+
+  // TODO: LHS array check
+  if(lhs->GetType()->IsArray()){
+    if(t != NULL) *t = GetToken();
+    if(msg != NULL) *msg = "assignments to compound types are not supported.";
     return false;
   }
   return true;
@@ -1177,6 +1178,29 @@ CAstExpression* CAstFunctionCall::GetArg(int index) const
 
 bool CAstFunctionCall::TypeCheck(CToken *t, string *msg) const
 {
+  const CSymProc *symbol = GetSymbol();
+  int nArgs = GetNArgs();
+  int nRealArgs = symbol->GetNParams();
+
+  if(nArgs != nRealArgs){
+    if(t != NULL) *t = GetToken();
+    if(msg != NULL) *msg = "too many arguments.";
+    return false;
+  }
+
+  for(int i = 0; i < nArgs; i++){
+    if(!GetArg(i)->TypeCheck(t, msg)) return false;
+    if(!GetArg(i)->GetType()->Match(symbol->GetParam(i)->GetDataType())){
+      if(t != NULL) *t = GetArg(i)->GetToken();
+      if(msg != NULL) *msg = "argument type mismatch.";
+      cout << "expected: ";
+      symbol->GetParam(i)->GetDataType()->print(cout, 0);
+      cout << endl << "got: ";
+      GetArg(i)->GetType()->print(cout, 0);
+      cout << endl;
+      return false;
+    }
+  }
   return true;
 }
 
@@ -1340,11 +1364,20 @@ CAstExpression* CAstArrayDesignator::GetIndex(int index) const
 
 bool CAstArrayDesignator::TypeCheck(CToken *t, string *msg) const
 {
-  bool result = true;
-
   assert(_done);
 
-  return result;
+  int nIndices = GetNIndices();
+
+  for(int i = 0; i < nIndices; i++){
+    if(!GetIndex(i)->TypeCheck(t, msg)) return false;
+    if(!GetIndex(i)->GetType()->Match(CTypeManager::Get()->GetInt())){
+      if(t != NULL) *t = GetIndex(i)->GetToken();
+      if(msg != NULL) *msg = "invalid array index expression.";
+      return false;
+    }
+  }
+
+  return true;
 }
 
 const CType* CAstArrayDesignator::GetType(void) const

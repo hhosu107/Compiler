@@ -639,6 +639,7 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
   }
 
   // make a CAstFunctionCall* node to enclose it
+  // CToken dummy;
   CAstFunctionCall* fc = new CAstFunctionCall(id, (CSymProc*)symbol);
 
   Consume(tLParen);
