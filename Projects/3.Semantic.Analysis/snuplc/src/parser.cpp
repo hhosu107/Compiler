@@ -874,6 +874,7 @@ CAstDesignator* CParser::qualident(CAstScope* s){
     Consume(tRBracket);
   }
 
+  an->IndicesComplete();
   return an;
 }
 

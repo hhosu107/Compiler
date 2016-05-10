@@ -1087,6 +1087,8 @@ CAstExpression* CAstSpecialOp::GetOperand(void) const
 
 bool CAstSpecialOp::TypeCheck(CToken *t, string *msg) const
 {
+  EOperation _oper = GetOperation();
+
   return false;
 }
 
