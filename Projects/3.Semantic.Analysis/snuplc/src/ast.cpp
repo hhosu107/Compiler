@@ -803,7 +803,13 @@ bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstBinaryOp::GetType(void) const
 {
-  return CTypeManager::Get()->GetInt();
+  // only +, -, *, / return int type. o.w. bool.
+  if(oper == opAdd || oper == opSub || oper == opMul || oper == opDiv){
+    return CTypeManager::Get()->GetInt();
+  }
+  else{
+    return CTypeManager::Get->GetBool();
+  }
 }
 
 ostream& CAstBinaryOp::print(ostream &out, int indent) const
@@ -876,7 +882,12 @@ bool CAstUnaryOp::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstUnaryOp::GetType(void) const
 {
-  return CTypeManager::Get()->GetInt();
+  if(oper == opNot){
+    return CTypeManager::Get()->GetBool();
+  }
+  else{
+    return CTypeManager::Get()->GetInt();
+  }
 }
 
 ostream& CAstUnaryOp::print(ostream &out, int indent) const
@@ -948,7 +959,13 @@ bool CAstSpecialOp::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstSpecialOp::GetType(void) const
 {
-  return NULL;
+  if(oper == opAddress){
+    return CTypeManager::Get()->GetPointer(e->GetType());
+  }
+  else if(oper == opDeref){
+    return (e->GetType())->GetBaseType();
+  }
+  else return type;
 }
 
 ostream& CAstSpecialOp::print(ostream &out, int indent) const
@@ -1193,7 +1210,11 @@ bool CAstArrayDesignator::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstArrayDesignator::GetType(void) const
 {
-  return NULL;
+  CType* originType = GetSymbol()->GetDatatype();
+  for(int i=0; i<GetNIndices(); i++){
+    originType = originType->GetInnerType();
+  }
+  return originType;
 }
 
 ostream& CAstArrayDesignator::print(ostream &out, int indent) const
@@ -1359,7 +1380,7 @@ bool CAstStringConstant::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstStringConstant::GetType(void) const
 {
-  return _type;
+  return CTypeManager::Get()->GetPointer(_type);
 }
 
 ostream& CAstStringConstant::print(ostream &out, int indent) const
