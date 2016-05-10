@@ -1078,6 +1078,8 @@ CAstExpression* CAstSpecialOp::GetOperand(void) const
 
 bool CAstSpecialOp::TypeCheck(CToken *t, string *msg) const
 {
+  EOperation _oper = GetOperation();
+
   return false;
 }
 
@@ -1354,7 +1356,7 @@ const CType* CAstArrayDesignator::GetType(void) const
     if(!ret->IsArray()){ return NULL; break; }
     ret = dynamic_cast<const CArrayType*>(ret)->GetInnerType();
   }
-  return originType;
+  return ret;
 }
 
 ostream& CAstArrayDesignator::print(ostream &out, int indent) const
