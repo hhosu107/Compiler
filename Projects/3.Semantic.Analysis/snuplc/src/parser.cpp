@@ -176,7 +176,7 @@ CAstModule* CParser::module(void)
   // module -> ... varDeclaration ...
   CSymtab *symbols = m->GetSymbolTable();
   InitSymbolTable(symbols);
-  symbols = varDeclaration(symbols, stGlobal);
+  symbols = varDeclaration(symbols, stGlobal, false);
 
   // module -> ... { subroutineDecl }
   // m will be edited in subroutineDecl,
@@ -204,7 +204,7 @@ CAstModule* CParser::module(void)
 }
 
 // varDeclaration
-CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType sType){
+CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType sType, bool openArray){
   //
   // varDeclaration ::= [ "var" varDecl ";" { varDecl ";" } ].
 
@@ -216,7 +216,7 @@ CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType sType){
     Consume(tVar);
 
     // varDeclaration -> [ ... varDecl ";" ... ]
-    symbols = varDecl(symbols, sType, NULL);
+    symbols = varDecl(symbols, sType, NULL, openArray);
     Consume(tSemicolon);
 
     // varDeclaration -> [ ... { varDecl ";" } ]
@@ -224,7 +224,7 @@ CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType sType){
       tt = _scanner->Peek().GetType();
       if(tt != tIdent) break;
 
-      symbols = varDecl(symbols, sType, NULL);
+      symbols = varDecl(symbols, sType, NULL, openArray);
       Consume(tSemicolon);
     }
   }
@@ -233,7 +233,7 @@ CSymtab* CParser::varDeclaration(CSymtab* symbols, ESymbolType sType){
 }
 
 // varDecl
-CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*> *params){
+CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*> *params, bool openArray){
   //
   // varDecl : ident { "," ident } ":" type.
   //
@@ -274,7 +274,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
 
   // varDecl : .. type
   const CType *datatype;
-  datatype = ReadType()->GetType();
+  datatype = ReadType(openArray)->GetType();
 
   // CSymbol(name, ESymbolType symboltype, CType *datatype)
   // have to give each methods refer to sType
@@ -368,14 +368,14 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
     // we have to save each formal parameters sequentially.
     if(tt == tIdent){
       // formalParam -> ... [ varDecl ...
-      symbols = varDecl(symbols, stParam, &params);
+      symbols = varDecl(symbols, stParam, &params, true);
 
       // formalParam -> ... [ ... { ";" varDecl } ] ...
       for(;;){
         tt = _scanner->Peek().GetType();
         if(tt != tSemicolon) break;
         Consume(tSemicolon);
-        symbols = varDecl(symbols, stParam, &params);
+        symbols = varDecl(symbols, stParam, &params, true);
       }
     }
 
@@ -391,7 +391,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   else{
     // subroutineDecl -> ... ":" type ";" ...
     Consume(tColon);
-    retType = ReadType()->GetType();
+    retType = ReadType(false)->GetType();
     Consume(tSemicolon);
   }
 
@@ -412,7 +412,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   // subroutineBody ::= varDeclaration "begin" statSequence "end"
 
   // subroutineBody -> varDeclaration ...
-  symbols = varDeclaration(symbols, stLocal);
+  symbols = varDeclaration(symbols, stLocal, false);
   vector<CSymbol*> symbolList = symbols->GetSymbols();
   for(int i=0; i<symbolList.size(); i++){
     (m->GetSymbolTable())->AddSymbol(symbolList[i]);
@@ -445,7 +445,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
 }
 
 // ReadType
-const CAstType* CParser::ReadType(void){
+const CAstType* CParser::ReadType(bool openArray){
   //
   // type ::= basetype | type "[" [ number ] "]".
   //  <=>
@@ -486,7 +486,7 @@ const CAstType* CParser::ReadType(void){
       Consume(tLBracket);
 
       tt = _scanner->Peek().GetType();
-      if(tt == tNumber){
+      if(tt == tNumber || !openArray){
         CToken intToken;
         Consume(tNumber, &intToken);
         NElems.push(strtoll(intToken.GetValue().c_str(), NULL, 10));

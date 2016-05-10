@@ -102,7 +102,7 @@ class CParser {
     /// @param symbols a given symbol table
     /// @param s_type a symbol type depend on the location of variable declaration
     /// @retval CSymtab* symbols which saves newly declared symbols
-    CSymtab* varDeclaration(CSymtab* symbols, ESymbolType s_type);
+    CSymtab* varDeclaration(CSymtab* symbols, ESymbolType s_type, bool openArray);
 
     /// @brief takes an one type of the variable declaration and add them into the given symbol table
     /// @param symbols a given symbol table
@@ -110,7 +110,7 @@ class CParser {
     /// @param *params a pointer to vector<CSymParam*> which contains formal parameters of the subroutine, NULL otherwise
     /// @retval CSymtab* symbols which saves newly declared symbols
     /// @retval vector<CSymParam*>* as a parameter
-    CSymtab* varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params);
+    CSymtab* varDecl(CSymtab* symbols, ESymbolType s_type, vector<CSymParam*> *params, bool openArray);
 
     /// @brief takes a declaration part of subroutine and add it into global symbol table
     /// @param s parent scope
@@ -119,7 +119,7 @@ class CParser {
 
     /// @brief takes a type definition
     /// @retval CAstType* node with its type
-    const CAstType* ReadType(void);
+    const CAstType* ReadType(bool openArray);
 
     /// @brief takes a sequence of statements to make a linked list of them
     /// @param s parent scope
