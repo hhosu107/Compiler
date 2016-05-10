@@ -166,19 +166,6 @@ CAstStatement* CAstScope::GetStatementSequence(void) const
 bool CAstScope::TypeCheck(CToken *t, string *msg) const
 {
   vector<CAstScope*>::const_iterator it = _children.begin();
-  /*
-  while(it != _children.end()){
-       if(dynamic_cast<CAstProcedure*>(*it) != NULL){
-        const CType *retType = dynamic_cast<CAstProcedure*>(*it)->GetSymbol()->GetDataType();
-        if(retType->IsArray()){
-          if(t != NULL) *t = (*it)->GetToken();
-          if(msg != NULL) *msg = "invalid composite type for function.";
-          return false;
-        }
-      }
-      it++;
-  }
-  */
 
   CAstStatement *s = _statseq;
   while(s != NULL){
@@ -421,15 +408,15 @@ bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
 
   if(lhs->GetType()->IsArray() || rhs->GetType()->IsArray()){
     if(t != NULL) *t = GetToken();
-      ostringstream os;
-      os.clear();
-      os << "assignments to compound types are not supported.\n";
-      os << "  LHS: ";
-      lhs->GetType()->print(os, 0);
-      os << "\n";
-      os << "  RHS: ";
-      rhs->GetType()->print(os, 0);
-      *msg = os.str().c_str();
+    ostringstream os;
+    os.clear();
+    os << "assignments to compound types are not supported.\n";
+    os << "  LHS: ";
+    lhs->GetType()->print(os, 0);
+    os << "\n";
+    os << "  RHS: ";
+    rhs->GetType()->print(os, 0);
+    *msg = os.str().c_str();
     return false;
   }
 
@@ -444,7 +431,7 @@ bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
       os << "\n";
       os << "  RHS: ";
       rhs->GetType()->print(os, 0);
-      os << "\n";
+
       *msg = os.str().c_str();
     }
     return false;
@@ -925,49 +912,41 @@ bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
   if(!rhs->TypeCheck(t, msg)) return false;
 
   if(oper == opAdd || oper == opSub || oper == opMul || oper == opDiv || oper == opLessThan || oper == opLessEqual || oper == opBiggerThan || oper == opBiggerEqual){
-    if(!lhs->GetType()->Match(CTypeManager::Get()->GetInt())){
+    if(!lhs->GetType()->Match(CTypeManager::Get()->GetInt()) || !rhs->GetType()->Match(CTypeManager::Get()->GetInt())){
       if(t != NULL) *t = GetToken();
       ostringstream os;
       os.clear();
+      if(oper == opAdd) os << "add: ";
+      if(oper == opSub) os << "sub: ";
+      if(oper == opMul) os << "mul: ";
+      if(oper == opDiv) os << "div: ";
+      if(oper == opLessThan) os << "<: ";
+      if(oper == opLessEqual) os << "<=: ";
+      if(oper == opBiggerThan) os << ">: ";
+      if(oper == opBiggerEqual) os << ">=: ";
       os << "type mismatch.";
-      os << '\n' << "  operand:      ";
+      os << '\n' << "  left  operand: ";
       lhs->GetType()->print(os, 0);
-      os << '\n';
-      if(msg != NULL) *msg = os.str().c_str();
-      return false;
-    }
-    if(!rhs->GetType()->Match(CTypeManager::Get()->GetInt())){
-      if(t != NULL) *t = GetToken();
-      ostringstream os;
-      os.clear();
-      os << "type mismatch.";
-      os << '\n' << "  operand:      ";
+      os << '\n' << "  right operand: ";
       rhs->GetType()->print(os, 0);
-      os << '\n';
+
       if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
   }
   else if(oper == opAnd || oper == opOr){
-    if(!lhs->GetType()->Match(CTypeManager::Get()->GetBool())){
+    if(!lhs->GetType()->Match(CTypeManager::Get()->GetBool()) || !rhs->GetType()->Match(CTypeManager::Get()->GetBool())){
       if(t != NULL) *t = GetToken();
       ostringstream os;
       os.clear();
+      if(oper == opAnd) os << "and: ";
+      if(oper == opOr) os << "or: ";
       os << "type mismatch.";
-      os << '\n' << "  operand:      ";
+      os << '\n' << "  left  operand: ";
       lhs->GetType()->print(os, 0);
-      os << '\n';
-      if(msg != NULL) *msg = os.str().c_str();
-      return false;
-    }
-    if(!rhs->GetType()->Match(CTypeManager::Get()->GetBool())){
-      if(t != NULL) *t = GetToken();
-      ostringstream os;
-      os.clear();
-      os << "type mismatch.";
-      os << '\n' << "  operand:      ";
+      os << '\n' << "  right operand: ";
       rhs->GetType()->print(os, 0);
-      os << '\n';
+
       if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
@@ -975,7 +954,20 @@ bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
   else{
     if(!lhs->GetType()->Match(rhs->GetType())){
       if(t != NULL) *t = GetToken();
-      if(msg != NULL) *msg = "type mismatch.";
+
+      ostringstream os;
+      os.clear();
+
+      if(oper == opEqual) os << "=: ";
+      if(oper == opNotEqual) os << "#: ";
+      os << "type mismatch.";
+      os << '\n' << "  left  operand: ";
+      lhs->GetType()->print(os, 0);
+      os << '\n' << "  right operand: ";
+      rhs->GetType()->print(os, 0);
+
+
+      if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
   }
@@ -1074,8 +1066,8 @@ bool CAstUnaryOp::TypeCheck(CToken *t, string *msg) const
       if(t != NULL) *t = GetToken();
       ostringstream os;
       os.clear();
-      os << "type mismatch.";
-      os << '\n' << "  operand:      ";
+      os << "not: type mismatch.";
+      os << '\n' << "  operand:       ";
       e->GetType()->print(os, 0);
       os << '\n';
       if(msg != NULL) *msg = os.str().c_str();
@@ -1087,8 +1079,10 @@ bool CAstUnaryOp::TypeCheck(CToken *t, string *msg) const
       if(t != NULL) *t = GetToken();
       ostringstream os;
       os.clear();
+      if(oper == opPos) os << "pos: ";
+      else os << "neg: ";
       os << "type mismatch.";
-      os << '\n' << "  operand:      ";
+      os << '\n' << "  operand:       ";
       e->GetType()->print(os, 0);
       os << '\n';
       if(msg != NULL) *msg = os.str().c_str();
@@ -1285,21 +1279,20 @@ bool CAstFunctionCall::TypeCheck(CToken *t, string *msg) const
     const CType* exType = symbol->GetParam(i)->GetDataType();
     const CType* gotType = GetArg(i)->GetType();
 
-    const CType* exBaseType = (exType->IsPointer() ? dynamic_cast<const CPointerType*>(exType)->GetBaseType() : exType);
-    const CType* gotBaseType = (gotType->IsPointer() ? dynamic_cast<const CPointerType*>(gotType)->GetBaseType() : gotType);
+    const CType* gotPointedType = (gotType->IsArray() ?CTypeManager::Get()->GetPointer(gotType) : gotType);
 
     ostringstream os;
 
-    if(!gotBaseType->Match(exBaseType)){
+    if(!exType->Match(gotPointedType)){
       if(t != NULL) *t = GetArg(i)->GetToken();
       ostringstream os;
       os.clear();
       os << "parameter " << (i + 1) << ": argument type mismatch.";
       os << '\n' << "  expected ";
-      symbol->GetParam(i)->GetDataType()->print(os, 0);
+      exType->print(os, 0);
       os << "\n";
       os << "  got      ";
-      GetArg(i)->GetType()->print(os, 0);
+      gotPointedType->print(os, 0);
       if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
@@ -1680,7 +1673,7 @@ bool CAstStringConstant::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstStringConstant::GetType(void) const
 {
-  return CTypeManager::Get()->GetPointer(CTypeManager::Get()->GetArray(GetValueStr().size() + 1, CTypeManager::Get()->GetChar()));
+  return CTypeManager::Get()->GetArray(GetValueStr().size() + 1, CTypeManager::Get()->GetChar());
 }
 
 ostream& CAstStringConstant::print(ostream &out, int indent) const
