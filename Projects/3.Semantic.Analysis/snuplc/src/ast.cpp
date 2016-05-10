@@ -399,24 +399,44 @@ bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
 
   if(!lhs->TypeCheck(t, msg)) return false;
   if(!rhs->TypeCheck(t, msg)) return false;
-
-  if(!lhs->GetType()->Match(rhs->GetType())){
+  if(lhs == NULL || lhs->GetType() == NULL){
     if(t != NULL) *t = GetToken();
-    if(msg != NULL) *msg = "incompatible types in assignment.";
-    if(lhs->GetType() == NULL) cout << "LHS: <INVALID> ";
-    else {cout << "LHS: "; lhs->GetType()->print(cout, 0);}
-    cout << endl;
-    if(rhs->GetType() == NULL) cout << "RHS: <INVALID>";
-    else {cout << "RHS: "; rhs->GetType()->print(cout, 0);}
+    if(msg != NULL) *msg = "invalid types in assignment.";
+    cout << "LHS: <INVALID> ";
     cout << endl;
     return false;
   }
-
-  // TODO: LHS array check
-  if(lhs->GetType()->IsArray()){
+  else if(rhs == NULL || rhs->GetType() == NULL){
     if(t != NULL) *t = GetToken();
-    if(msg != NULL) *msg = "assignments to compound types are not supported.";
+    if(msg != NULL) *msg = "invalid types in assignment.";
+    cout << "RHS: <INVALID>";
+    cout << endl;
     return false;
+  }
+  const CType* lhsBaseType = (lhs->GetType()->IsPointer() ? dynamic_cast<const CPointerType*>(lhs->GetType())->GetBaseType() : lhs->GetType());
+  const CType* rhsBaseType = (rhs->GetType()->IsPointer() ? dynamic_cast<const CPointerType*>(rhs->GetType())->GetBaseType() : rhs->GetType());
+  if(!lhsBaseType->Match(rhsBaseType)){
+    if(t != NULL) *t = GetToken();
+    if(msg != NULL) *msg = "incompatible types in assignment.";
+    cout << "LHS: ";
+    lhs->GetType()->print(cout, 0);
+    cout << endl << "RHS: ";
+    rhs->GetType()->print(cout, 0);
+    cout << endl;
+    return false;
+  }
+  else{
+    if(!lhsBaseType->IsScalar() || !rhsBaseType->IsScalar()){
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "array-wise assignment is invalid.";
+      cout << "LHS: ";
+      lhs->GetType()->print(cout, 0);
+      cout << endl << "RHS: ";
+      rhs->GetType()->print(cout, 0);
+      cout << endl;
+      return false;
+    }
+    else return true;
   }
   return true;
 }
