@@ -1282,7 +1282,8 @@ const CSymbol* CAstDesignator::GetSymbol(void) const
 
 bool CAstDesignator::TypeCheck(CToken *t, string *msg) const
 {
-  return true;
+  if(!(GetType()->IsArray())) return true;
+  else return false;
 }
 
 const CType* CAstDesignator::GetType(void) const
@@ -1484,7 +1485,22 @@ string CAstConstant::GetValueStr(void) const
 
 bool CAstConstant::TypeCheck(CToken *t, string *msg) const
 {
-  if(t->GetType() == tNumber){
+  const CType *st = GetType();
+  if(st->IsInt()){
+    if(GetValue() >= (1LL << 31) || GetValue() < -(1LL << 31)){
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "exceed integer range";
+      return false;
+    }
+  }
+  else if(st->IsBoolean()){
+    if(GetValue() != 0 && GetValue() != 1){
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "Not valid boolean";
+      return false;
+    }
+  }
+  else if(st->IsChar()){
   }
   return true;
 }
