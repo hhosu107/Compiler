@@ -403,9 +403,11 @@ bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
   if(!lhs->GetType()->Match(rhs->GetType())){
     if(t != NULL) *t = GetToken();
     if(msg != NULL) *msg = "incompatible types in assignment.";
-    lhs->GetType()->print(cout, 0);
+    if(lhs->GetType() == NULL) cout << "LHS: <INVALID> ";
+    else {cout << "LHS: "; lhs->GetType()->print(cout, 0);}
     cout << endl;
-    rhs->GetType()->print(cout, 0);
+    if(rhs->GetType() == NULL) cout << "RHS: <INVALID>";
+    else {cout << "RHS: "; rhs->GetType()->print(cout, 0);}
     cout << endl;
     return false;
   }
@@ -1004,23 +1006,43 @@ bool CAstUnaryOp::TypeCheck(CToken *t, string *msg) const
   EOperation oper = GetOperation();
   CAstExpression *e = GetOperand();
 
-  if(!e->TypeCheck(t, msg)) return false;
-
-  if(oper == opNot){
-    if(!e->GetType()->Match(CTypeManager::Get()->GetBool())){
-      if(t != NULL) *t = GetToken();
-      if(msg != NULL) *msg = "type mismatch.";
-      return false;
+  if(!e->TypeCheck(t, msg)){
+    if(oper == opPos || oper == opNeg){
+      CAstConstant *c = dynamic_cast<CAstConstant *>(e);
+      if(c != NULL){
+        if((c->GetType())->Match(CTypeManager::Get()->GetInt())){
+          if(!((c->GetValue() == 2147483648LL) && (oper == opNeg))){
+            if(t != NULL) *t = GetToken();
+            if(msg != NULL) *msg = "integer range exceed.";
+            return false;
+          }
+          else return true;
+        }
+        else return false;
+      }
+      else return false;
     }
+    else return false;
   }
   else{
-    if(!e->GetType()->Match(CTypeManager::Get()->GetInt())){
-      if(t != NULL) *t = GetToken();
-      if(msg != NULL) *msg = "type mismatch.";
-      return false;
+    if(oper == opNot){
+      if(!e->GetType()->Match(CTypeManager::Get()->GetBool())){
+        if(t != NULL) *t = GetToken();
+        if(msg != NULL) *msg = "type mismatch.";
+        return false;
+      }
+      else return true;
     }
+    else if(oper == opPos || oper == opNeg){
+      if(!e->GetType()->Match(CTypeManager::Get()->GetInt())){
+        if(t != NULL) *t = GetToken();
+        if(msg != NULL) *msg = "required int type, but mismatch.";
+        return false;
+      }
+      else return true;
+    }
+    else return false;
   }
-
   return true;
 }
 
@@ -1391,8 +1413,12 @@ bool CAstArrayDesignator::TypeCheck(CToken *t, string *msg) const
 {
   assert(_done);
 
+  if(GetType() == NULL){
+    if(t != NULL) *t = GetToken();
+    if(msg != NULL) *msg = "invalid array expression.";
+    return false;
+  }
   int nIndices = GetNIndices();
-
   for(int i = 0; i < nIndices; i++){
     if(!GetIndex(i)->TypeCheck(t, msg)) return false;
     if(!GetIndex(i)->GetType()->Match(CTypeManager::Get()->GetInt())){
@@ -1511,7 +1537,7 @@ bool CAstConstant::TypeCheck(CToken *t, string *msg) const
 {
   const CType *st = GetType();
   if(st->IsInt()){
-    if(GetValue() >= (1LL << 31) || GetValue() < -(1LL << 31)){
+    if(GetValue() >= 2147483648LL){
       if(t != NULL) *t = GetToken();
       if(msg != NULL) *msg = "exceed integer range";
       return false;
