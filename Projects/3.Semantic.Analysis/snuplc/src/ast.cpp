@@ -803,12 +803,13 @@ bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstBinaryOp::GetType(void) const
 {
+  EOperation _oper = GetOperation();
   // only +, -, *, / return int type. o.w. bool.
-  if(oper == opAdd || oper == opSub || oper == opMul || oper == opDiv){
+  if(_oper == opAdd || _oper == opSub || _oper == opMul || _oper == opDiv){
     return CTypeManager::Get()->GetInt();
   }
   else{
-    return CTypeManager::Get->GetBool();
+    return CTypeManager::Get()->GetBool();
   }
 }
 
@@ -882,7 +883,8 @@ bool CAstUnaryOp::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstUnaryOp::GetType(void) const
 {
-  if(oper == opNot){
+  EOperation _oper = GetOperation();
+  if(_oper == opNot){
     return CTypeManager::Get()->GetBool();
   }
   else{
@@ -959,13 +961,14 @@ bool CAstSpecialOp::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstSpecialOp::GetType(void) const
 {
-  if(oper == opAddress){
-    return CTypeManager::Get()->GetPointer(e->GetType());
+  EOperation _oper = GetOperation();
+  if(_oper == opAddress){
+    return CTypeManager::Get()->GetPointer(GetOperand()->GetType());
   }
-  else if(oper == opDeref){
-    return (e->GetType())->GetBaseType();
+  else if(_oper == opDeref){
+    return GetOperand()->GetType();
   }
-  else return type;
+  else return _type;
 }
 
 ostream& CAstSpecialOp::print(ostream &out, int indent) const
@@ -1210,10 +1213,16 @@ bool CAstArrayDesignator::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstArrayDesignator::GetType(void) const
 {
-  CType* originType = GetSymbol()->GetDatatype();
+  const CArrayType* originType = dynamic_cast<const CArrayType*>(GetSymbol()->GetDataType());
+  const CType* basetype = NULL;
+
   for(int i=0; i<GetNIndices(); i++){
-    originType = originType->GetInnerType();
+    if(originType->GetNDim() == 1)
+      basetype = originType->GetInnerType();
+    else
+      originType = dynamic_cast<const CArrayType*>(originType->GetInnerType());
   }
+  if(basetype != NULL) return basetype;
   return originType;
 }
 
