@@ -164,7 +164,7 @@ CAstModule* CParser::module(void)
   CAstStatement *statseq = NULL;
 
   // module -> "module" ideBegin ";" ...
-  Consume(tModule);
+  Consume(tModule, &dummy);
 
   CToken idBegin, idEnd;
   Consume(tIdent, &idBegin);
@@ -324,17 +324,18 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
 
   EToken tt = _scanner->Peek().GetType();
 
+  CToken dummy;
   bool isProcedure = false;
 
   // subroutineDecl -> "procedure" ...
   if(tt == tProcedure){
-    Consume(tProcedure);
+    Consume(tProcedure, &dummy);
     isProcedure = true;
   }
 
   // subroutineDecl -> "function" ...
   else if(tt == tFunction){
-    Consume(tFunction);
+    Consume(tFunction, &dummy);
   }
 
   else {
@@ -404,7 +405,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   }
   (s->GetSymbolTable())->AddSymbol(symproc);
 
-  m = new CAstProcedure(idBegin, idBegin.GetValue(), s, symproc);
+  m = new CAstProcedure(dummy, idBegin.GetValue(), s, symproc);
   // 3rd element sets parent scope. In here, it is s.
   // Still, its symbol table has to be set, in the below code.
 
@@ -615,7 +616,7 @@ CAstStatAssign* CParser::assignment(CAstScope *s){
   CAstDesignator *lhs;
   lhs = qualident(s);
 
-  Consume(tAssign);
+  Consume(tAssign, &dummy);
 
   CAstExpression *rhs = expression(s);
   return new CAstStatAssign(dummy, lhs, rhs);
@@ -705,8 +706,9 @@ CAstStatWhile* CParser::whileStatement(CAstScope *s){
   //
   // whileStatement ::= "while" "(" expression ")" "then" statSequence "end".
   //
+  CToken dummy;
 
-  Consume(tWhile);
+  Consume(tWhile, &dummy);
   Consume(tLParen);
 
   CAstExpression *condExpr = expression(s);
@@ -718,7 +720,6 @@ CAstStatWhile* CParser::whileStatement(CAstScope *s){
 
   Consume(tEnd);
 
-  CToken dummy;
   CAstStatWhile* ret = new CAstStatWhile(dummy, condExpr, statseq);
   return ret;
 }
@@ -731,7 +732,7 @@ CAstStatReturn* CParser::returnStatement(CAstScope *s){
   CToken dummy;
 
   // returnStatement -> "return" ...
-  Consume(tReturn);
+  Consume(tReturn, &dummy);
 
   CAstExpression *retExpr = NULL;
 
@@ -891,8 +892,7 @@ CAstFunctionCall* CParser::expSubroutineCall(CAstScope *s){
     SetError(id, "no such subroutine");
   }
 
-  CToken dummy;
-  CAstFunctionCall* fc = new CAstFunctionCall(dummy, (CSymProc*)symbol);
+  CAstFunctionCall* fc = new CAstFunctionCall(id, (CSymProc*)symbol);
 
   Consume(tLParen);
   EToken tt = _scanner->Peek().GetType();
