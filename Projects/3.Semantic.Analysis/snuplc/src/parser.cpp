@@ -244,7 +244,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
   CToken id;
   Consume(tIdent, &id);
   if(symbols->FindSymbol(id.GetValue(), sLocal) != NULL){
-    SetError(id, "duplicate variable declaration.");
+    SetError(id, "duplicate variable declaration \'" + id.GetValue() + "\'.");
     return NULL;
   }
 
@@ -260,13 +260,13 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
     Consume(tIdent, &id);
 
     if(symbols->FindSymbol(id.GetValue(), sLocal) != NULL){
-      SetError(id, "duplicate variable declaration.");
+      SetError(id, "duplicate variable declaration \'" + id.GetValue() + "\'.");
       return NULL;
     }
 
     for(string name : varNames){
       if(name == id.GetValue()){
-        SetError(id, "duplicate variable declaration.");
+      SetError(id, "duplicate variable declaration \'" + id.GetValue() + "\'.");
         return NULL;
       }
     }

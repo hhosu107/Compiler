@@ -412,7 +412,15 @@ bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
 
   if(lhs->GetType()->IsArray() || rhs->GetType()->IsArray()){
     if(t != NULL) *t = GetToken();
-    if(msg != NULL) *msg = "assignments to compound types are not supported.";
+      ostringstream os;
+      os.clear();
+      os << "assignments to compound types are not supported.\n";
+      os << "  LHS: ";
+      lhs->GetType()->print(os, 0);
+      os << "\n";
+      os << "  RHS: ";
+      rhs->GetType()->print(os, 0);
+      *msg = os.str().c_str();
     return false;
   }
 
@@ -420,13 +428,14 @@ bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
     if(t != NULL) *t = GetToken();
     if(msg != NULL){
       ostringstream os;
+      os.clear();
       os << "incompatible types in assignment:\n";
       os << "  LHS: ";
       lhs->GetType()->print(os, 0);
       os << "\n";
       os << "  RHS: ";
       rhs->GetType()->print(os, 0);
-
+      os << "\n";
       *msg = os.str().c_str();
     }
     return false;
@@ -909,24 +918,48 @@ bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
   if(oper == opAdd || oper == opSub || oper == opMul || oper == opDiv || oper == opLessThan || oper == opLessEqual || oper == opBiggerThan || oper == opBiggerEqual){
     if(!lhs->GetType()->Match(CTypeManager::Get()->GetInt())){
       if(t != NULL) *t = GetToken();
-      if(msg != NULL) *msg = "type mismatch.";
+      ostringstream os;
+      os.clear();
+      os << "type mismatch.";
+      os << '\n' << "  operand:      ";
+      lhs->GetType()->print(os, 0);
+      os << '\n';
+      if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
     if(!rhs->GetType()->Match(CTypeManager::Get()->GetInt())){
       if(t != NULL) *t = GetToken();
-      if(msg != NULL) *msg = "type mismatch.";
+      ostringstream os;
+      os.clear();
+      os << "type mismatch.";
+      os << '\n' << "  operand:      ";
+      rhs->GetType()->print(os, 0);
+      os << '\n';
+      if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
   }
   else if(oper == opAnd || oper == opOr){
     if(!lhs->GetType()->Match(CTypeManager::Get()->GetBool())){
       if(t != NULL) *t = GetToken();
-      if(msg != NULL) *msg = "type mismatch.";
+      ostringstream os;
+      os.clear();
+      os << "type mismatch.";
+      os << '\n' << "  operand:      ";
+      lhs->GetType()->print(os, 0);
+      os << '\n';
+      if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
     if(!rhs->GetType()->Match(CTypeManager::Get()->GetBool())){
       if(t != NULL) *t = GetToken();
-      if(msg != NULL) *msg = "type mismatch.";
+      ostringstream os;
+      os.clear();
+      os << "type mismatch.";
+      os << '\n' << "  operand:      ";
+      rhs->GetType()->print(os, 0);
+      os << '\n';
+      if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
   }
@@ -1030,14 +1063,26 @@ bool CAstUnaryOp::TypeCheck(CToken *t, string *msg) const
   if(oper == opNot){
     if(!e->GetType()->Match(CTypeManager::Get()->GetBool())){
       if(t != NULL) *t = GetToken();
-      if(msg != NULL) *msg = "type mismatch.";
+      ostringstream os;
+      os.clear();
+      os << "type mismatch.";
+      os << '\n' << "  operand:      ";
+      e->GetType()->print(os, 0);
+      os << '\n';
+      if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
   }
   else if(oper == opPos || oper == opNeg){
     if(!e->GetType()->Match(CTypeManager::Get()->GetInt())){
       if(t != NULL) *t = GetToken();
-      if(msg != NULL) *msg = "type mismatch.";
+      ostringstream os;
+      os.clear();
+      os << "type mismatch.";
+      os << '\n' << "  operand:      ";
+      e->GetType()->print(os, 0);
+      os << '\n';
+      if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
   }
@@ -1234,14 +1279,19 @@ bool CAstFunctionCall::TypeCheck(CToken *t, string *msg) const
     const CType* exBaseType = (exType->IsPointer() ? dynamic_cast<const CPointerType*>(exType)->GetBaseType() : exType);
     const CType* gotBaseType = (gotType->IsPointer() ? dynamic_cast<const CPointerType*>(gotType)->GetBaseType() : gotType);
 
+    ostringstream os;
+
     if(!gotBaseType->Match(exBaseType)){
       if(t != NULL) *t = GetArg(i)->GetToken();
-      if(msg != NULL) *msg = "argument type mismatch.";
-      cout << "expected: ";
-      symbol->GetParam(i)->GetDataType()->print(cout, 0);
-      cout << endl << "got: ";
-      GetArg(i)->GetType()->print(cout, 0);
-      cout << endl;
+      ostringstream os;
+      os.clear();
+      os << "parameter " << (i + 1) << ": argument type mismatch.";
+      os << '\n' << "  expected ";
+      symbol->GetParam(i)->GetDataType()->print(os, 0);
+      os << "\n";
+      os << "  got      ";
+      GetArg(i)->GetType()->print(os, 0);
+      if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
   }
