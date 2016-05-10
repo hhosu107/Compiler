@@ -403,6 +403,10 @@ bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
   if(!lhs->GetType()->Match(rhs->GetType())){
     if(t != NULL) *t = GetToken();
     if(msg != NULL) *msg = "incompatible types in assignment.";
+    lhs->GetType()->print(cout, 0);
+    cout << endl;
+    rhs->GetType()->print(cout, 0);
+    cout << endl;
     return false;
   }
 
@@ -549,7 +553,7 @@ bool CAstStatReturn::TypeCheck(CToken *t, string *msg) const
 
     if(!st->Match(e->GetType())){
       if(t != NULL) *t = e->GetToken();
-      if(msg != NULL) *msg = "return type mismach.";
+      if(msg != NULL) *msg = "return type mismatch.";
       return false;
     }
   }
@@ -641,7 +645,7 @@ bool CAstStatIf::TypeCheck(CToken *t, string *msg) const
   if(!cond->TypeCheck(t, msg)) return false;
   if(!cond->GetType()->Match(CTypeManager::Get()->GetBool())){
     if(t != NULL) *t = cond->GetToken();
-    if(msg != NULL) *msg = "condition expression is not boolean type.";
+    if(msg != NULL) *msg = "boolean expression expected.";
     return false;
   }
   if(!GetIfBody()->TypeCheck(t, msg)) return false;
@@ -752,7 +756,7 @@ bool CAstStatWhile::TypeCheck(CToken *t, string *msg) const
   if(!cond->TypeCheck(t, msg)) return false;
   if(!cond->GetType()->Match(CTypeManager::Get()->GetBool())){
     if(t != NULL) *t = cond->GetToken();
-    if(msg != NULL) *msg = "condition expression is not boolean type.";
+    if(msg != NULL) *msg = "boolean expression expected.";
     return false;
   }
   if(!GetBody()->TypeCheck(t, msg)) return false;
@@ -886,27 +890,34 @@ bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
   if(!lhs->TypeCheck(t, msg)) return false;
   if(!rhs->TypeCheck(t, msg)) return false;
 
-  if(oper == opAdd || oper == opSub || oper == opMul || oper == opDiv){
+  if(oper == opAdd || oper == opSub || oper == opMul || oper == opDiv || oper == opLessThan || oper == opLessEqual || oper == opBiggerThan || oper == opBiggerEqual){
     if(!lhs->GetType()->Match(CTypeManager::Get()->GetInt())){
-      if(t != NULL) *t = lhs->GetToken();
-      if(msg != NULL) *msg = "lhs of binary operator must be integer.";
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "type mismatch.";
       return false;
     }
     if(!rhs->GetType()->Match(CTypeManager::Get()->GetInt())){
-      if(t != NULL) *t = rhs->GetToken();
-      if(msg != NULL) *msg = "rhs of binary operator must be integer.";
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "type mismatch.";
+      return false;
+    }
+  }
+  else if(oper == opAnd || oper == opOr){
+    if(!lhs->GetType()->Match(CTypeManager::Get()->GetBool())){
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "type mismatch.";
+      return false;
+    }
+    if(!rhs->GetType()->Match(CTypeManager::Get()->GetBool())){
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "type mismatch.";
       return false;
     }
   }
   else{
-    if(!lhs->GetType()->Match(CTypeManager::Get()->GetBool())){
-      if(t != NULL) *t = lhs->GetToken();
-      if(msg != NULL) *msg = "lhs of binary operator must be boolean.";
-      return false;
-    }
-    if(!rhs->GetType()->Match(CTypeManager::Get()->GetBool())){
-      if(t != NULL) *t = rhs->GetToken();
-      if(msg != NULL) *msg = "rhs of binary operator must be boolean.";
+    if(!lhs->GetType()->Match(rhs->GetType())){
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "type mismatch.";
       return false;
     }
   }
@@ -997,15 +1008,15 @@ bool CAstUnaryOp::TypeCheck(CToken *t, string *msg) const
 
   if(oper == opNot){
     if(!e->GetType()->Match(CTypeManager::Get()->GetBool())){
-      if(t != NULL) *t = e->GetToken();
-      if(msg != NULL) *msg = "operand of unary operator must be boolean.";
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "type mismatch.";
       return false;
     }
   }
   else{
     if(!e->GetType()->Match(CTypeManager::Get()->GetInt())){
-      if(t != NULL) *t = e->GetToken();
-      if(msg != NULL) *msg = "operand of unary operator must be integer.";
+      if(t != NULL) *t = GetToken();
+      if(msg != NULL) *msg = "type mismatch.";
       return false;
     }
   }
@@ -1182,15 +1193,28 @@ bool CAstFunctionCall::TypeCheck(CToken *t, string *msg) const
   int nArgs = GetNArgs();
   int nRealArgs = symbol->GetNParams();
 
-  if(nArgs != nRealArgs){
+  if(nArgs > nRealArgs){
     if(t != NULL) *t = GetToken();
     if(msg != NULL) *msg = "too many arguments.";
     return false;
   }
 
+  if(nArgs < nRealArgs){
+    if(t != NULL) *t = GetToken();
+    if(msg != NULL) *msg = "not enough arguments.";
+    return false;
+  }
+
   for(int i = 0; i < nArgs; i++){
     if(!GetArg(i)->TypeCheck(t, msg)) return false;
-    if(!GetArg(i)->GetType()->Match(symbol->GetParam(i)->GetDataType())){
+
+    const CType* exType = symbol->GetParam(i)->GetDataType();
+    const CType* gotType = GetArg(i)->GetType();
+
+    const CType* exBaseType = (exType->IsPointer() ? dynamic_cast<const CPointerType*>(exType)->GetBaseType() : exType);
+    const CType* gotBaseType = (gotType->IsPointer() ? dynamic_cast<const CPointerType*>(gotType)->GetBaseType() : gotType);
+
+    if(!gotBaseType->Match(exBaseType)){
       if(t != NULL) *t = GetArg(i)->GetToken();
       if(msg != NULL) *msg = "argument type mismatch.";
       cout << "expected: ";
