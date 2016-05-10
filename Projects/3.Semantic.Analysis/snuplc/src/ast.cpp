@@ -966,7 +966,10 @@ const CType* CAstSpecialOp::GetType(void) const
     return CTypeManager::Get()->GetPointer(GetOperand()->GetType());
   }
   else if(_oper == opDeref){
-    return GetOperand()->GetType();
+    if(GetOperand()->GetType()->IsPointer()){
+      return dynamic_cast<const CPointerType*>(GetOperand()->GetType())->GetBaseType();
+    }
+    else return NULL;
   }
   else return _type;
 }
@@ -1213,16 +1216,22 @@ bool CAstArrayDesignator::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstArrayDesignator::GetType(void) const
 {
-  const CArrayType* originType = dynamic_cast<const CArrayType*>(GetSymbol()->GetDataType());
-  const CType* basetype = NULL;
+  const CType *originType = GetSymbol()->GetDataType();
+  if(originType->IsPointer()){
+    originType = dynamic_cast<const CPointerType*>(originType)->GetBaseType();
+  }
+  if(!originType->IsArray()) return NULL;
+
+  const CType *ret = originType;
+
+  if(GetNIndices() > dynamic_cast<const CArrayType*>(ret)->GetNDim() ){
+    return NULL;
+  }
 
   for(int i=0; i<GetNIndices(); i++){
-    if(originType->GetNDim() == 1)
-      basetype = originType->GetInnerType();
-    else
-      originType = dynamic_cast<const CArrayType*>(originType->GetInnerType());
+    if(!ret->IsArray()){ return NULL; break; }
+    ret = dynamic_cast<const CArrayType*>(ret)->GetInnerType();
   }
-  if(basetype != NULL) return basetype;
   return originType;
 }
 
@@ -1389,7 +1398,7 @@ bool CAstStringConstant::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstStringConstant::GetType(void) const
 {
-  return CTypeManager::Get()->GetPointer(_type);
+  return CTypeManager::Get()->GetPointer(CTypeManager::Get()->GetArray(GetValueStr().size() + 1, CTypeManager::Get()->GetChar()));
 }
 
 ostream& CAstStringConstant::print(ostream &out, int indent) const
