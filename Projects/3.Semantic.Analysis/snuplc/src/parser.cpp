@@ -243,11 +243,15 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
   // varDecl -> ident ...
   CToken id;
   Consume(tIdent, &id);
+  if(symbols->FindSymbol(id.GetValue(), sLocal) != NULL){
+    SetError(id, "duplicate variable declaration.");
+    return NULL;
+  }
+
   varNames.push_back(id.GetValue());
 
   // varDecl -> ... { "," identNext } ":" ...
   for(;;){
-    const CSymbol *duplicate;
     EToken tt = _scanner->Peek().GetType();
     if(tt != tComma) break;
 
@@ -255,15 +259,14 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
 
     Consume(tIdent, &id);
 
-    duplicate = symbols->FindSymbol(id.GetValue(), sLocal);
-    if(duplicate != NULL){
-      SetError(id, "ident was duplicated in local");
+    if(symbols->FindSymbol(id.GetValue(), sLocal) != NULL){
+      SetError(id, "duplicate variable declaration.");
       return NULL;
     }
 
     for(string name : varNames){
       if(name == id.GetValue()){
-        SetError(id, "ident was duplicated in varDecl statement");
+        SetError(id, "duplicate variable declaration.");
         return NULL;
       }
     }
@@ -821,13 +824,13 @@ CAstExpression* CParser::factor(CAstScope *s)
           }
         }
         else{
-          SetError(_scanner->Peek(), "variable \"" + _scanner->Peek().GetValue() + "\" is undeclared");
+          SetError(_scanner->Peek(), "undefined identifier.");
         }
       }
       break;
 
     default:
-      cout << "got " << _scanner->Peek() << endl;
+      // cout << "got " << _scanner->Peek() << endl;
       SetError(_scanner->Peek(), "factor expected.");
       break;
   }
@@ -1057,7 +1060,7 @@ CAstConstant* CParser::number(void){
   long long v = strtoll(t.GetValue().c_str(), NULL, 10);
   if (errno != 0) SetError(t, "invalid number.");
   long long absv = (v > 0 ? v : (-v));
-  if(absv > (1LL << 31)) SetError(t, "tNumber received token exceeding MAX_INT");
+  if(absv > (1LL << 31)) SetError(t, "integer constant outside valid range.");
 
   return new CAstConstant(t, CTypeManager::Get()->GetInt(), v);
 }
