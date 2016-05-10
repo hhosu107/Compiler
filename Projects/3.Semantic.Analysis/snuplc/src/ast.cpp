@@ -394,8 +394,17 @@ CAstExpression* CAstStatAssign::GetRHS(void) const
 
 bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
 {
+  if(!GetLHS()->TypeCheck(t, msg)) return false;
+  if(!GetRHS()->TypeCheck(t, msg)) return false;
+
   const CType *lhsType = GetLHS()->GetType();
   const CType *rhsType = GetRHS()->GetType();
+
+  cout << "LHS : ";
+  lhsType->print(cout, 0);
+  cout << ", RHS : ";
+  rhsType->print(cout, 0);
+  cout << endl;
 
   if(!lhsType->Match(rhsType)){
     if(t != NULL) *t = GetToken();
@@ -1354,7 +1363,8 @@ const CType* CAstArrayDesignator::GetType(void) const
     if(!ret->IsArray()){ return NULL; break; }
     ret = dynamic_cast<const CArrayType*>(ret)->GetInnerType();
   }
-  return originType;
+
+  return ret;
 }
 
 ostream& CAstArrayDesignator::print(ostream &out, int indent) const
