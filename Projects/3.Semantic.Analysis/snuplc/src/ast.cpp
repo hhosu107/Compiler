@@ -165,25 +165,34 @@ CAstStatement* CAstScope::GetStatementSequence(void) const
 
 bool CAstScope::TypeCheck(CToken *t, string *msg) const
 {
-  bool result = true;
-
-  try{
-    CAstStatement *s = _statseq;
-    while(result && (s != NULL)){
-      result = s->TypeCheck(t, msg);
-      s = s->GetNext();
-    }
-
-    vector<CAstScope*>::const_iterator it = _children.begin();
-    while(result && (it != _children.end())){
-      result = (*it)->TypeCheck(t, msg);
+  vector<CAstScope*>::const_iterator it = _children.begin();
+  /*
+  while(it != _children.end()){
+       if(dynamic_cast<CAstProcedure*>(*it) != NULL){
+        const CType *retType = dynamic_cast<CAstProcedure*>(*it)->GetSymbol()->GetDataType();
+        if(retType->IsArray()){
+          if(t != NULL) *t = (*it)->GetToken();
+          if(msg != NULL) *msg = "invalid composite type for function.";
+          return false;
+        }
+      }
       it++;
-    }
-  } catch(...){
-    result = false;
+  }
+  */
+
+  CAstStatement *s = _statseq;
+  while(s != NULL){
+    if(!s->TypeCheck(t, msg)) return false;
+    s = s->GetNext();
   }
 
-  return result;
+  it = _children.begin();
+  while(it != _children.end()){
+    if(!(*it)->TypeCheck(t, msg)) return false;
+    it++;
+  }
+
+  return true;
 }
 
 ostream& CAstScope::print(ostream &out, int indent) const

@@ -277,7 +277,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
 
   // varDecl : .. type
   const CType *datatype;
-  datatype = ReadType(openArray)->GetType();
+  datatype = ReadType(openArray, true)->GetType();
 
   // CSymbol(name, ESymbolType symboltype, CType *datatype)
   // have to give each methods refer to sType
@@ -395,7 +395,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   else{
     // subroutineDecl -> ... ":" type ";" ...
     Consume(tColon);
-    retType = ReadType(false)->GetType();
+    retType = ReadType(false, false)->GetType();
     Consume(tSemicolon);
   }
 
@@ -449,7 +449,7 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
 }
 
 // ReadType
-const CAstType* CParser::ReadType(bool openArray){
+const CAstType* CParser::ReadType(bool openArray, bool beArray){
   //
   // type ::= basetype | type "[" [ number ] "]".
   //  <=>
@@ -508,9 +508,13 @@ const CAstType* CParser::ReadType(bool openArray){
     else break;
   }
 
+  if(!beArray && !(NElems.empty())){
+    SetError(typeToken, "invalid composite type for function.");
+  }
+
   // make CType* node iteratively
   while(!(NElems.empty())){
-    long long size = NElems.top();
+   long long size = NElems.top();
     NElems.pop();
     if(size >= 0){
       datatype = tm->GetArray(size, datatype);

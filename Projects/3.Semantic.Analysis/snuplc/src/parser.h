@@ -119,7 +119,7 @@ class CParser {
 
     /// @brief takes a type definition
     /// @retval CAstType* node with its type
-    const CAstType* ReadType(bool openArray);
+    const CAstType* ReadType(bool openArray, bool beArray);
 
     /// @brief takes a sequence of statements to make a linked list of them
     /// @param s parent scope
