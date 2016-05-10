@@ -639,8 +639,7 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
   }
 
   // make a CAstFunctionCall* node to enclose it
-  CToken dummy;
-  CAstFunctionCall* fc = new CAstFunctionCall(dummy, (CSymProc*)symbol);
+  CAstFunctionCall* fc = new CAstFunctionCall(id, (CSymProc*)symbol);
 
   Consume(tLParen);
 
@@ -665,7 +664,7 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
   // subroutineCall -> ... ")"
   Consume(tRParen);
 
-  return new CAstStatCall(dummy, fc);
+  return new CAstStatCall(id, fc);
 }
 
 // ifStatement

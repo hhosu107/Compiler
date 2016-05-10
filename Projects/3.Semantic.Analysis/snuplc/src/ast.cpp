@@ -1451,6 +1451,8 @@ string CAstConstant::GetValueStr(void) const
 
 bool CAstConstant::TypeCheck(CToken *t, string *msg) const
 {
+  if(t->GetType() == tNumber){
+  }
   return true;
 }
 
