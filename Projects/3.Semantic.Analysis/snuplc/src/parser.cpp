@@ -307,6 +307,10 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
         ptrtype = datatype;
       }
 
+      // cout << endl;
+      // datatype->print(cout, 0); cout << endl;
+      // ptrtype->print(cout, 0); cout << endl;
+
       symbols->AddSymbol(new CSymParam(size, name, ptrtype));
       params->push_back(new CSymParam(size, name, ptrtype));
     }

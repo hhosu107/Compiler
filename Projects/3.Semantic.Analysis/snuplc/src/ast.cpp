@@ -1287,7 +1287,7 @@ bool CAstFunctionCall::TypeCheck(CToken *t, string *msg) const
     const CType* exType = symbol->GetParam(i)->GetDataType();
     const CType* gotType = GetArg(i)->GetType();
 
-    const CType* gotPointedType = (gotType->IsArray() ?CTypeManager::Get()->GetPointer(gotType) : gotType);
+    const CType* gotPointedType = (gotType->IsArray() ? CTypeManager::Get()->GetPointer(gotType) : gotType);
 
     ostringstream os;
 

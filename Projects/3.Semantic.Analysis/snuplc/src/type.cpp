@@ -159,6 +159,8 @@ ostream& CBoolType::print(ostream &out, int indent) const
 CPointerType::CPointerType(const CType *basetype)
   : CScalarType(), _basetype(basetype)
 {
+//  cout << "basetype: "; basetype->print(cout, 0); cout << endl;
+//  cout << "_basetype: "; _basetype->print(cout, 0); cout << endl;
 }
 
 bool CPointerType::Match(const CType *t) const
@@ -343,7 +345,7 @@ const CPointerType* CTypeManager::GetVoidPtr(void) const
 const CPointerType* CTypeManager::GetPointer(const CType *basetype)
 {
   for (size_t i=0; i<_ptr.size(); i++) {
-    if ((_ptr[i]->GetBaseType()->Match(basetype))) {
+    if ((_ptr[i]->GetBaseType()->Compare(basetype))) {
       return _ptr[i];
     }
   }
