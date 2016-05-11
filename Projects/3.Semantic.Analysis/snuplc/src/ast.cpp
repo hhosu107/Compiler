@@ -388,6 +388,7 @@ CAstExpression* CAstStatAssign::GetRHS(void) const
   return _rhs;
 }
 
+// Check errors on lhs, rhs of assignment and match their types.
 bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
 {
   CAstExpression *lhs = GetLHS();
@@ -406,6 +407,8 @@ bool CAstStatAssign::TypeCheck(CToken *t, string *msg) const
     return false;
   }
 
+  // We don;t allow assign from array to array(not ptr).
+  // Below here, we used ostringstream to make a proper printing format.
   if(lhs->GetType()->IsArray() || rhs->GetType()->IsArray()){
     if(t != NULL) *t = GetToken();
     ostringstream os;
@@ -499,6 +502,7 @@ CAstFunctionCall* CAstStatCall::GetCall(void) const
   return _call;
 }
 
+// Since this class is wrapper of CAstFunctionCall, just perform into it.
 bool CAstStatCall::TypeCheck(CToken *t, string *msg) const
 {
   return GetCall()->TypeCheck(t, msg);
@@ -551,6 +555,7 @@ CAstExpression* CAstStatReturn::GetExpression(void) const
   return _expr;
 }
 
+// match two types: function/procedure return type, type of expression of return
 bool CAstStatReturn::TypeCheck(CToken *t, string *msg) const
 {
   const CType *st = GetScope()->GetType();
@@ -659,6 +664,8 @@ CAstStatement* CAstStatIf::GetElseBody(void) const
   return _elseBody;
 }
 
+// Check validity of ifcond/truestat/falsestat and w.o.n the type of ifcond
+// matches with boolean type.
 bool CAstStatIf::TypeCheck(CToken *t, string *msg) const
 {
   CAstExpression *cond = GetCondition();
@@ -770,6 +777,7 @@ CAstStatement* CAstStatWhile::GetBody(void) const
   return _body;
 }
 
+// check validity of whilecond/whilebody, and match whilecond type with boolean
 bool CAstStatWhile::TypeCheck(CToken *t, string *msg) const
 {
   CAstExpression *cond = GetCondition();
@@ -902,6 +910,8 @@ CAstExpression* CAstBinaryOp::GetRight(void) const
   return _right;
 }
 
+// check validity of lhs and rhs, match types of lhs, rhs, and
+// match that type with the return type of given operation.
 bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
 {
   CAstExpression *lhs = GetLeft();
@@ -974,14 +984,15 @@ bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
   return true;
 }
 
+// binary operators return int(arithmetics) or bool(and/or) type.
 const CType* CAstBinaryOp::GetType(void) const
 {
   EOperation _oper = GetOperation();
-  // only +, -, *, / return int type. o.w. bool.
+  // +, -, *, /
   if(_oper == opAdd || _oper == opSub || _oper == opMul || _oper == opDiv){
     return CTypeManager::Get()->GetInt();
   }
-  else{
+  else{ // &&, ||
     return CTypeManager::Get()->GetBool();
   }
 }
@@ -1049,6 +1060,8 @@ CAstExpression* CAstUnaryOp::GetOperand(void) const
   return _operand;
 }
 
+// check validity of expression next to the unary operation
+// and match this type with the return type of the given operation
 bool CAstUnaryOp::TypeCheck(CToken *t, string *msg) const
 {
   EOperation oper = GetOperation();
@@ -1092,13 +1105,15 @@ bool CAstUnaryOp::TypeCheck(CToken *t, string *msg) const
   return true;
 }
 
+// only not returns bool, otherwise int
 const CType* CAstUnaryOp::GetType(void) const
 {
+  // !
   EOperation _oper = GetOperation();
   if(_oper == opNot){
     return CTypeManager::Get()->GetBool();
   }
-  else{
+  else{ // +, -
     return CTypeManager::Get()->GetInt();
   }
 }
@@ -1165,6 +1180,8 @@ CAstExpression* CAstSpecialOp::GetOperand(void) const
   return _operand;
 }
 
+// Just check validity of its operand. If operation were opDeref, operand must
+// be a pointer.
 bool CAstSpecialOp::TypeCheck(CToken *t, string *msg) const
 {
   EOperation _oper = GetOperation();
@@ -1180,6 +1197,9 @@ bool CAstSpecialOp::TypeCheck(CToken *t, string *msg) const
   return true;
 }
 
+// Address operator returns pointer to it and it will resolve address to take
+// real value. Dereferencing deletes one pointer wrapper. Otherwise, return the
+// new(forced) type which is given.
 const CType* CAstSpecialOp::GetType(void) const
 {
   EOperation _oper = GetOperation();
@@ -1263,12 +1283,14 @@ CAstExpression* CAstFunctionCall::GetArg(int index) const
   return _arg[index];
 }
 
+// Many points have to be checked.
 bool CAstFunctionCall::TypeCheck(CToken *t, string *msg) const
 {
   const CSymProc *symbol = GetSymbol();
   int nArgs = GetNArgs();
   int nRealArgs = symbol->GetNParams();
 
+  // Check Argument #
   if(nArgs > nRealArgs){
     if(t != NULL) *t = GetToken();
     if(msg != NULL) *msg = "too many arguments.";
@@ -1281,6 +1303,10 @@ bool CAstFunctionCall::TypeCheck(CToken *t, string *msg) const
     return false;
   }
 
+  // Check types of each argument
+  // We gave pointer wrapper to all parameter except primitive types. So it
+  // encloses array as a pointer to array, and then perform type checking using
+  // their basetypes.
   for(int i = 0; i < nArgs; i++){
     if(!GetArg(i)->TypeCheck(t, msg)) return false;
 
@@ -1308,6 +1334,7 @@ bool CAstFunctionCall::TypeCheck(CToken *t, string *msg) const
   return true;
 }
 
+// DataType contains its return type.
 const CType* CAstFunctionCall::GetType(void) const
 {
   return GetSymbol()->GetDataType();
@@ -1384,6 +1411,8 @@ const CSymbol* CAstDesignator::GetSymbol(void) const
   return _symbol;
 }
 
+// It is just a simple designator. If it has to return false, it is an error on
+// parsing, not on type cgecking.
 bool CAstDesignator::TypeCheck(CToken *t, string *msg) const
 {
   return true;
@@ -1466,6 +1495,8 @@ CAstExpression* CAstArrayDesignator::GetIndex(int index) const
   return _idx[index];
 }
 
+// Check its indices are the valid numbers. If the parameter was open, no
+// problem. But, if such indices are not closed, we must check its actual value.
 bool CAstArrayDesignator::TypeCheck(CToken *t, string *msg) const
 {
   assert(_done);
@@ -1487,15 +1518,15 @@ bool CAstArrayDesignator::TypeCheck(CToken *t, string *msg) const
 
   return true;
 }
-
+// Make its dimension lower when each indices are detected. If it opened indices
+// too many, it is an error. We also accept pointer to array, by removing
+// wrapper(pointer).
 const CType* CAstArrayDesignator::GetType(void) const
 {
   const CType *originType = GetSymbol()->GetDataType();
   if(originType->IsPointer()){
     originType = dynamic_cast<const CPointerType*>(originType)->GetBaseType();
   }
-  // originType->print(cout, 2);
-  // cout << endl;
   if(!originType->IsArray()) return NULL;
 
   const CType *ret = originType;
@@ -1592,6 +1623,10 @@ string CAstConstant::GetValueStr(void) const
   return out.str();
 }
 
+// We used such a complex trick to make a valid boundary for number.
+// If its token value is larger than or equal to 1LL << 31, return false. If
+// unary operator takes it and its operator is opNeg, accept it only if its
+// value was exactly 1LL << 31. Otherwise, check it false at there.
 bool CAstConstant::TypeCheck(CToken *t, string *msg) const
 {
   const CType *st = GetType();

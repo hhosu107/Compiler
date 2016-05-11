@@ -508,7 +508,8 @@ class CTypeManager {
     /// @{
 
     /// @brief get/create an pointer type
-    ///
+    /// Here use Compare function tocheck rather than Match function, since
+    /// it it is matched, it doesn't generates objects, which makes awful side effects.
     /// @param basetype pointed-to data type
     const CPointerType* GetPointer(const CType* basetype);
 

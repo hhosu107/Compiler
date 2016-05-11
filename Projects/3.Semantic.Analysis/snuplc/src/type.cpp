@@ -159,8 +159,6 @@ ostream& CBoolType::print(ostream &out, int indent) const
 CPointerType::CPointerType(const CType *basetype)
   : CScalarType(), _basetype(basetype)
 {
-//  cout << "basetype: "; basetype->print(cout, 0); cout << endl;
-//  cout << "_basetype: "; _basetype->print(cout, 0); cout << endl;
 }
 
 bool CPointerType::Match(const CType *t) const
@@ -248,7 +246,6 @@ bool CArrayType::Match(const CType *t) const
   if (t->IsArray()) {
     const CArrayType *at = dynamic_cast<const CArrayType*>(t);
     assert(at != NULL);
-    // cout << GetNElem() << " " << at->GetNElem() << endl;
     return ((GetNElem() == at->GetNElem()) ||
             (GetNElem() == OPEN) ||
             (at->GetNElem() == OPEN)) &&
@@ -278,7 +275,6 @@ ostream& CArrayType::print(ostream &out, int indent) const
   out << ind << "<array ";
   if (n != OPEN) out << n << " ";
   out << " of "; GetInnerType()->print(out);
-  //out << "," << GetSize() << "," << GetAlign();
   out << ">";
   return out;
 }
@@ -345,6 +341,10 @@ const CPointerType* CTypeManager::GetVoidPtr(void) const
 const CPointerType* CTypeManager::GetPointer(const CType *basetype)
 {
   for (size_t i=0; i<_ptr.size(); i++) {
+    // Edited Match to Compare. Since if it is matched by Match, it doesn't make new
+    // object. It makes a serious problem on array declation as a parameter.
+    // We experienced that integer[][5][] type was recognized as integer[][][]
+    // by reference parser. We found bug in here, so it works well.
     if ((_ptr[i]->GetBaseType()->Compare(basetype))) {
       return _ptr[i];
     }

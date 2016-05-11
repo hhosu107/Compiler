@@ -118,6 +118,8 @@ class CParser {
     CAstProcedure*    subroutineDecl(CAstScope *s);
 
     /// @brief takes a type definition
+    /// @param openArray checks it allows opened array or not
+    /// @param beArray true if it is return type of function to make type error
     /// @retval CAstType* node with its type
     const CAstType* ReadType(bool openArray, bool beArray);
 

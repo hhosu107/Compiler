@@ -278,7 +278,6 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
   // varDecl : .. type
   const CType *datatype;
   datatype = ReadType(openArray, true)->GetType();
-  // datatype->print(cout, 1);
   // CSymbol(name, ESymbolType symboltype, CType *datatype)
   // have to give each methods refer to sType
   for(string name : varNames){
@@ -299,18 +298,11 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
 
       // only if it is an array as a parameter, it has to be a pointer
       if(datatype->IsArray()){
-        //datatype->print(cout, 0) << endl;
         ptrtype = tm->GetPointer(datatype);
-        //ptrtype->print(cout, 0) << endl;
       }
       else{
         ptrtype = datatype;
       }
-
-      // cout << endl;
-      // datatype->print(cout, 0); cout << endl;
-      // ptrtype->print(cout, 0); cout << endl;
-
       symbols->AddSymbol(new CSymParam(size, name, ptrtype));
       params->push_back(new CSymParam(size, name, ptrtype));
     }
@@ -673,7 +665,6 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
   if(tt == tPlusMinus || tt == tIdent || tt == tNumber || tt == tBool || tt == tCharacter || tt == tString || tt == tLParen || tt == tNot){ // expression
     // subroutineCall -> ... [ expression ...
     CAstExpression *ex = expression(s);
-    // if(ex->GetType()->IsArray() && dynamic_cast<const CArrayType*>(ex->GetType())->GetBaseType() == CTypeManager::Get()->GetChar())
     if(ex->GetType()->IsArray())
       {
         fc->AddArg(new CAstSpecialOp(t, opAddress, ex, NULL));
@@ -688,7 +679,6 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
       Consume(tComma);
       t = _scanner->Peek();
       ex = expression(s);
-      // if(ex->GetType()->IsArray() && dynamic_cast<const CArrayType*>(ex->GetType())->GetBaseType() == CTypeManager::Get()->GetChar())
       if(ex->GetType()->IsArray())
       {
         fc->AddArg(new CAstSpecialOp(t, opAddress, ex, NULL));

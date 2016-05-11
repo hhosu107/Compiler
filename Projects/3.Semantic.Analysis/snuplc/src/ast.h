@@ -949,7 +949,7 @@ class CAstBinaryOp : public CAstOperation {
     /// @retval false otherwise
     virtual bool TypeCheck(CToken *t, string *msg) const;
 
-    /// @brief return (compute) the type of the expression.
+    /// @brief return (compute) operator's return type of the expression.
     virtual const CType* GetType(void) const;
 
     /// @}
@@ -1026,7 +1026,7 @@ class CAstUnaryOp : public CAstOperation {
     /// @retval false otherwise
     virtual bool TypeCheck(CToken *t, string *msg) const;
 
-    /// @brief return (compute) the type of the expression.
+    /// @brief return (compute) operator's return type of the expression.
     virtual const CType* GetType(void) const;
 
     /// @}
@@ -1376,7 +1376,7 @@ class CAstArrayDesignator : public CAstDesignator {
     /// @retval false otherwise
     virtual bool TypeCheck(CToken *t, string *msg) const;
 
-    /// @brief return (compute) the type of the designator.
+    /// @brief return (compute) the type of the designator(perform this also onto the pointer to array)
     virtual const CType* GetType(void) const;
 
     /// @}
