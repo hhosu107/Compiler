@@ -74,7 +74,7 @@ ostream& operator<<(ostream &out, const CType *t)
 //
 bool CScalarType::Match(const CType *t) const
 {
-  // types are singletons and not implicit type conversions are allowed, 
+  // types are singletons and not implicit type conversions are allowed,
   // i.e., for scalar types we can simply compare the pointers
   return (t == this);
 }
@@ -186,7 +186,7 @@ ostream& CPointerType::print(ostream &out, int indent) const
   string ind(indent, ' ');
 
   out << ind << "<" << "ptr" << "(" << GetSize() << ") to ";
-  if (_basetype != NULL) out << _basetype; else out << "void";
+  if (_basetype != NULL) _basetype->print(out, 0); else out << "void";
   out << ">";
   return out;
 }
@@ -246,6 +246,7 @@ bool CArrayType::Match(const CType *t) const
   if (t->IsArray()) {
     const CArrayType *at = dynamic_cast<const CArrayType*>(t);
     assert(at != NULL);
+    // cout << GetNElem() << " " << at->GetNElem() << endl;
     return ((GetNElem() == at->GetNElem()) ||
             (GetNElem() == OPEN) ||
             (at->GetNElem() == OPEN)) &&

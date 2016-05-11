@@ -1168,8 +1168,16 @@ CAstExpression* CAstSpecialOp::GetOperand(void) const
 bool CAstSpecialOp::TypeCheck(CToken *t, string *msg) const
 {
   EOperation _oper = GetOperation();
-
-  return false;
+  if(!_operand->TypeCheck(t, msg))
+    return false;
+  if(_oper == opDeref){
+    if(!_operand->GetType() || !_operand->GetType()->IsPointer()){
+      if(t != NULL) *t = _operand->GetToken();
+      if(msg) *msg = "dereferencing non-pointer type is invalid.";
+      return false;
+    }
+  }
+  return true;
 }
 
 const CType* CAstSpecialOp::GetType(void) const
@@ -1486,6 +1494,8 @@ const CType* CAstArrayDesignator::GetType(void) const
   if(originType->IsPointer()){
     originType = dynamic_cast<const CPointerType*>(originType)->GetBaseType();
   }
+  // originType->print(cout, 2);
+  // cout << endl;
   if(!originType->IsArray()) return NULL;
 
   const CType *ret = originType;

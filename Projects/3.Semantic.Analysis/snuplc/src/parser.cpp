@@ -278,7 +278,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
   // varDecl : .. type
   const CType *datatype;
   datatype = ReadType(openArray, true)->GetType();
-
+  // datatype->print(cout, 1);
   // CSymbol(name, ESymbolType symboltype, CType *datatype)
   // have to give each methods refer to sType
   for(string name : varNames){
@@ -299,7 +299,9 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
 
       // only if it is an array as a parameter, it has to be a pointer
       if(datatype->IsArray()){
+        //datatype->print(cout, 0) << endl;
         ptrtype = tm->GetPointer(datatype);
+        //ptrtype->print(cout, 0) << endl;
       }
       else{
         ptrtype = datatype;
@@ -490,12 +492,14 @@ const CAstType* CParser::ReadType(bool openArray, bool beArray){
       Consume(tLBracket);
 
       tt = _scanner->Peek().GetType();
-      if(tt == tNumber || !openArray){
+      if(!openArray || tt == tNumber){
         CToken intToken;
         Consume(tNumber, &intToken);
+        // cout << intToken.GetValue().c_str() << "  ";
         NElems.push(strtoll(intToken.GetValue().c_str(), NULL, 10));
       }
       else if(tt == tRBracket){
+        // cout << " - " ;
         NElems.push(-1LL);
       }
       else{
@@ -507,6 +511,7 @@ const CAstType* CParser::ReadType(bool openArray, bool beArray){
     }
     else break;
   }
+  // cout << endl;
 
   if(!beArray && !(NElems.empty())){
     SetError(typeToken, "invalid composite type for function.");
@@ -515,14 +520,20 @@ const CAstType* CParser::ReadType(bool openArray, bool beArray){
   // make CType* node iteratively
   while(!(NElems.empty())){
    long long size = NElems.top();
+   // cout << size << " ";
     NElems.pop();
     if(size >= 0){
+      // cout << size << " ";
       datatype = tm->GetArray(size, datatype);
     }
     else{
+      // cout << " | " ;
       datatype = tm->GetArray(CArrayType::OPEN, datatype);
     }
   }
+  // cout << endl;
+
+  // datatype->print(cout, 0);
 
   return new CAstType(typeToken, datatype);
 }
@@ -653,11 +664,17 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
 
   // subroutineCall -> ... [ expression ...
   // Does an expression exist or not?
+  CToken t = _scanner->Peek();
   EToken tt = _scanner->Peek().GetType();
   if(tt == tPlusMinus || tt == tIdent || tt == tNumber || tt == tBool || tt == tCharacter || tt == tString || tt == tLParen || tt == tNot){ // expression
     // subroutineCall -> ... [ expression ...
     CAstExpression *ex = expression(s);
-    fc->AddArg(ex);
+    // if(ex->GetType()->IsArray() && dynamic_cast<const CArrayType*>(ex->GetType())->GetBaseType() == CTypeManager::Get()->GetChar())
+    if(ex->GetType()->IsArray())
+      {
+        fc->AddArg(new CAstSpecialOp(t, opAddress, ex, NULL));
+      }
+      else fc->AddArg(ex);
 
     // subroutineCall -> ... [ ... { "," expression } ] ...
     for(;;){
@@ -665,8 +682,14 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
       if(tt != tComma) break;
 
       Consume(tComma);
+      t = _scanner->Peek();
       ex = expression(s);
-      fc->AddArg(ex);
+      // if(ex->GetType()->IsArray() && dynamic_cast<const CArrayType*>(ex->GetType())->GetBaseType() == CTypeManager::Get()->GetChar())
+      if(ex->GetType()->IsArray())
+      {
+        fc->AddArg(new CAstSpecialOp(t, opAddress, ex, NULL));
+      }
+      else fc->AddArg(ex);
     }
   }
   // subroutineCall -> ... ")"
@@ -935,15 +958,14 @@ CAstExpression* CParser::term(CAstScope *s)
   // term ::= factor ...
   n = factor(s);
 
-  CToken t = _scanner->Peek();
-  EToken tt = t.GetType();
+  EToken tt;
 
   // term ::= ... { factOp factor }
   // Does a factOp exist or not?
-  while ((tt == tMulDiv) || (tt == tAndOr && t.GetValue() == "&&")) {
+  while ((_scanner->Peek().GetType() == tMulDiv) || (_scanner->Peek().GetType() == tAndOr && _scanner->Peek().GetValue() == "&&")) {
     CToken t;
     CAstExpression *l = n, *r = NULL;
-
+    tt = _scanner->Peek().GetType();
     switch(tt){
       case tMulDiv:
         Consume(tMulDiv, &t);
@@ -957,7 +979,6 @@ CAstExpression* CParser::term(CAstScope *s)
         n = new CAstBinaryOp(t, opAnd, l, r);
         break;
     }
-    tt = _scanner->Peek().GetType();
   }
 
   return n;
