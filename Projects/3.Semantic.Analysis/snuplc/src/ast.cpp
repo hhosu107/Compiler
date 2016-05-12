@@ -49,8 +49,8 @@ using namespace std;
 //
 int CAstNode::_global_id = 0;
 
-  CAstNode::CAstNode(CToken token)
-: _token(token), _addr(NULL)
+CAstNode::CAstNode(CToken token)
+  : _token(token), _addr(NULL)
 {
   _id = _global_id++;
 }
@@ -112,9 +112,9 @@ ostream& operator<<(ostream &out, const CAstNode *t)
 //------------------------------------------------------------------------------
 // CAstScope
 //
-  CAstScope::CAstScope(CToken t, const string name, CAstScope *parent)
-: CAstNode(t), _name(name), _symtab(NULL), _parent(parent), _statseq(NULL),
-  _cb(NULL)
+CAstScope::CAstScope(CToken t, const string name, CAstScope *parent)
+  : CAstNode(t), _name(name), _symtab(NULL), _parent(parent), _statseq(NULL),
+    _cb(NULL)
 {
   if (_parent != NULL) _parent->AddChild(this);
 }
@@ -268,8 +268,8 @@ void CAstScope::AddChild(CAstScope *child)
 //------------------------------------------------------------------------------
 // CAstModule
 //
-  CAstModule::CAstModule(CToken t, const string name)
-: CAstScope(t, name, NULL)
+CAstModule::CAstModule(CToken t, const string name)
+  : CAstScope(t, name, NULL)
 {
   SetSymbolTable(new CSymtab());
 }
@@ -290,8 +290,8 @@ string CAstModule::dotAttr(void) const
 // CAstProcedure
 //
 CAstProcedure::CAstProcedure(CToken t, const string name,
-    CAstScope *parent, CSymProc *symbol)
-: CAstScope(t, name, parent), _symbol(symbol)
+                             CAstScope *parent, CSymProc *symbol)
+  : CAstScope(t, name, parent), _symbol(symbol)
 {
   assert(GetParent() != NULL);
   SetSymbolTable(new CSymtab(GetParent()->GetSymbolTable()));
@@ -322,8 +322,8 @@ string CAstProcedure::dotAttr(void) const
 //------------------------------------------------------------------------------
 // CAstType
 //
-  CAstType::CAstType(CToken t, const CType *type)
-: CAstNode(t), _type(type)
+CAstType::CAstType(CToken t, const CType *type)
+  : CAstNode(t), _type(type)
 {
   assert(type != NULL);
 }
@@ -345,8 +345,8 @@ ostream& CAstType::print(ostream &out, int indent) const
 //------------------------------------------------------------------------------
 // CAstStatement
 //
-  CAstStatement::CAstStatement(CToken token)
-: CAstNode(token), _next(NULL)
+CAstStatement::CAstStatement(CToken token)
+  : CAstNode(token), _next(NULL)
 {
 }
 
@@ -375,8 +375,8 @@ CTacAddr* CAstStatement::ToTac(CCodeBlock *cb, CTacLabel *next)
 // CAstStatAssign
 //
 CAstStatAssign::CAstStatAssign(CToken t,
-    CAstDesignator *lhs, CAstExpression *rhs)
-: CAstStatement(t), _lhs(lhs), _rhs(rhs)
+                               CAstDesignator *lhs, CAstExpression *rhs)
+  : CAstStatement(t), _lhs(lhs), _rhs(rhs)
 {
   assert(lhs != NULL);
   assert(rhs != NULL);
@@ -495,8 +495,8 @@ CTacAddr* CAstStatAssign::ToTac(CCodeBlock *cb, CTacLabel *next)
 //------------------------------------------------------------------------------
 // CAstStatCall
 //
-  CAstStatCall::CAstStatCall(CToken t, CAstFunctionCall *call)
-: CAstStatement(t), _call(call)
+CAstStatCall::CAstStatCall(CToken t, CAstFunctionCall *call)
+  : CAstStatement(t), _call(call)
 {
   assert(call != NULL);
 }
@@ -543,8 +543,8 @@ CTacAddr* CAstStatCall::ToTac(CCodeBlock *cb, CTacLabel *next)
 //------------------------------------------------------------------------------
 // CAstStatReturn
 //
-  CAstStatReturn::CAstStatReturn(CToken t, CAstScope *scope, CAstExpression *expr)
-: CAstStatement(t), _scope(scope), _expr(expr)
+CAstStatReturn::CAstStatReturn(CToken t, CAstScope *scope, CAstExpression *expr)
+  : CAstStatement(t), _scope(scope), _expr(expr)
 {
   assert(scope != NULL);
 }
@@ -647,8 +647,8 @@ CTacAddr* CAstStatReturn::ToTac(CCodeBlock *cb, CTacLabel *next)
 // CAstStatIf
 //
 CAstStatIf::CAstStatIf(CToken t, CAstExpression *cond,
-    CAstStatement *ifBody, CAstStatement *elseBody)
-: CAstStatement(t), _cond(cond), _ifBody(ifBody), _elseBody(elseBody)
+                       CAstStatement *ifBody, CAstStatement *elseBody)
+  : CAstStatement(t), _cond(cond), _ifBody(ifBody), _elseBody(elseBody)
 {
   assert(cond != NULL);
 }
@@ -733,7 +733,7 @@ void CAstStatIf::toDot(ostream &out, int indent) const
       do {
         s->toDot(out, indent);
         out << ind << prev << " -> " << s->dotID() << " [style=dotted];"
-          << endl;
+            << endl;
         prev = s->dotID();
         s = s->GetNext();
       } while (s != NULL);
@@ -747,7 +747,7 @@ void CAstStatIf::toDot(ostream &out, int indent) const
       do {
         s->toDot(out, indent);
         out << ind << prev << " -> " << s->dotID() << " [style=dotted];"
-          << endl;
+            << endl;
         prev = s->dotID();
         s = s->GetNext();
       } while (s != NULL);
@@ -765,8 +765,8 @@ CTacAddr* CAstStatIf::ToTac(CCodeBlock *cb, CTacLabel *next)
 // CAstStatWhile
 //
 CAstStatWhile::CAstStatWhile(CToken t,
-    CAstExpression *cond, CAstStatement *body)
-: CAstStatement(t), _cond(cond), _body(body)
+                             CAstExpression *cond, CAstStatement *body)
+  : CAstStatement(t), _cond(cond), _body(body)
 {
   assert(cond != NULL);
 }
@@ -837,7 +837,7 @@ void CAstStatWhile::toDot(ostream &out, int indent) const
       do {
         s->toDot(out, indent);
         out << ind << prev << " -> " << s->dotID() << " [style=dotted];"
-          << endl;
+            << endl;
         prev = s->dotID();
         s = s->GetNext();
       } while (s != NULL);
@@ -854,8 +854,8 @@ CTacAddr* CAstStatWhile::ToTac(CCodeBlock *cb, CTacLabel *next)
 //------------------------------------------------------------------------------
 // CAstExpression
 //
-  CAstExpression::CAstExpression(CToken t)
-: CAstNode(t)
+CAstExpression::CAstExpression(CToken t)
+  : CAstNode(t)
 {
 }
 
@@ -865,7 +865,7 @@ CTacAddr* CAstExpression::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstExpression::ToTac(CCodeBlock *cb,
-    CTacLabel *ltrue, CTacLabel *lfalse)
+                                CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
@@ -874,8 +874,8 @@ CTacAddr* CAstExpression::ToTac(CCodeBlock *cb,
 //------------------------------------------------------------------------------
 // CAstOperation
 //
-  CAstOperation::CAstOperation(CToken t, EOperation oper)
-: CAstExpression(t), _oper(oper)
+CAstOperation::CAstOperation(CToken t, EOperation oper)
+  : CAstExpression(t), _oper(oper)
 {
 }
 
@@ -889,17 +889,17 @@ EOperation CAstOperation::GetOperation(void) const
 // CAstBinaryOp
 //
 CAstBinaryOp::CAstBinaryOp(CToken t, EOperation oper,
-    CAstExpression *l,CAstExpression *r)
-: CAstOperation(t, oper), _left(l), _right(r)
+                           CAstExpression *l,CAstExpression *r)
+  : CAstOperation(t, oper), _left(l), _right(r)
 {
   // these are the only binary operation we support for now
   assert((oper == opAdd)        || (oper == opSub)         ||
-      (oper == opMul)        || (oper == opDiv)         ||
-      (oper == opAnd)        || (oper == opOr)          ||
-      (oper == opEqual)      || (oper == opNotEqual)    ||
-      (oper == opLessThan)   || (oper == opLessEqual)   ||
-      (oper == opBiggerThan) || (oper == opBiggerEqual)
-      );
+         (oper == opMul)        || (oper == opDiv)         ||
+         (oper == opAnd)        || (oper == opOr)          ||
+         (oper == opEqual)      || (oper == opNotEqual)    ||
+         (oper == opLessThan)   || (oper == opLessEqual)   ||
+         (oper == opBiggerThan) || (oper == opBiggerEqual)
+        );
   assert(l != NULL);
   assert(r != NULL);
 }
@@ -1043,7 +1043,7 @@ CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb,
-    CTacLabel *ltrue, CTacLabel *lfalse)
+                              CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
@@ -1052,8 +1052,8 @@ CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb,
 //------------------------------------------------------------------------------
 // CAstUnaryOp
 //
-  CAstUnaryOp::CAstUnaryOp(CToken t, EOperation oper, CAstExpression *e)
-: CAstOperation(t, oper), _operand(e)
+CAstUnaryOp::CAstUnaryOp(CToken t, EOperation oper, CAstExpression *e)
+  : CAstOperation(t, oper), _operand(e)
 {
   assert((oper == opNeg) || (oper == opPos) || (oper == opNot));
   assert(e != NULL);
@@ -1160,7 +1160,7 @@ CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb,
-    CTacLabel *ltrue, CTacLabel *lfalse)
+                             CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
@@ -1170,13 +1170,13 @@ CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb,
 // CAstSpecialOp
 //
 CAstSpecialOp::CAstSpecialOp(CToken t, EOperation oper, CAstExpression *e,
-    const CType *type)
-: CAstOperation(t, oper), _operand(e), _type(type)
+                             const CType *type)
+  : CAstOperation(t, oper), _operand(e), _type(type)
 {
   assert((oper == opAddress) || (oper == opDeref) || (oper = opCast));
   assert(e != NULL);
   assert(((oper != opCast) && (type == NULL)) ||
-      ((oper == opCast) && (type != NULL)));
+         ((oper == opCast) && (type != NULL)));
 }
 
 CAstExpression* CAstSpecialOp::GetOperand(void) const
@@ -1260,8 +1260,8 @@ CTacAddr* CAstSpecialOp::ToTac(CCodeBlock *cb)
 //------------------------------------------------------------------------------
 // CAstFunctionCall
 //
-  CAstFunctionCall::CAstFunctionCall(CToken t, const CSymProc *symbol)
-: CAstExpression(t), _symbol(symbol)
+CAstFunctionCall::CAstFunctionCall(CToken t, const CSymProc *symbol)
+  : CAstExpression(t), _symbol(symbol)
 {
   assert(symbol != NULL);
 }
@@ -1385,7 +1385,7 @@ CTacAddr* CAstFunctionCall::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstFunctionCall::ToTac(CCodeBlock *cb,
-    CTacLabel *ltrue, CTacLabel *lfalse)
+                                  CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
@@ -1395,8 +1395,8 @@ CTacAddr* CAstFunctionCall::ToTac(CCodeBlock *cb,
 //------------------------------------------------------------------------------
 // CAstOperand
 //
-  CAstOperand::CAstOperand(CToken t)
-: CAstExpression(t)
+CAstOperand::CAstOperand(CToken t)
+  : CAstExpression(t)
 {
 }
 
@@ -1404,8 +1404,8 @@ CTacAddr* CAstFunctionCall::ToTac(CCodeBlock *cb,
 //------------------------------------------------------------------------------
 // CAstDesignator
 //
-  CAstDesignator::CAstDesignator(CToken t, const CSymbol *symbol)
-: CAstOperand(t), _symbol(symbol)
+CAstDesignator::CAstDesignator(CToken t, const CSymbol *symbol)
+  : CAstOperand(t), _symbol(symbol)
 {
   assert(symbol != NULL);
 }
@@ -1462,7 +1462,7 @@ CTacAddr* CAstDesignator::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstDesignator::ToTac(CCodeBlock *cb,
-    CTacLabel *ltrue, CTacLabel *lfalse)
+                                CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
@@ -1471,8 +1471,8 @@ CTacAddr* CAstDesignator::ToTac(CCodeBlock *cb,
 //------------------------------------------------------------------------------
 // CAstArrayDesignator
 //
-  CAstArrayDesignator::CAstArrayDesignator(CToken t, const CSymbol *symbol)
-: CAstDesignator(t, symbol), _done(false), _offset(NULL)
+CAstArrayDesignator::CAstArrayDesignator(CToken t, const CSymbol *symbol)
+  : CAstDesignator(t, symbol), _done(false), _offset(NULL)
 {
 }
 
@@ -1590,7 +1590,7 @@ CTacAddr* CAstArrayDesignator::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstArrayDesignator::ToTac(CCodeBlock *cb,
-    CTacLabel *ltrue, CTacLabel *lfalse)
+                                     CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
@@ -1599,8 +1599,8 @@ CTacAddr* CAstArrayDesignator::ToTac(CCodeBlock *cb,
 //------------------------------------------------------------------------------
 // CAstConstant
 //
-  CAstConstant::CAstConstant(CToken t, const CType *type, long long value)
-: CAstOperand(t), _type(type), _value(value)
+CAstConstant::CAstConstant(CToken t, const CType *type, long long value)
+  : CAstOperand(t), _type(type), _value(value)
 {
 }
 
@@ -1676,7 +1676,7 @@ CTacAddr* CAstConstant::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstConstant::ToTac(CCodeBlock *cb,
-    CTacLabel *ltrue, CTacLabel *lfalse)
+                              CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
@@ -1688,13 +1688,13 @@ CTacAddr* CAstConstant::ToTac(CCodeBlock *cb,
 int CAstStringConstant::_idx = 0;
 
 CAstStringConstant::CAstStringConstant(CToken t, const string value,
-    CAstScope *s)
-: CAstOperand(t)
+                                       CAstScope *s)
+  : CAstOperand(t)
 {
   CTypeManager *tm = CTypeManager::Get();
 
   _type = tm->GetArray(strlen(CToken::unescape(value).c_str())+1,
-      tm->GetChar());
+                       tm->GetChar());
   _value = new CDataInitString(value);
 
   ostringstream o;
@@ -1744,7 +1744,7 @@ string CAstStringConstant::dotAttr(void) const
   ostringstream out;
   // the string is already escaped, but dot requires double escaping
   out << " [label=\"\\\"" << CToken::escape(GetValueStr())
-    << "\\\"\",shape=ellipse]";
+      << "\\\"\",shape=ellipse]";
   return out.str();
 }
 
@@ -1754,7 +1754,7 @@ CTacAddr* CAstStringConstant::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstStringConstant::ToTac(CCodeBlock *cb,
-    CTacLabel *ltrue, CTacLabel *lfalse)
+                                    CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
