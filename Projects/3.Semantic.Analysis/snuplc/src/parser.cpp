@@ -266,7 +266,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
 
     for(string name : varNames){
       if(name == id.GetValue()){
-      SetError(id, "duplicate variable declaration \'" + id.GetValue() + "\'.");
+        SetError(id, "duplicate variable declaration \'" + id.GetValue() + "\'.");
         return NULL;
       }
     }
@@ -303,6 +303,7 @@ CSymtab* CParser::varDecl(CSymtab* symbols, ESymbolType sType, vector<CSymParam*
       else{
         ptrtype = datatype;
       }
+
       symbols->AddSymbol(new CSymParam(size, name, ptrtype));
       params->push_back(new CSymParam(size, name, ptrtype));
     }
@@ -491,11 +492,9 @@ const CAstType* CParser::ReadType(bool openArray, bool beArray){
       if(!openArray || tt == tNumber){
         CToken intToken;
         Consume(tNumber, &intToken);
-        // cout << intToken.GetValue().c_str() << "  ";
         NElems.push(strtoll(intToken.GetValue().c_str(), NULL, 10));
       }
       else if(tt == tRBracket){
-        // cout << " - " ;
         NElems.push(-1LL);
       }
       else{
@@ -515,21 +514,15 @@ const CAstType* CParser::ReadType(bool openArray, bool beArray){
 
   // make CType* node iteratively
   while(!(NElems.empty())){
-   long long size = NElems.top();
-   // cout << size << " ";
+    long long size = NElems.top();
     NElems.pop();
     if(size >= 0){
-      // cout << size << " ";
       datatype = tm->GetArray(size, datatype);
     }
     else{
-      // cout << " | " ;
       datatype = tm->GetArray(CArrayType::OPEN, datatype);
     }
   }
-  // cout << endl;
-
-  // datatype->print(cout, 0);
 
   return new CAstType(typeToken, datatype);
 }
@@ -653,7 +646,6 @@ CAstStatCall* CParser::subroutineCall(CAstScope *s){
   }
 
   // make a CAstFunctionCall* node to enclose it
-  // CToken dummy;
   CAstFunctionCall* fc = new CAstFunctionCall(id, (CSymProc*)symbol);
 
   Consume(tLParen);
@@ -851,7 +843,6 @@ CAstExpression* CParser::factor(CAstScope *s)
       break;
 
     default:
-      // cout << "got " << _scanner->Peek() << endl;
       SetError(_scanner->Peek(), "factor expected.");
       break;
   }

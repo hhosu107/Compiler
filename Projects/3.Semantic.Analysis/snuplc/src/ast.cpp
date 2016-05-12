@@ -1676,7 +1676,7 @@ CTacAddr* CAstConstant::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstConstant::ToTac(CCodeBlock *cb,
-                              CTacLabel *ltrue, CTacLabel *lfalse)
+                                CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
@@ -1754,7 +1754,7 @@ CTacAddr* CAstStringConstant::ToTac(CCodeBlock *cb)
 }
 
 CTacAddr* CAstStringConstant::ToTac(CCodeBlock *cb,
-                                    CTacLabel *ltrue, CTacLabel *lfalse)
+                                CTacLabel *ltrue, CTacLabel *lfalse)
 {
   return NULL;
 }
