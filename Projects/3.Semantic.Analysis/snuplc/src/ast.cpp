@@ -680,8 +680,8 @@ bool CAstStatIf::TypeCheck(CToken *t, string *msg) const
     if(msg != NULL) *msg = "boolean expression expected.";
     return false;
   }
-  if(!GetIfBody()->TypeCheck(t, msg)) return false;
-  if(!GetElseBody()->TypeCheck(t, msg)) return false;
+  if(GetIfBody() != NULL && !GetIfBody()->TypeCheck(t, msg)) return false;
+  if(GetElseBody() != NULL && !GetElseBody()->TypeCheck(t, msg)) return false;
 
   return true;
 }
@@ -792,7 +792,7 @@ bool CAstStatWhile::TypeCheck(CToken *t, string *msg) const
     if(msg != NULL) *msg = "boolean expression expected.";
     return false;
   }
-  if(!GetBody()->TypeCheck(t, msg)) return false;
+  if(GetBody() != NULL && !GetBody()->TypeCheck(t, msg)) return false;
 
   return true;
 }
