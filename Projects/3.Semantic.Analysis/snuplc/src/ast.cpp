@@ -966,12 +966,12 @@ bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
     }
   }
   else{
-    if(!lhs->GetType()->Match(rhs->GetType())){
+    if(!lhs->GetType()->IsScalar() || lhs->GetType()->IsPointer()
+        || !rhs->GetType()->IsScalar() || rhs->GetType()->IsPointer()
+        || !lhs->GetType()->Match(rhs->GetType())){
       if(t != NULL) *t = GetToken();
-
       ostringstream os;
       os.clear();
-
       if(oper == opEqual) os << "=: ";
       if(oper == opNotEqual) os << "#: ";
       os << "type mismatch.";
@@ -979,7 +979,6 @@ bool CAstBinaryOp::TypeCheck(CToken *t, string *msg) const
       lhs->GetType()->print(os, 0);
       os << '\n' << "  right operand: ";
       rhs->GetType()->print(os, 0);
-
 
       if(msg != NULL) *msg = os.str().c_str();
       return false;
@@ -996,7 +995,7 @@ const CType* CAstBinaryOp::GetType(void) const
   if(_oper == opAdd || _oper == opSub || _oper == opMul || _oper == opDiv){
     return CTypeManager::Get()->GetInt();
   }
-  else{ // &&, ||
+  else{ // &&, ||, =, #, <, <=, >, >=
     return CTypeManager::Get()->GetBool();
   }
 }
@@ -1416,7 +1415,7 @@ const CSymbol* CAstDesignator::GetSymbol(void) const
 }
 
 // It is just a simple designator. If it has to return false, it is an error on
-// parsing, not on type cgecking.
+// parsing, not on type checking.
 bool CAstDesignator::TypeCheck(CToken *t, string *msg) const
 {
   return true;
