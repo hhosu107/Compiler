@@ -506,7 +506,6 @@ const CAstType* CParser::ReadType(bool openArray, bool beArray){
     }
     else break;
   }
-  // cout << endl;
 
   if(!beArray && !(NElems.empty())){
     SetError(typeToken, "invalid composite type for function.");
