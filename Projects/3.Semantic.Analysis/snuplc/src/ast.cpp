@@ -165,18 +165,22 @@ CAstStatement* CAstScope::GetStatementSequence(void) const
 
 bool CAstScope::TypeCheck(CToken *t, string *msg) const
 {
-  vector<CAstScope*>::const_iterator it = _children.begin();
+  try{
+    CAstStatement *s = _statseq;
+    while(s != NULL){
+      if(!s->TypeCheck(t, msg)) return false;
+      s = s->GetNext();
+    }
 
-  CAstStatement *s = _statseq;
-  while(s != NULL){
-    if(!s->TypeCheck(t, msg)) return false;
-    s = s->GetNext();
-  }
-
-  it = _children.begin();
-  while(it != _children.end()){
-    if(!(*it)->TypeCheck(t, msg)) return false;
-    it++;
+    vector<CAstScope*>::const_iterator it = _children.begin();
+    while(it != _children.end()){
+      if(!(*it)->TypeCheck(t, msg)) return false;
+      it++;
+    }
+  } catch (...) {
+    if(t != NULL) *t = GetToken();
+    if(msg != NULL) *msg = "unexpected error.";
+    return false;
   }
 
   return true;
