@@ -194,7 +194,12 @@ CAstModule* CParser::module(void)
   Consume(tIdent, &idEnd);
 
   if(idBegin.GetValue() != idEnd.GetValue()){
-    SetError(idEnd, "module name is not matched");
+    string err = "module identifier mismatch ('";
+    err += idBegin.GetValue();
+    err += "' != '";
+    err += idEnd.GetValue();
+    err += "').";
+    SetError(idEnd, err);
   }
 
   Consume(tDot);
@@ -433,7 +438,12 @@ CAstProcedure* CParser::subroutineDecl(CAstScope *s)
   Consume(tIdent, &idEnd);
 
   if(idBegin.GetValue() != idEnd.GetValue()){
-    SetError(idEnd, "module name is not mached");
+    string err = "procedure/function identifier mismatch ('";
+    err += idBegin.GetValue();
+    err += "' != '";
+    err += idEnd.GetValue();
+    err += "').";
+    SetError(idEnd, err);
   }
 
   Consume(tSemicolon);
