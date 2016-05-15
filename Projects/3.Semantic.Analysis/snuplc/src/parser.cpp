@@ -919,20 +919,30 @@ CAstFunctionCall* CParser::expSubroutineCall(CAstScope *s){
   CAstFunctionCall* fc = new CAstFunctionCall(id, (CSymProc*)symbol);
 
   Consume(tLParen);
+  CToken t = _scanner->Peek();
   EToken tt = _scanner->Peek().GetType();
   if(tt == tPlusMinus || tt == tIdent || tt == tNumber || tt == tBool ||
       tt == tCharacter || tt == tString || tt == tLParen || tt == tNot){ // expression
 
     CAstExpression *ex = expression(s);
-    fc->AddArg(ex);
+    if(ex->GetType()->IsArray())
+      {
+        fc->AddArg(new CAstSpecialOp(t, opAddress, ex, NULL));
+      }
+      else fc->AddArg(ex);
 
     for(;;){
       EToken tt = _scanner->Peek().GetType();
       if(tt != tComma) break;
 
       Consume(tComma);
+      t = _scanner->Peek();
       ex = expression(s);
-      fc->AddArg(ex);
+      if(ex->GetType()->IsArray())
+      {
+        fc->AddArg(new CAstSpecialOp(t, opAddress, ex, NULL));
+      }
+      else fc->AddArg(ex);
     }
   }
 
