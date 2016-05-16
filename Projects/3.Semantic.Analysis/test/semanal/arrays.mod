@@ -17,6 +17,7 @@ var A: integer[10];             // pass
     B: integer[10][5][10];      // pass
 //    C: integer[];               // fail
     D: boolean[5];              // pass
+    E: integer[10][10][10];
 
 
 procedure p1(A,B: integer[]; C: integer[][][]); // pass
@@ -30,21 +31,27 @@ begin
   i := A[i];                      // pass
   i := A[A[A[i]]];                // pass
 
-//  c := A[0];                      // fail
-//  b := A[0];                      // fail
+  //c := A[0];                      // fail
+  //b := A[0];                      // fail
 
+  p1(A, A, B);
   A[0] := A[0];                   // pass
-//  A := B;                         // pass (pointer-copy)
-//  A := C;                         // fail (incompatible pointer types)
-  X := Y;                         // fail (array assignments not supported)
+  A := B;                         // pass (pointer-copy)
+  //A := C;                         // fail (incompatible pointer types)
+  //X := Y;                         // fail (array assignments not supported)
+  if (i = i) then
+    i := 1
+  else
+    i := -i / (i / i) * i
+  end;
 
-//  A := B[0];                      // fail
-//  A[0] := B;                      // fail
+  //A := B[0];                      // fail
+  //A[0] := B;                      // fail
 
-//  A[A] := i;                      // fail
+  //A[A] := i;                      // fail
 
   b := D[0];                      // pass
-//  i := D[0];                      // fail
+  //i := D[0];                      // fail
 
   i := 0
 end p1;
@@ -52,7 +59,7 @@ end p1;
 procedure p2(a: integer[][5][]);  // pass
 var b: integer[5][5][5];          // pass
     c: integer[5][7][9];          // pass
-//    d: integer[][5][];            // fail
+    //d: integer[][5][];            // fail
 begin
   p2(a);                          // pass
 //  p2(1);                          // fail
@@ -61,7 +68,7 @@ begin
 
   p2(B);                          // pass
   p2(b);                          // pass
-//  p2(c);                          // fail
+//  p2(c);                          // fail: have to compare each indices w.o.n same
 
   a[0][0][0] := 0
 end p2;

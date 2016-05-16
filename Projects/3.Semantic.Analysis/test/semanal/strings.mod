@@ -32,7 +32,7 @@ end bar;
 procedure foobar();
 var s: char[9];
 begin
-  s := "No good.";              // fail
+  // s := "No good.";              // fail
   WriteStr(s);                  // pass
   WriteLn()
 end foobar;

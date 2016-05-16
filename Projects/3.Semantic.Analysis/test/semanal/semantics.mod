@@ -92,12 +92,12 @@ end UseBeforeDef;
 
 
 // multiple definitions
-//procedure MultipleDef(i,i: integer); // fail (parameter - parameter)
-//var i: integer;               // fail (parameter - local var)
-//    m,m: integer;             // fail (local var - local var)
-//begin
-//  i := 1
-//end MultipleDef;
+procedure MultipleDef(i: integer); // fail (parameter - parameter)
+var j: integer;               // fail (parameter - local var)
+    m,n: integer;             // fail (local var - local var)
+begin
+  i := 1
+end MultipleDef;
 
 
 // parameters: too many/few/wrong type of parameters
@@ -152,7 +152,7 @@ begin
 //  a[0] := true;               // fail
   A[0] := i;                  // pass
   A[-1] := B[0][0];           // pass
-  // A[0][0] := i;               // fail
+//  A[0][0] := i;               // fail
   B[0][0] := i;               // pass
 //  D[1] := A[0];               // fail
   E[0] := B[A[0]][A[1]] > 0   // pass
@@ -178,19 +178,20 @@ end ProcReturn;
 
 function NoReturn(): integer;
 begin
-  return 1                   // fail
+  // return
+  return 1                  // fail
 end NoReturn;
 
 function IntReturn(): integer;
 begin
-//  return 1 > 2              // fail
+  // return 1 > 2              // fail
   return 1
 end IntReturn;
 
 function BoolReturn(): boolean;
 begin
-//  return 1 + 2              // fail
-  return false
+  // return 1 + 2              // fail
+  return 1 > 2
 end BoolReturn;
 
 
@@ -206,7 +207,7 @@ end If;
 //  end;
 
 //  if (ProcedureCall()) then // fail
-  //if (FunctionCall() > 0) then // fail
+//  if (FunctionCall() > 0) then // fail
 //    return
 //  else
 //    return
@@ -216,9 +217,11 @@ end If;
 procedure While();
 var a,b: integer;
 begin
-//  while (a)    // fail
-//    b := b-1
-//  end
+  // while (a)   // fail
+  while (a > 0)    // fail
+  do
+    b := b-1
+  end
 end While;
 
 
