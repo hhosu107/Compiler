@@ -245,7 +245,7 @@ void CAstScope::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstScope::ToTac(CCodeBlock *cb)
 {
-  assert(cb != NULL);
+  //assert(cb != NULL);
 
   CAstStatement *s = GetStatementSequence();
   while (s != NULL) {
@@ -501,8 +501,8 @@ void CAstStatAssign::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstStatAssign::ToTac(CCodeBlock *cb, CTacLabel *next)
 {
-  assert(cb != NULL);
-  assert(next != NULL);
+  //assert(cb != NULL);
+  //assert(next != NULL);
   CTacAddr* src = _rhs->ToTac(cb);
   cb->AddInstr(new CTacInstr(opAssign, new CTacName(_lhs->GetSymbol()), src, NULL));
   return NULL;
@@ -1098,8 +1098,8 @@ void CAstBinaryOp::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb)
 {
-  assert(cb != NULL);
-  assert(GetType() != NULL);
+  //assert(cb != NULL);
+  //assert(GetType() != NULL);
 
   CTacAddr *src1 = _left->ToTac(cb);
   CTacAddr *src2 = _right->ToTac(cb);
@@ -1114,9 +1114,9 @@ CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb)
 CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb,
                               CTacLabel *ltrue, CTacLabel *lfalse)
 {
-  assert(cb != NULL);
-  assert(ltrue != NULL);
-  assert(lfalse != NULL);
+  //assert(cb != NULL);
+  //assert(ltrue != NULL);
+  //assert(lfalse != NULL);
   CTacAddr *src1 = _left->ToTac(cb);
   CTacAddr *src2 = _right->ToTac(cb);
   EOperation _op = GetOperation();
@@ -1235,14 +1235,14 @@ void CAstUnaryOp::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb)
 {
-  assert(cb != NULL);
+  //assert(cb != NULL);
   return NULL;
 }
 
 CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb,
                              CTacLabel *ltrue, CTacLabel *lfalse)
 {
-  assert(cb != NULL);
+  //assert(cb != NULL);
   assert(ltrue != NULL);
   assert(lfalse != NULL);
   return NULL;
@@ -1336,7 +1336,7 @@ void CAstSpecialOp::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstSpecialOp::ToTac(CCodeBlock *cb)
 {
-  assert(cb != NULL);
+  //assert(cb != NULL);
   return NULL;
 }
 
@@ -1465,7 +1465,7 @@ void CAstFunctionCall::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstFunctionCall::ToTac(CCodeBlock *cb)
 {
-  assert(cb != NULL);
+  //assert(cb != NULL);
   const CType* ret = GetType();
 
   CTacAddr *dst = (ret->IsNull() ? NULL : cb->CreateTemp(GetType()));
@@ -1483,9 +1483,9 @@ CTacAddr* CAstFunctionCall::ToTac(CCodeBlock *cb)
 CTacAddr* CAstFunctionCall::ToTac(CCodeBlock *cb,
                                   CTacLabel *ltrue, CTacLabel *lfalse)
 {
-  assert(cb != NULL);
-  assert(ltrue != NULL);
-  assert(lfalse != NULL);
+  //assert(cb != NULL);
+  //assert(ltrue != NULL);
+  //assert(lfalse != NULL);
   return NULL;
 }
 
@@ -1772,7 +1772,7 @@ string CAstConstant::dotAttr(void) const
 
 CTacAddr* CAstConstant::ToTac(CCodeBlock *cb)
 {
-  assert(cb != NULL);
+  //assert(cb != NULL);
   // cb->AddInstr(new CTacConst(GetValue()));
   // cb->AddInstr(new CTacInstr("constant"));
   return new CTacConst(GetValue());
@@ -1781,9 +1781,9 @@ CTacAddr* CAstConstant::ToTac(CCodeBlock *cb)
 CTacAddr* CAstConstant::ToTac(CCodeBlock *cb,
                                 CTacLabel *ltrue, CTacLabel *lfalse)
 {
-  assert(cb != NULL);
-  assert(ltrue != NULL);
-  assert(lfalse != NULL);
+  //assert(cb != NULL);
+  //assert(ltrue != NULL);
+  //assert(lfalse != NULL);
   return NULL;
 }
 
@@ -1856,7 +1856,7 @@ string CAstStringConstant::dotAttr(void) const
 
 CTacAddr* CAstStringConstant::ToTac(CCodeBlock *cb)
 {
-  assert(cb != NULL);
+  //assert(cb != NULL);
   return new CTacName(_sym);
   // cb->AddInstr(new CTacInstr("stringconstant"));
   return NULL;
@@ -1865,9 +1865,9 @@ CTacAddr* CAstStringConstant::ToTac(CCodeBlock *cb)
 CTacAddr* CAstStringConstant::ToTac(CCodeBlock *cb,
                                 CTacLabel *ltrue, CTacLabel *lfalse)
 {
-  assert(cb != NULL);
-  assert(ltrue != NULL);
-  assert(lfalse != NULL);
+  //assert(cb != NULL);
+  //assert(ltrue != NULL);
+  //assert(lfalse != NULL);
   assert(false);
   return NULL;
 }
