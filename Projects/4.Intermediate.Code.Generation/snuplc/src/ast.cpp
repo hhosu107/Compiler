@@ -1299,6 +1299,7 @@ CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb)
   EOperation _op = GetOperation();
   CTacAddr *dst = cb->CreateTemp(GetType());
 
+  // Edit it as a version of AST. We cannot use CTacAddr for dst parameter.)
   if(_op == opNeg || _op == opPos || _op == opNot) cb->AddInstr(new CTacInstr(_op, dst, src, NULL));
 
   return dst;
@@ -1622,6 +1623,7 @@ void CAstDesignator::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstDesignator::ToTac(CCodeBlock *cb)
 {
+  assert(cb != NULL);
   return new CTacName(GetSymbol());
   // return NULL;
 }
@@ -1629,10 +1631,19 @@ CTacAddr* CAstDesignator::ToTac(CCodeBlock *cb)
 CTacAddr* CAstDesignator::ToTac(CCodeBlock *cb,
                                 CTacLabel *ltrue, CTacLabel *lfalse)
 {
-  CTacAddr *src1 = NULL, *src2 = NULL;
-  CAstBinaryOp *src = new CAstBinaryOp(GetToken(), opEqual, this,
+  assert(cb != NULL);
+  assert(ltrue != NULL);
+  assert(lfalse != NULL);
+  assert(GetType()->Compare(CTypeManager::Get()->GetBool()));
+  //CTacTemp *_addr = new CTacTemp(GetSymbol());
+  //cb->AddInstr(new CTacInstr(opEqual, _addr,
+  //      new CTacName(GetSymbol()), new CTacConst(1)));
+  //cb->AddInstr(new CTacInstr(opGoto, ltrue));
+  //cb->AddInstr(new CTacInstr(opGoto, lfalse));
+   CAstBinaryOp *src = new CAstBinaryOp(GetToken(), opEqual, this,
       new CAstConstant(GetToken(), CTypeManager::Get()->GetInt(), 1));
   src->ToTac(cb, ltrue, lfalse);
+  // It doesn't makes 2 labels...
   return NULL;
 }
 
@@ -1755,12 +1766,121 @@ void CAstArrayDesignator::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstArrayDesignator::ToTac(CCodeBlock *cb)
 {
-  return NULL;
+  cb->AddInstr(new CTacInstr("ArrayDesignator"));
+  CTacTemp* res = cb->CreateTemp(CTypeManager::Get()->GetInt());
+  int nIndices = GetNIndices();
+  CTacTemp* t0 = cb->CreateTemp(CTypeManager::Get()->GetPointer(GetType()));
+  cb->AddInstr(new CTacInstr(opAddress, t0, new CTacName(GetSymbol()), NULL));
+
+  if(nIndices == 0) return t0;
+  else{
+    // Here, I wrotejust CTacInstrs, which is actually wrong since CTecInstr cannot
+    // accept all but only CTacLabel as a 2nd parameter.
+    // So we have to make a bunch of AST and call their ToTac ......
+    // FUUUUUUCK.
+    //
+    // Most of all, we haven't made specialOp,
+    // so we cannot see almost anything.
+
+    // DIM iterate to compute offset
+    CTacTemp *t = NULL;
+    for(int i = 1; i <= nIndices; i++){
+      cb->AddInstr(new CTacInstr(opParam, new CTacConst(1), new CTacConst(i+1)) );
+
+      CTacTemp *t1 = cb->CreateTemp(CTypeManager::Get()->GetPointer(GetType()));
+      cb->AddInstr(new CTacInstr(opAddress, t1, new CTacName(GetSymbol()), NULL));
+      cb->AddInstr(new CTacInstr(opParam, new CTacConst(0), t1));
+
+      CTacTemp *t2 = cb->CreateTemp(CTypeManager::Get()->GetInt());
+      cb->AddInstr(new CTacInstr(opCall, t2,
+            new CTacName(cb->GetOwner()->GetSymbolTable()->FindSymbol("DIM", sGlobal))));
+
+      CTacTemp *t3 = cb->CreateTemp(CTypeManager::Get()->GetInt());
+      if(i == 1){
+        cb->AddInstr(new CTacInstr(opMul, t3, GetIndex(i-1)->ToTac(cb), t2));
+      }
+      else{
+        cb->AddInstr(new CTacInstr(opMul, t3, t, t2));
+      }
+
+      t = cb->CreateTemp(CTypeManager::Get()->GetInt());
+      if(i != nIndices){
+        cb->AddInstr(new CTacInstr(opAdd, t, t3, GetIndex(i+1)->ToTac(cb)));
+      }
+      else{
+        cb->AddInstr(new CTacInstr(opAdd, t, t3, new CTacConst(0)));
+      }
+    }
+    CTacTemp *offset = cb->CreateTemp(CTypeManager::Get()->GetInt());
+    cb->AddInstr(new CTacInstr(opMul, offset, t,
+          new CTacConst(dynamic_cast<const CArrayType *>(GetType())->GetBaseType()->GetSize())));
+
+    // DOFS
+    CTacTemp *ts = cb->CreateTemp(CTypeManager::Get()->GetPointer(GetType()));
+    cb->AddInstr(new CTacInstr(opAddress, ts, new CTacName(GetSymbol()), NULL));
+    cb->AddInstr(new CTacInstr(opParam, new CTacConst(0), ts));
+    CTacTemp *ofs = cb->CreateTemp(CTypeManager::Get()->GetInt());
+    cb->AddInstr(new CTacInstr(opCall, ofs,
+            new CTacName(cb->GetOwner()->GetSymbolTable()->FindSymbol("DOFS", sGlobal))));
+
+    // Add index offset and DOFS
+    CTacTemp *sumofs = cb->CreateTemp(CTypeManager::Get()->GetInt());
+    cb->AddInstr(new CTacInstr(opAdd, sumofs, offset, ofs));
+
+    // Finally add original address and offset.
+    // But here, we have to cast the pointer type into int
+    // to calculate muted address. We have to cast implicitly
+    // (i.e., casting doesn't appear on tac, so we have to give t0 to an add
+    // operation, butwe have to return its address, which has int type.)
+    // I just wrote as a concept,
+    // so we have to find a real meaning which is valid.
+    cb->AddInstr(new CTacInstr(opAdd, res, t0, sumofs));
+
+    // It if is still an array type, one more step exist.
+    if(!GetType()->IsPointer() && GetType()->IsArray()){
+      CTacTemp *temp = cb->CreateTemp(CTypeManager::Get()->GetPointer(CTypeManager::Get()->GetInt()));
+      CTacReference *src = new CTacReference(res->GetSymbol());
+      cb->AddInstr(new CTacInstr(opAddress, temp, src, NULL));
+      return temp;
+    }
+    else{
+      return res;
+    }
+  }
+
+  // A critical reference is test6.mod. See test6's ir.
+  // For an array A with the size [L][M][N],
+  // if A[l][m] is required as foo(A[l][m], &() t0 <- A, but it is written by
+  // this step(calculating address) and we iterate steps:
+  // 1. DIM
+  // param 1 <- 2/ &() t1 <- A/ param 0 <- t1/ call t2 <- DIM(will be M)/
+  // mul t3 <- l, t2/ add t4 <- t3, l(if arr-desig not end, add l/ o.w., add 0)
+  // param 1 <- 3/ &() t5 <- A/ param 0 <- t5/
+  // call t6 <-DIM(will be N)/ mul t7 <- t4, t6 / add t8, t7, 0(desig ends)
+  // mul t9 <- t8, size
+  // 2. DOFS
+  // &() t10 <- A/ param 0 <- t10/ call t11 <- DOFS/ add t12 <- t9, t11.
+  // Finally, Calculate read address as add t13 <- t0, t12,
+  // reference it as &() t14 <- @t13. (Which I wrote as a code(T.B.Checked))
+  // Egger said that we would have to make a temporary ASTNode for it.
+  // This is the last role of this function, so return t14.
+  // Then param 0 <- t14, call foo.
+  // This is so fuuuuuuuuuuuuuuuuuck.
+
+  //return NULL;
 }
 
 CTacAddr* CAstArrayDesignator::ToTac(CCodeBlock *cb,
                                      CTacLabel *ltrue, CTacLabel *lfalse)
 {
+  // It must be bool.
+  assert(GetType()->Compare(CTypeManager::Get()->GetBool()));
+  // Doing process as same as above.
+
+  // after do, we have to make a process as same as we did on
+  // CAstDesignator::ToTac(cb, ltrue, lfalse):
+  // Make a temporary CAstBinaryOp with " = 1".
+  // Then generate code using ToTac of CAstBinaryOp.
   return NULL;
 }
 
@@ -1841,18 +1961,18 @@ string CAstConstant::dotAttr(void) const
 
 CTacAddr* CAstConstant::ToTac(CCodeBlock *cb)
 {
-  //assert(cb != NULL);
-  // cb->AddInstr(new CTacConst(GetValue()));
-  // cb->AddInstr(new CTacInstr("constant"));
+  assert(cb != NULL);
   return new CTacConst(GetValue());
 }
 
 CTacAddr* CAstConstant::ToTac(CCodeBlock *cb,
                                 CTacLabel *ltrue, CTacLabel *lfalse)
 {
-  //assert(cb != NULL);
-  //assert(ltrue != NULL);
-  //assert(lfalse != NULL);
+  assert(cb != NULL);
+  assert(ltrue != NULL);
+  assert(lfalse != NULL);
+  assert(GetType()->Compare(CTypeManager::Get()->GetBool()));
+
   return NULL;
 }
 
