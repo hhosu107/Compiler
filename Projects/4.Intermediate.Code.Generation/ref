@@ -1,305 +1,3 @@
-parsing 'test/tac/test8.mod'...
-converting to TAC...
-[[ module: test8
-  [[ type manager
-    base types:
-      <NULL>
-      <int>
-      <char>
-      <bool>
-      <ptr(4) to <NULL>>
-    pointer types:
-      <ptr(4) to <NULL>>
-      <ptr(4) to <array of <char>>>
-    array types:
-      <array of <char>>
-  ]]
-  [[
-    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
-    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
-    [ *ReadInt() --> <int>     ]
-    [ *WriteChar(<char>) --> <NULL>     ]
-    [ *WriteInt(<int>) --> <NULL>     ]
-    [ *WriteLn() --> <NULL>     ]
-    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
-    [ @b        <bool>     ]
-    [ @i        <int>     ]
-    [ $t0       <bool>     ]
-  ]]
-  [[ test8
-      0:     if     i < 3 goto 4
-      1:     goto   2
-      2: 4:
-      3:     if     i > 0 goto 1
-      4:     goto   2
-      5: 1:
-      6:     assign t0 <- 1
-      7:     goto   3
-      8: 2:
-      9:     assign t0 <- 0
-     10: 3:
-     11:     assign b <- t0
-     12:     if     b = 1 goto 8_if_true
-     13:     goto   9_if_false
-     14: 8_if_true:
-     15:     assign i <- 0
-     16:     goto   7
-     17: 9_if_false:
-     18: 7:
-  ]]
-]]
-
-run the following command to convert the .dot file into a PDF:
-  dot -Tpdf -otest/tac/test8.mod.pdf test/tac/test8.mod.dot
-
-
-Done.
-parsing 'test/tac/test6.mod'...
-converting to TAC...
-[[ module: test6
-  [[ type manager
-    base types:
-      <NULL>
-      <int>
-      <char>
-      <bool>
-      <ptr(4) to <NULL>>
-    pointer types:
-      <ptr(4) to <NULL>>
-      <ptr(4) to <array of <char>>>
-      <ptr(4) to <array of <array of <int>>>>
-      <ptr(4) to <array 10 of <array 5 of <int>>>>
-    array types:
-      <array of <char>>
-      <array 5 of <int>>
-      <array 10 of <array 5 of <int>>>
-      <array of <int>>
-      <array of <array of <int>>>
-  ]]
-  [[
-    [ @A        <array 10 of <array 5 of <int>>>     ]
-    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
-    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
-    [ *ReadInt() --> <int>     ]
-    [ *WriteChar(<char>) --> <NULL>     ]
-    [ *WriteInt(<int>) --> <NULL>     ]
-    [ *WriteLn() --> <NULL>     ]
-    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
-    [ *foo(<ptr(4) to <array of <array of <int>>>>) --> <NULL>     ]
-    [ @i        <int>     ]
-    [ $t0       <ptr(4) to <array 10 of <array 5 of <int>>>>     ]
-  ]]
-  [[ test6
-      0:     assign i <- 0
-      1:     &()    t0 <- A
-      2:     param  0 <- t0
-      3:     call   foo
-  ]]
-
-  [[ procedure: foo
-    [[
-      [ %M        <ptr(4) to <array of <array of <int>>>>       ]
-      [ $t0       <int>       ]
-      [ $t1       <int>       ]
-      [ $t2       <int>       ]
-      [ $t3       <int>       ]
-      [ $t4       <int>       ]
-      [ $t5       <int>       ]
-      [ $t6       <int>       ]
-    ]]
-    [[ foo
-        0:     param  1 <- 2
-        1:     param  0 <- M
-        2:     call   t0 <- DIM
-        3:     mul    t1 <- 1, t0
-        4:     add    t2 <- t1, 3
-        5:     mul    t3 <- t2, 4
-        6:     param  0 <- M
-        7:     call   t4 <- DOFS
-        8:     add    t5 <- t3, t4
-        9:     add    t6 <- M, t5
-       10:     assign @t6 <- i
-    ]]
-  ]]
-]]
-
-run the following command to convert the .dot file into a PDF:
-  dot -Tpdf -otest/tac/test6.mod.pdf test/tac/test6.mod.dot
-
-
-Done.
-parsing 'test/tac/test7.mod'...
-converting to TAC...
-[[ module: test7
-  [[ type manager
-    base types:
-      <NULL>
-      <int>
-      <char>
-      <bool>
-      <ptr(4) to <NULL>>
-    pointer types:
-      <ptr(4) to <NULL>>
-      <ptr(4) to <array of <char>>>
-    array types:
-      <array of <char>>
-  ]]
-  [[
-    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
-    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
-    [ *ReadInt() --> <int>     ]
-    [ *WriteChar(<char>) --> <NULL>     ]
-    [ *WriteInt(<int>) --> <NULL>     ]
-    [ *WriteLn() --> <NULL>     ]
-    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
-    [ @i        <int>     ]
-  ]]
-  [[ test7
-      0:     if     i < 3 goto 3
-      1:     goto   2_if_false
-      2: 3:
-      3:     if     i > 0 goto 1_if_true
-      4:     goto   2_if_false
-      5: 1_if_true:
-      6:     assign i <- 0
-      7:     goto   0
-      8: 2_if_false:
-      9: 0:
-  ]]
-]]
-
-run the following command to convert the .dot file into a PDF:
-  dot -Tpdf -otest/tac/test7.mod.pdf test/tac/test7.mod.dot
-
-
-Done.
-parsing 'test/tac/test1.mod'...
-converting to TAC...
-[[ module: test1
-  [[ type manager
-    base types:
-      <NULL>
-      <int>
-      <char>
-      <bool>
-      <ptr(4) to <NULL>>
-    pointer types:
-      <ptr(4) to <NULL>>
-      <ptr(4) to <array of <char>>>
-    array types:
-      <array of <char>>
-  ]]
-  [[
-    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
-    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
-    [ *ReadInt() --> <int>     ]
-    [ *WriteChar(<char>) --> <NULL>     ]
-    [ *WriteInt(<int>) --> <NULL>     ]
-    [ *WriteLn() --> <NULL>     ]
-    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
-    [ @i        <int>     ]
-    [ $t0       <int>     ]
-    [ $t1       <int>     ]
-  ]]
-  [[ test1
-      0:     add    t0 <- 1, 2
-      1:     mul    t1 <- t0, 3
-      2:     assign i <- t1
-  ]]
-]]
-
-run the following command to convert the .dot file into a PDF:
-  dot -Tpdf -otest/tac/test1.mod.pdf test/tac/test1.mod.dot
-
-
-Done.
-parsing 'test/tac/test4.mod'...
-converting to TAC...
-[[ module: test4
-  [[ type manager
-    base types:
-      <NULL>
-      <int>
-      <char>
-      <bool>
-      <ptr(4) to <NULL>>
-    pointer types:
-      <ptr(4) to <NULL>>
-      <ptr(4) to <array of <char>>>
-    array types:
-      <array of <char>>
-  ]]
-  [[
-    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
-    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
-    [ *ReadInt() --> <int>     ]
-    [ *WriteChar(<char>) --> <NULL>     ]
-    [ *WriteInt(<int>) --> <NULL>     ]
-    [ *WriteLn() --> <NULL>     ]
-    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
-    [ @i        <int>     ]
-    [ $t0       <int>     ]
-  ]]
-  [[ test4
-      0: 1_while_cond:
-      1:     if     i > 3 goto 2_while_body
-      2:     goto   0
-      3: 2_while_body:
-      4:     sub    t0 <- i, 1
-      5:     assign i <- t0
-      6:     goto   1_while_cond
-      7: 0:
-  ]]
-]]
-
-run the following command to convert the .dot file into a PDF:
-  dot -Tpdf -otest/tac/test4.mod.pdf test/tac/test4.mod.dot
-
-
-Done.
-parsing 'test/tac/test3.mod'...
-converting to TAC...
-[[ module: test3
-  [[ type manager
-    base types:
-      <NULL>
-      <int>
-      <char>
-      <bool>
-      <ptr(4) to <NULL>>
-    pointer types:
-      <ptr(4) to <NULL>>
-      <ptr(4) to <array of <char>>>
-    array types:
-      <array of <char>>
-  ]]
-  [[
-    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
-    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
-    [ *ReadInt() --> <int>     ]
-    [ *WriteChar(<char>) --> <NULL>     ]
-    [ *WriteInt(<int>) --> <NULL>     ]
-    [ *WriteLn() --> <NULL>     ]
-    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
-    [ @i        <int>     ]
-  ]]
-  [[ test3
-      0:     if     i > 3 goto 1_if_true
-      1:     goto   2_if_false
-      2: 1_if_true:
-      3:     assign i <- 0
-      4:     goto   0
-      5: 2_if_false:
-      6:     assign i <- 1
-      7: 0:
-  ]]
-]]
-
-run the following command to convert the .dot file into a PDF:
-  dot -Tpdf -otest/tac/test3.mod.pdf test/tac/test3.mod.dot
-
-
-Done.
 parsing 'test/tac/test5.mod'...
 converting to TAC...
 [[ module: test5
@@ -360,6 +58,135 @@ converting to TAC...
 
 run the following command to convert the .dot file into a PDF:
   dot -Tpdf -otest/tac/test5.mod.pdf test/tac/test5.mod.dot
+
+
+Done.
+parsing 'test/tac/test1.mod'...
+converting to TAC...
+[[ module: test1
+  [[ type manager
+    base types:
+      <NULL>
+      <int>
+      <char>
+      <bool>
+      <ptr(4) to <NULL>>
+    pointer types:
+      <ptr(4) to <NULL>>
+      <ptr(4) to <array of <char>>>
+    array types:
+      <array of <char>>
+  ]]
+  [[
+    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
+    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
+    [ *ReadInt() --> <int>     ]
+    [ *WriteChar(<char>) --> <NULL>     ]
+    [ *WriteInt(<int>) --> <NULL>     ]
+    [ *WriteLn() --> <NULL>     ]
+    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
+    [ @i        <int>     ]
+    [ $t0       <int>     ]
+    [ $t1       <int>     ]
+  ]]
+  [[ test1
+      0:     add    t0 <- 1, 2
+      1:     mul    t1 <- t0, 3
+      2:     assign i <- t1
+  ]]
+]]
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -otest/tac/test1.mod.pdf test/tac/test1.mod.dot
+
+
+Done.
+parsing 'test/tac/test7.mod'...
+converting to TAC...
+[[ module: test7
+  [[ type manager
+    base types:
+      <NULL>
+      <int>
+      <char>
+      <bool>
+      <ptr(4) to <NULL>>
+    pointer types:
+      <ptr(4) to <NULL>>
+      <ptr(4) to <array of <char>>>
+    array types:
+      <array of <char>>
+  ]]
+  [[
+    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
+    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
+    [ *ReadInt() --> <int>     ]
+    [ *WriteChar(<char>) --> <NULL>     ]
+    [ *WriteInt(<int>) --> <NULL>     ]
+    [ *WriteLn() --> <NULL>     ]
+    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
+    [ @i        <int>     ]
+  ]]
+  [[ test7
+      0:     if     i < 3 goto 3
+      1:     goto   2_if_false
+      2: 3:
+      3:     if     i > 0 goto 1_if_true
+      4:     goto   2_if_false
+      5: 1_if_true:
+      6:     assign i <- 0
+      7:     goto   0
+      8: 2_if_false:
+      9: 0:
+  ]]
+]]
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -otest/tac/test7.mod.pdf test/tac/test7.mod.dot
+
+
+Done.
+parsing 'test/tac/test4.mod'...
+converting to TAC...
+[[ module: test4
+  [[ type manager
+    base types:
+      <NULL>
+      <int>
+      <char>
+      <bool>
+      <ptr(4) to <NULL>>
+    pointer types:
+      <ptr(4) to <NULL>>
+      <ptr(4) to <array of <char>>>
+    array types:
+      <array of <char>>
+  ]]
+  [[
+    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
+    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
+    [ *ReadInt() --> <int>     ]
+    [ *WriteChar(<char>) --> <NULL>     ]
+    [ *WriteInt(<int>) --> <NULL>     ]
+    [ *WriteLn() --> <NULL>     ]
+    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
+    [ @i        <int>     ]
+    [ $t0       <int>     ]
+  ]]
+  [[ test4
+      0: 1_while_cond:
+      1:     if     i > 3 goto 2_while_body
+      2:     goto   0
+      3: 2_while_body:
+      4:     sub    t0 <- i, 1
+      5:     assign i <- t0
+      6:     goto   1_while_cond
+      7: 0:
+  ]]
+]]
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -otest/tac/test4.mod.pdf test/tac/test4.mod.dot
 
 
 Done.
@@ -436,6 +263,179 @@ converting to TAC...
 
 run the following command to convert the .dot file into a PDF:
   dot -Tpdf -otest/tac/test2.mod.pdf test/tac/test2.mod.dot
+
+
+Done.
+parsing 'test/tac/test8.mod'...
+converting to TAC...
+[[ module: test8
+  [[ type manager
+    base types:
+      <NULL>
+      <int>
+      <char>
+      <bool>
+      <ptr(4) to <NULL>>
+    pointer types:
+      <ptr(4) to <NULL>>
+      <ptr(4) to <array of <char>>>
+    array types:
+      <array of <char>>
+  ]]
+  [[
+    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
+    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
+    [ *ReadInt() --> <int>     ]
+    [ *WriteChar(<char>) --> <NULL>     ]
+    [ *WriteInt(<int>) --> <NULL>     ]
+    [ *WriteLn() --> <NULL>     ]
+    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
+    [ @b        <bool>     ]
+    [ @i        <int>     ]
+    [ $t0       <bool>     ]
+  ]]
+  [[ test8
+      0:     if     i < 3 goto 4
+      1:     goto   2
+      2: 4:
+      3:     if     i > 0 goto 1
+      4:     goto   2
+      5: 1:
+      6:     assign t0 <- 1
+      7:     goto   3
+      8: 2:
+      9:     assign t0 <- 0
+     10: 3:
+     11:     assign b <- t0
+     12:     if     b = 1 goto 8_if_true
+     13:     goto   9_if_false
+     14: 8_if_true:
+     15:     assign i <- 0
+     16:     goto   7
+     17: 9_if_false:
+     18: 7:
+  ]]
+]]
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -otest/tac/test8.mod.pdf test/tac/test8.mod.dot
+
+
+Done.
+parsing 'test/tac/test3.mod'...
+converting to TAC...
+[[ module: test3
+  [[ type manager
+    base types:
+      <NULL>
+      <int>
+      <char>
+      <bool>
+      <ptr(4) to <NULL>>
+    pointer types:
+      <ptr(4) to <NULL>>
+      <ptr(4) to <array of <char>>>
+    array types:
+      <array of <char>>
+  ]]
+  [[
+    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
+    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
+    [ *ReadInt() --> <int>     ]
+    [ *WriteChar(<char>) --> <NULL>     ]
+    [ *WriteInt(<int>) --> <NULL>     ]
+    [ *WriteLn() --> <NULL>     ]
+    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
+    [ @i        <int>     ]
+  ]]
+  [[ test3
+      0:     if     i > 3 goto 1_if_true
+      1:     goto   2_if_false
+      2: 1_if_true:
+      3:     assign i <- 0
+      4:     goto   0
+      5: 2_if_false:
+      6:     assign i <- 1
+      7: 0:
+  ]]
+]]
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -otest/tac/test3.mod.pdf test/tac/test3.mod.dot
+
+
+Done.
+parsing 'test/tac/test6.mod'...
+converting to TAC...
+[[ module: test6
+  [[ type manager
+    base types:
+      <NULL>
+      <int>
+      <char>
+      <bool>
+      <ptr(4) to <NULL>>
+    pointer types:
+      <ptr(4) to <NULL>>
+      <ptr(4) to <array of <char>>>
+      <ptr(4) to <array of <array of <int>>>>
+      <ptr(4) to <array 10 of <array 5 of <int>>>>
+    array types:
+      <array of <char>>
+      <array 5 of <int>>
+      <array 10 of <array 5 of <int>>>
+      <array of <int>>
+      <array of <array of <int>>>
+  ]]
+  [[
+    [ @A        <array 10 of <array 5 of <int>>>     ]
+    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
+    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
+    [ *ReadInt() --> <int>     ]
+    [ *WriteChar(<char>) --> <NULL>     ]
+    [ *WriteInt(<int>) --> <NULL>     ]
+    [ *WriteLn() --> <NULL>     ]
+    [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>     ]
+    [ *foo(<ptr(4) to <array of <array of <int>>>>) --> <NULL>     ]
+    [ @i        <int>     ]
+    [ $t0       <ptr(4) to <array 10 of <array 5 of <int>>>>     ]
+  ]]
+  [[ test6
+      0:     assign i <- 0
+      1:     &()    t0 <- A
+      2:     param  0 <- t0
+      3:     call   foo
+  ]]
+
+  [[ procedure: foo
+    [[
+      [ %M        <ptr(4) to <array of <array of <int>>>>       ]
+      [ $t0       <int>       ]
+      [ $t1       <int>       ]
+      [ $t2       <int>       ]
+      [ $t3       <int>       ]
+      [ $t4       <int>       ]
+      [ $t5       <int>       ]
+      [ $t6       <int>       ]
+    ]]
+    [[ foo
+        0:     param  1 <- 2
+        1:     param  0 <- M
+        2:     call   t0 <- DIM
+        3:     mul    t1 <- 1, t0
+        4:     add    t2 <- t1, 3
+        5:     mul    t3 <- t2, 4
+        6:     param  0 <- M
+        7:     call   t4 <- DOFS
+        8:     add    t5 <- t3, t4
+        9:     add    t6 <- M, t5
+       10:     assign @t6 <- i
+    ]]
+  ]]
+]]
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -otest/tac/test6.mod.pdf test/tac/test6.mod.dot
 
 
 Done.
