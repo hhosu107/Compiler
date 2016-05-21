@@ -379,6 +379,7 @@ CAstStatement* CAstStatement::GetNext(void) const
 
 CTacAddr* CAstStatement::ToTac(CCodeBlock *cb, CTacLabel *next)
 {
+  cb->AddInstr(new CTacInstr("aststatement"));
   return NULL;
 }
 
@@ -775,6 +776,30 @@ void CAstStatIf::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstStatIf::ToTac(CCodeBlock *cb, CTacLabel *next)
 {
+  CTacLabel *if_true = cb->CreateLabel("if_true");
+  CTacLabel *if_false = cb->CreateLabel("if_false");
+
+  _cond->ToTac(cb, if_true, if_false);
+
+  cb->AddInstr(if_true);
+  if(_ifBody != NULL){
+    CAstStatement *s = _ifBody;
+    do{
+      s->ToTac(cb, next);
+      s = s->GetNext();
+    } while(s != NULL);
+  }
+  cb->AddInstr(new CTacInstr(opGoto, next));
+
+  cb->AddInstr(if_false);
+  if(_elseBody != NULL){
+    CAstStatement *s = _elseBody;
+    do{
+      s->ToTac(cb, next);
+      s = s->GetNext();
+    } while(s != NULL);
+  }
+
   return NULL;
 }
 
@@ -865,6 +890,22 @@ void CAstStatWhile::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstStatWhile::ToTac(CCodeBlock *cb, CTacLabel *next)
 {
+  CTacLabel *while_cond = cb->CreateLabel("while_cond");
+  CTacLabel *while_body = cb->CreateLabel("while_body");
+
+  cb->AddInstr(while_cond);
+  _cond->ToTac(cb, while_body, next);
+
+  cb->AddInstr(while_body);
+  if(_body != NULL){
+    CAstStatement *s = _body;
+    do{
+      s->ToTac(cb, next);
+      s = s->GetNext();
+    } while(s != NULL);
+  }
+  cb->AddInstr(new CTacInstr(opGoto, while_cond));
+
   return NULL;
 }
 
@@ -1062,7 +1103,7 @@ CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb)
 
   CTacAddr *dst = cb->CreateTemp(GetType());
 
-  if(_op == opAdd || _op == opMul) cb->AddInstr(new CTacInstr(_op, dst, src1, src2));
+  if(_op == opAdd || _op == opMul || _op == opSub) cb->AddInstr(new CTacInstr(_op, dst, src1, src2));
 
   return dst;
 }
@@ -1070,6 +1111,13 @@ CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb)
 CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb,
                               CTacLabel *ltrue, CTacLabel *lfalse)
 {
+  CTacAddr *src1 = _left->ToTac(cb);
+  CTacAddr *src2 = _right->ToTac(cb);
+  EOperation _op = GetOperation();
+
+  cb->AddInstr(new CTacInstr(_op, ltrue, src1, src2));
+  cb->AddInstr(new CTacInstr(opGoto, lfalse));
+
   return NULL;
 }
 
