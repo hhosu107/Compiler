@@ -1236,7 +1236,13 @@ void CAstUnaryOp::toDot(ostream &out, int indent) const
 CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb)
 {
   //assert(cb != NULL);
-  return NULL;
+  CTacAddr *src = _operand->ToTac(cb);
+  EOperation _op = GetOperation();
+  CTacAddr *dst = cb->CreateTemp(GetType());
+
+  if(_op = opNeg || _op = opPos || _op = opNot) cb->AddInstr(new CTacInstr(_op, dst, src, NULL));
+
+  return dst;
 }
 
 CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb,
