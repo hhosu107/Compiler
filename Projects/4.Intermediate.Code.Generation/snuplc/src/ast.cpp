@@ -1114,15 +1114,27 @@ CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb)
 CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb,
                               CTacLabel *ltrue, CTacLabel *lfalse)
 {
-  //assert(cb != NULL);
-  //assert(ltrue != NULL);
-  //assert(lfalse != NULL);
-  CTacAddr *src1 = _left->ToTac(cb);
-  CTacAddr *src2 = _right->ToTac(cb);
+  CTacAddr *src1 = NULL, *src2 = NULL;
   EOperation _op = GetOperation();
 
-  cb->AddInstr(new CTacInstr(_op, ltrue, src1, src2));
-  cb->AddInstr(new CTacInstr(opGoto, lfalse));
+  if(_op == opAnd){
+    CTacLabel *nxt = cb->CreateLabel();
+    src1 = _left->ToTac(cb, nxt, lfalse);
+    cb->AddInstr(nxt);
+    src2 = _right->ToTac(cb, ltrue, lfalse);
+  }
+  else if(_op == opOr){
+    CTacLabel *nxt = cb->CreateLabel();
+    src1 = _left->ToTac(cb, ltrue, nxt);
+    cb->AddInstr(nxt);
+    src2 = _right->ToTac(cb, ltrue, lfalse);
+  }
+  else{
+    src1 = _left->ToTac(cb);
+    src2 = _right->ToTac(cb);
+    cb->AddInstr(new CTacInstr(_op, ltrue, src1, src2));
+    cb->AddInstr(new CTacInstr(opGoto, lfalse));
+ }
 
   return NULL;
 }
