@@ -379,7 +379,7 @@ CAstStatement* CAstStatement::GetNext(void) const
 
 CTacAddr* CAstStatement::ToTac(CCodeBlock *cb, CTacLabel *next)
 {
-  cb->AddInstr(new CTacInstr("aststatement"));
+  //cb->AddInstr(new CTacInstr("aststatement"));
   return NULL;
 }
 
@@ -825,6 +825,7 @@ CTacAddr* CAstStatIf::ToTac(CCodeBlock *cb, CTacLabel *next)
       s = s->GetNext();
     } while(s != NULL);
   }
+  cb->AddInstr(new CTacInstr(opGoto, next));
 
   return NULL;
 }
@@ -1123,8 +1124,8 @@ void CAstBinaryOp::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb)
 {
-  //assert(cb != NULL);
-  //assert(GetType() != NULL);
+  assert(cb != NULL);
+  // assert(GetType() != NULL);
 
   CTacAddr* _addr = NULL;
 
@@ -1294,23 +1295,48 @@ void CAstUnaryOp::toDot(ostream &out, int indent) const
 
 CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb)
 {
-  //assert(cb != NULL);
-  CTacAddr *src = _operand->ToTac(cb);
-  EOperation _op = GetOperation();
-  CTacAddr *dst = cb->CreateTemp(GetType());
+  assert(cb != NULL);
 
-  // Edit it as a version of AST. We cannot use CTacAddr for dst parameter.)
-  if(_op == opNeg || _op == opPos || _op == opNot) cb->AddInstr(new CTacInstr(_op, dst, src, NULL));
+  CTacAddr* _addr = NULL;
+  if(GetType()->Compare(CTypeManager::Get()->GetBool())){
+    CTacLabel *ltrue = cb->CreateLabel();
+    CTacLabel *lfalse = cb->CreateLabel();
+    CTacLabel *lnext = cb->CreateLabel();
 
-  return dst;
+    ToTac(cb, ltrue, lfalse);
+    _addr = cb->CreateTemp(CTypeManager::Get()->GetBool());
+
+    cb->AddInstr(ltrue);
+    cb->AddInstr(new CTacInstr(opAssign, _addr, new CTacConst(1), NULL));
+    cb->AddInstr(new CTacInstr(opGoto, lnext));
+
+    cb->AddInstr(lfalse);
+    cb->AddInstr(new CTacInstr(opAssign, _addr, new CTacConst(0), NULL));
+    cb->AddInstr(new CTacInstr(opGoto, lnext));
+
+    cb->AddInstr(lnext);
+  }
+  else{
+    CTacAddr *src = _operand->ToTac(cb);
+    EOperation _op = GetOperation();
+    _addr = cb->CreateTemp(GetType());
+
+    cb->AddInstr(new CTacInstr(_op, _addr, src, NULL));
+
+  }
+
+  return _addr;
 }
 
 CTacAddr* CAstUnaryOp::ToTac(CCodeBlock *cb,
                              CTacLabel *ltrue, CTacLabel *lfalse)
 {
-  //assert(cb != NULL);
+  assert(cb != NULL);
   assert(ltrue != NULL);
   assert(lfalse != NULL);
+  assert(_operand->GetType()->Compare(CTypeManager::Get()->GetBool()));
+
+  _operand->ToTac(cb, lfalse, ltrue);
   return NULL;
 }
 
@@ -1625,7 +1651,6 @@ CTacAddr* CAstDesignator::ToTac(CCodeBlock *cb)
 {
   assert(cb != NULL);
   return new CTacName(GetSymbol());
-  // return NULL;
 }
 
 CTacAddr* CAstDesignator::ToTac(CCodeBlock *cb,
@@ -1635,11 +1660,6 @@ CTacAddr* CAstDesignator::ToTac(CCodeBlock *cb,
   assert(ltrue != NULL);
   assert(lfalse != NULL);
   assert(GetType()->Compare(CTypeManager::Get()->GetBool()));
-  //CTacTemp *_addr = new CTacTemp(GetSymbol());
-  //cb->AddInstr(new CTacInstr(opEqual, _addr,
-  //      new CTacName(GetSymbol()), new CTacConst(1)));
-  //cb->AddInstr(new CTacInstr(opGoto, ltrue));
-  //cb->AddInstr(new CTacInstr(opGoto, lfalse));
    CAstBinaryOp *src = new CAstBinaryOp(GetToken(), opEqual, this,
       new CAstConstant(GetToken(), CTypeManager::Get()->GetInt(), 1));
   src->ToTac(cb, ltrue, lfalse);
