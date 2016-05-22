@@ -28,7 +28,12 @@ converting to TAC...
     [ @i        <int>     ]
   ]]
   [[ test5
-      0:     assign A <- i
+      0: [CTacInstr: '480']
+      1:     assign A <- i
+      2: [CTacInstr: '481']
+      3:     goto   0
+      4: [CTacInstr: '253']
+      5: 0:
   ]]
 ]]
 
@@ -68,7 +73,12 @@ converting to TAC...
   [[ test1
       0:     add    t0 <- 1, 2
       1:     mul    t1 <- t0, 3
-      2:     assign i <- t1
+      2: [CTacInstr: '480']
+      3:     assign i <- t1
+      4: [CTacInstr: '481']
+      5:     goto   0
+      6: [CTacInstr: '253']
+      7: 0:
   ]]
 ]]
 
@@ -104,16 +114,32 @@ converting to TAC...
     [ @i        <int>     ]
   ]]
   [[ test7
-      0:     if     i < 3 goto 3
-      1:     goto   2_if_false
-      2: 3:
-      3:     if     i > 0 goto 1_if_true
-      4:     goto   2_if_false
-      5: 1_if_true:
-      6:     assign i <- 0
-      7:     goto   0
-      8: 2_if_false:
-      9: 0:
+      0: [CTacInstr: '1181']
+      1:     if     i < 3 goto 3
+      2: [CTacInstr: '1182']
+      3:     goto   2_if_false
+      4: [CTacInstr: '1160']
+      5: 3:
+      6: [CTacInstr: '1181']
+      7:     if     i > 0 goto 1_if_true
+      8: [CTacInstr: '1182']
+      9:     goto   2_if_false
+     10: [CTacInstr: '776']
+     11: 1_if_true:
+     12: [CTacInstr: '480']
+     13:     assign i <- 0
+     14: [CTacInstr: '481']
+     15:     goto   6
+     16: [CTacInstr: '783']
+     17: 6:
+     18: [CTacInstr: '788']
+     19:     goto   0
+     20: [CTacInstr: '790']
+     21: 2_if_false:
+     22: [CTacInstr: '802']
+     23:     goto   0
+     24: [CTacInstr: '253']
+     25: 0:
   ]]
 ]]
 
@@ -151,13 +177,19 @@ converting to TAC...
   ]]
   [[ test4
       0: 1_while_cond:
-      1:     if     i > 3 goto 2_while_body
-      2:     goto   0
-      3: 2_while_body:
-      4:     sub    t0 <- i, 1
-      5:     assign i <- t0
-      6:     goto   1_while_cond
-      7: 0:
+      1: [CTacInstr: '1181']
+      2:     if     i > 3 goto 2_while_body
+      3: [CTacInstr: '1182']
+      4:     goto   0
+      5: 2_while_body:
+      6:     sub    t0 <- i, 1
+      7: [CTacInstr: '480']
+      8:     assign i <- t0
+      9: [CTacInstr: '481']
+     10:     goto   0
+     11:     goto   1_while_cond
+     12: [CTacInstr: '253']
+     13: 0:
   ]]
 ]]
 
@@ -198,11 +230,15 @@ converting to TAC...
   [[ test2
       0:     param  0 <- 1
       1:     call   foo
-      2:     param  3 <- 4
-      3:     param  2 <- 3
-      4:     param  1 <- 2
-      5:     param  0 <- 1
-      6:     call   t0 <- bar
+      2: [CTacInstr: '253']
+      3: 0:
+      4:     param  3 <- 4
+      5:     param  2 <- 3
+      6:     param  1 <- 2
+      7:     param  0 <- 1
+      8:     call   t0 <- bar
+      9: [CTacInstr: '253']
+     10: 1:
   ]]
 
   [[ procedure: foo
@@ -214,7 +250,12 @@ converting to TAC...
     [[ foo
         0:     add    t0 <- 1, 2
         1:     mul    t1 <- t0, v
-        2:     assign i <- t1
+        2: [CTacInstr: '480']
+        3:     assign i <- t1
+        4: [CTacInstr: '481']
+        5:     goto   0
+        6: [CTacInstr: '253']
+        7: 0:
     ]]
   ]]
 
@@ -233,6 +274,8 @@ converting to TAC...
         1:     mul    t1 <- p3, p4
         2:     add    t2 <- t0, t1
         3:     return t2
+        4: [CTacInstr: '253']
+        5: 0:
     ]]
   ]]
 ]]
@@ -269,14 +312,56 @@ converting to TAC...
     [ @b        <bool>     ]
     [ @i        <int>     ]
     [ $t0       <bool>     ]
-    [ $t1       <bool>     ]
-    [ $t2       <bool>     ]
   ]]
   [[ test8
-      0:     assign b <- t2
-      1:     assign i <- 0
-      2:     goto   1
-      3: 1:
+      0: [CTacInstr: '1181']
+      1:     if     i < 3 goto 4
+      2: [CTacInstr: '1182']
+      3:     goto   2
+      4: [CTacInstr: '1160']
+      5: 4:
+      6: [CTacInstr: '1181']
+      7:     if     i > 0 goto 1
+      8: [CTacInstr: '1182']
+      9:     goto   2
+     10: [CTacInstr: '1129']
+     11: 1:
+     12: [CTacInstr: '1130']
+     13:     assign t0 <- 1
+     14: [CTacInstr: '1131']
+     15:     goto   3
+     16: [CTacInstr: '1132']
+     17: 2:
+     18: [CTacInstr: '1133']
+     19:     assign t0 <- 0
+     20: [CTacInstr: '1134']
+     21: 3:
+     22: [CTacInstr: '480']
+     23:     assign b <- t0
+     24: [CTacInstr: '481']
+     25:     goto   0
+     26: [CTacInstr: '253']
+     27: 0:
+     28: [CTacInstr: '1712']
+     29:     if     b = 1 goto 8_if_true
+     30: [CTacInstr: '1713']
+     31:     goto   9_if_false
+     32: [CTacInstr: '776']
+     33: 8_if_true:
+     34: [CTacInstr: '480']
+     35:     assign i <- 0
+     36: [CTacInstr: '481']
+     37:     goto   10
+     38: [CTacInstr: '783']
+     39: 10:
+     40: [CTacInstr: '788']
+     41:     goto   7
+     42: [CTacInstr: '790']
+     43: 9_if_false:
+     44: [CTacInstr: '802']
+     45:     goto   7
+     46: [CTacInstr: '253']
+     47: 7:
   ]]
 ]]
 
@@ -312,19 +397,138 @@ converting to TAC...
     [ @i        <int>     ]
   ]]
   [[ test3
-      0:     if     i > 3 goto 1_if_true
-      1:     goto   2_if_false
-      2: 1_if_true:
-      3:     assign i <- 0
-      4:     goto   0
-      5: 2_if_false:
-      6:     assign i <- 1
-      7: 0:
+      0: [CTacInstr: '1181']
+      1:     if     i > 3 goto 1_if_true
+      2: [CTacInstr: '1182']
+      3:     goto   2_if_false
+      4: [CTacInstr: '776']
+      5: 1_if_true:
+      6: [CTacInstr: '1181']
+      7:     if     i > 5 goto 5_if_true
+      8: [CTacInstr: '1182']
+      9:     goto   6_if_false
+     10: [CTacInstr: '776']
+     11: 5_if_true:
+     12: [CTacInstr: '480']
+     13:     assign i <- 0
+     14: [CTacInstr: '481']
+     15:     goto   8
+     16: [CTacInstr: '783']
+     17: 8:
+     18: [CTacInstr: '480']
+     19:     assign i <- 1
+     20: [CTacInstr: '481']
+     21:     goto   9
+     22: [CTacInstr: '783']
+     23: 9:
+     24: [CTacInstr: '788']
+     25:     goto   4
+     26: [CTacInstr: '790']
+     27: 6_if_false:
+     28: [CTacInstr: '480']
+     29:     assign i <- 1
+     30: [CTacInstr: '481']
+     31:     goto   10
+     32: [CTacInstr: '797']
+     33: 10:
+     34: [CTacInstr: '802']
+     35:     goto   4
+     36: [CTacInstr: '783']
+     37: 4:
+     38: [CTacInstr: '480']
+     39:     assign i <- 0
+     40: [CTacInstr: '481']
+     41:     goto   11
+     42: [CTacInstr: '783']
+     43: 11:
+     44: [CTacInstr: '788']
+     45:     goto   0
+     46: [CTacInstr: '790']
+     47: 2_if_false:
+     48: [CTacInstr: '480']
+     49:     assign i <- 1
+     50: [CTacInstr: '481']
+     51:     goto   12
+     52: [CTacInstr: '797']
+     53: 12:
+     54: [CTacInstr: '802']
+     55:     goto   0
+     56: [CTacInstr: '253']
+     57: 0:
   ]]
 ]]
 
 run the following command to convert the .dot file into a PDF:
   dot -Tpdf -otest/tac/test3.mod.pdf test/tac/test3.mod.dot
+
+
+Done.
+parsing 'test/tac/test9.mod'...
+converting to TAC...
+[[ module: test6
+  [[ type manager
+    base types:
+      <NULL>
+      <int>
+      <char>
+      <bool>
+      <ptr(4) to <NULL>>
+    pointer types:
+      <ptr(4) to <NULL>>
+      <ptr(4) to <array  of <char>>>
+      <ptr(4) to <array  of <array  of <array  of <int>>>>>
+      <ptr(4) to <array 10  of <array 5  of <array 4  of <int>>>>>
+    array types:
+      <array  of <char>>
+      <array 4  of <int>>
+      <array 5  of <array 4  of <int>>>
+      <array 10  of <array 5  of <array 4  of <int>>>>
+      <array  of <int>>
+      <array  of <array  of <int>>>
+      <array  of <array  of <array  of <int>>>>
+  ]]
+  [[
+    [ @A        <array 10  of <array 5  of <array 4  of <int>>>>     ]
+    [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
+    [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
+    [ *ReadInt() --> <int>     ]
+    [ *WriteChar(<char>) --> <NULL>     ]
+    [ *WriteInt(<int>) --> <NULL>     ]
+    [ *WriteLn() --> <NULL>     ]
+    [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>     ]
+    [ *foo(<ptr(4) to <array  of <array  of <array  of <int>>>>>) --> <NULL>     ]
+    [ @i        <int>     ]
+  ]]
+  [[ test6
+      0: [CTacInstr: '480']
+      1:     assign i <- 0
+      2: [CTacInstr: '481']
+      3:     goto   0
+      4: [CTacInstr: '253']
+      5: 0:
+      6:     param  0 <- 
+      7:     call   foo
+      8: [CTacInstr: '253']
+      9: 1:
+  ]]
+
+  [[ procedure: foo
+    [[
+      [ %M        <ptr(4) to <array  of <array  of <array  of <int>>>>>       ]
+    ]]
+    [[ foo
+        0: [CTacInstr: '480']
+        1:     assign M <- i
+        2: [CTacInstr: '481']
+        3:     goto   0
+        4: [CTacInstr: '253']
+        5: 0:
+    ]]
+  ]]
+]]
+
+run the following command to convert the .dot file into a PDF:
+  dot -Tpdf -otest/tac/test9.mod.pdf test/tac/test9.mod.dot
 
 
 Done.
@@ -341,17 +545,17 @@ converting to TAC...
     pointer types:
       <ptr(4) to <NULL>>
       <ptr(4) to <array  of <char>>>
-      <ptr(4) to <array  of <array  of <int>>>>
-      <ptr(4) to <array 10  of <array 5  of <int>>>>
+      <ptr(4) to <array  of <int>>>
+      <ptr(4) to <array 4  of <int>>>
     array types:
       <array  of <char>>
-      <array 5  of <int>>
-      <array 10  of <array 5  of <int>>>
+      <array 4  of <int>>
+      <array 5  of <array 4  of <int>>>
+      <array 10  of <array 5  of <array 4  of <int>>>>
       <array  of <int>>
-      <array  of <array  of <int>>>
   ]]
   [[
-    [ @A        <array 10  of <array 5  of <int>>>     ]
+    [ @A        <array 10  of <array 5  of <array 4  of <int>>>>     ]
     [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>     ]
     [ *DOFS(<ptr(4) to <NULL>>) --> <int>     ]
     [ *ReadInt() --> <int>     ]
@@ -359,21 +563,33 @@ converting to TAC...
     [ *WriteInt(<int>) --> <NULL>     ]
     [ *WriteLn() --> <NULL>     ]
     [ *WriteStr(<ptr(4) to <array  of <char>>>) --> <NULL>     ]
-    [ *foo(<ptr(4) to <array  of <array  of <int>>>>) --> <NULL>     ]
+    [ *foo(<ptr(4) to <array  of <int>>>) --> <NULL>     ]
     [ @i        <int>     ]
   ]]
   [[ test6
-      0:     assign i <- 0
-      1:     param  0 <- 
-      2:     call   foo
+      0: [CTacInstr: '480']
+      1:     assign i <- 0
+      2: [CTacInstr: '481']
+      3:     goto   0
+      4: [CTacInstr: '253']
+      5: 0:
+      6:     param  0 <- 
+      7:     call   foo
+      8: [CTacInstr: '253']
+      9: 1:
   ]]
 
   [[ procedure: foo
     [[
-      [ %M        <ptr(4) to <array  of <array  of <int>>>>       ]
+      [ %M        <ptr(4) to <array  of <int>>>       ]
     ]]
     [[ foo
-        0:     assign M <- i
+        0: [CTacInstr: '480']
+        1:     assign M <- i
+        2: [CTacInstr: '481']
+        3:     goto   0
+        4: [CTacInstr: '253']
+        5: 0:
     ]]
   ]]
 ]]

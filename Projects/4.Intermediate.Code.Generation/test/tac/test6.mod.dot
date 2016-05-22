@@ -4,7 +4,7 @@ digraph IR {
   edge  [fontname="Times New Roman",fontsize=10];
 
   // scope 'test6'
-  test6_cb [label="test6\r  0:     assign i <- 0\l  1:     &()    t0 <- A\l  2:     param  0 <- t0\l  3:     call   foo\l",shape=box]
+  test6_cb [label="test6\r  0:     assign i <- 0\l  1:     &()    t0 <- A\l  2:     param  1 <- 2\l  3:     &()    t1 <- A\l  4:     param  0 <- t1\l  5:     call   t2 <- DIM\l  6:     mul    t3 <- 3, t2\l  7:     add    t4 <- t3, 2\l  8:     param  1 <- 3\l  9:     &()    t5 <- A\l 10:     param  0 <- t5\l 11:     call   t6 <- DIM\l 12:     mul    t7 <- t4, t6\l 13:     add    t8 <- t7, 0\l 14:     mul    t9 <- t8, 4\l 15:     &()    t10 <- A\l 16:     param  0 <- t10\l 17:     call   t11 <- DOFS\l 18:     add    t12 <- t9, t11\l 19:     add    t13 <- t0, t12\l 20:     &()    t14 <- @t13\l 21:     param  0 <- t14\l 22:     call   foo\l",shape=box]
   // scope 'foo'
-  foo_cb [label="foo\r  0:     param  1 <- 2\l  1:     param  0 <- M\l  2:     call   t0 <- DIM\l  3:     mul    t1 <- 1, t0\l  4:     add    t2 <- t1, 3\l  5:     mul    t3 <- t2, 4\l  6:     param  0 <- M\l  7:     call   t4 <- DOFS\l  8:     add    t5 <- t3, t4\l  9:     add    t6 <- M, t5\l 10:     assign @t6 <- i\l",shape=box]
+  foo_cb [label="foo\r  0:     mul    t0 <- 1, 4\l  1:     param  0 <- M\l  2:     call   t1 <- DOFS\l  3:     add    t2 <- t0, t1\l  4:     add    t3 <- M, t2\l  5:     assign @t3 <- i\l",shape=box]
 };
