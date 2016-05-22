@@ -7,11 +7,11 @@
 module test12;
 
 var i: integer;
-    A: integer[10];
+    A: boolean[10];
 
-procedure foo(M: integer[]);
+procedure foo(M: boolean[]);
 begin
-  M[i] := i
+  M[i] := M[i]
 end foo;
 
 begin

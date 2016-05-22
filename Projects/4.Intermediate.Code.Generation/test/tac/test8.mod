@@ -10,7 +10,7 @@ var i: integer;
     b: boolean;
 
 begin
-  b := (i < 3) && (i > 0);
+  b := !((i < 3) && (i > 0));
   if (b) then
     i := 0
   end

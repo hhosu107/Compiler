@@ -16,5 +16,5 @@ end foo;
 
 begin
   i := 0;
-  foo(A[3][2])
+  foo(A[i][2])
 end test6.
