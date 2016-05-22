@@ -510,8 +510,11 @@ CTacAddr* CAstStatAssign::ToTac(CCodeBlock *cb, CTacLabel *next)
 
   if(bop != NULL) src = bop->ToTac(cb);
   else src = _rhs->ToTac(cb);
+
+  CTacAddr* lhs = _lhs->ToTac(cb);
+
   cb->AddInstr(new CTacInstr("480"));
-  cb->AddInstr(new CTacInstr(opAssign, new CTacName(_lhs->GetSymbol()), src, NULL));
+  cb->AddInstr(new CTacInstr(opAssign, lhs, src, NULL));
   cb->AddInstr(new CTacInstr("481"));
   cb->AddInstr(new CTacInstr(opGoto, next));
 
@@ -564,6 +567,8 @@ void CAstStatCall::toDot(ostream &out, int indent) const
 CTacAddr* CAstStatCall::ToTac(CCodeBlock *cb, CTacLabel *next)
 {
   GetCall()->ToTac(cb);
+  cb->AddInstr(new CTacInstr("532"));
+  cb->AddInstr(new CTacInstr(opGoto, next));
   return NULL;
 }
 
@@ -917,17 +922,24 @@ CTacAddr* CAstStatWhile::ToTac(CCodeBlock *cb, CTacLabel *next)
   CTacLabel *while_cond = cb->CreateLabel("while_cond");
   CTacLabel *while_body = cb->CreateLabel("while_body");
 
+  cb->AddInstr(new CTacInstr("904"));
   cb->AddInstr(while_cond);
   _cond->ToTac(cb, while_body, next);
 
+  cb->AddInstr(new CTacInstr("906"));
   cb->AddInstr(while_body);
   if(_body != NULL){
     CAstStatement *s = _body;
     do{
-      s->ToTac(cb, next);
+      CTacLabel *nxt = cb->CreateLabel();
+      s->ToTac(cb, nxt);
       s = s->GetNext();
+
+      cb->AddInstr(new CTacInstr("913"));
+      cb->AddInstr(nxt);
     } while(s != NULL);
   }
+  cb->AddInstr(new CTacInstr("918"));
   cb->AddInstr(new CTacInstr(opGoto, while_cond));
 
   return NULL;
@@ -1156,6 +1168,7 @@ CTacAddr* CAstBinaryOp::ToTac(CCodeBlock *cb)
     EOperation _op = GetOperation();
     _addr = cb->CreateTemp(GetType());
 
+    cb->AddInstr(new CTacInstr("1141"));
     cb->AddInstr(new CTacInstr(_op, _addr, src1, src2));
   }
 
@@ -1440,6 +1453,7 @@ CTacAddr* CAstSpecialOp::ToTac(CCodeBlock *cb)
 
   if(_op == opAddress){
     const CSymbol *symbol = dynamic_cast<CTacName*>(src)->GetSymbol();
+    cb->AddInstr(new CTacInstr("1441"));
     cb->AddInstr(new CTacInstr(_op, _addr, new CTacReference(symbol), NULL));
   }
 
