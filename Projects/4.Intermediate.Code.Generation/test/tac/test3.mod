@@ -7,6 +7,7 @@
 module test3;
 
 var i: integer;
+    b: boolean;
 
 begin
   if (i > 3) then
@@ -14,6 +15,10 @@ begin
       i := 0;
       i := 1
     else
+      if (b) then
+        i := 2;
+        i := 3
+      end;
       i := 1
     end;
 
