@@ -8,13 +8,14 @@ module test10;
 
 var i: integer;
     b: boolean;
+    c: char;
 
 begin
-  i := -i+i;
-  b := !b;
-  if (!b) then
-    b := !b
+  i := -i;
+  b := !true;
+  if (false || true || (c # 't')) then
+    b := false
   else
-    b := b
+    b := true
   end
 end test10.

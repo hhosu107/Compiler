@@ -11,7 +11,7 @@ var i: integer;
 
 procedure foo(M: integer);
 begin
-  M := i
+  M := -i+i
 end foo;
 
 begin
