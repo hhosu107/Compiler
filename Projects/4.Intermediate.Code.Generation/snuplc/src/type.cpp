@@ -274,7 +274,7 @@ ostream& CArrayType::print(ostream &out, int indent) const
 
   out << ind << "<array ";
   if (n != OPEN) out << n << " ";
-  out << " of "; GetInnerType()->print(out);
+  out << "of "; GetInnerType()->print(out);
   out << ">";
   return out;
 }
