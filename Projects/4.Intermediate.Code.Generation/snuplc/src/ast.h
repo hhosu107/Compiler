@@ -235,6 +235,9 @@ class CAstScope : public CAstNode {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief execute tac converter for each statement in this scope.
+    /// @param cb that code block
+    /// @retval TAC result
     virtual CTacAddr* ToTac(CCodeBlock *cb);
 
     virtual CCodeBlock* GetCodeBlock(void) const;
@@ -512,6 +515,10 @@ class CAstStatAssign : public CAstStatement {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert assign into TAC
+    /// @param cb current code block
+    /// @param next next label to go after this assign
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *next);
 
     /// @}
@@ -589,6 +596,10 @@ class CAstStatCall : public CAstStatement {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert call on the statement into TAC
+    /// @param cb current code block
+    /// @param next next label to go after this call
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *next);
 
     /// @}
@@ -668,6 +679,10 @@ class CAstStatReturn : public CAstStatement {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert return into TAC
+    /// @param cb current code block
+    /// @param next next label to go after this assign
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *next);
 
     /// @}
@@ -750,6 +765,10 @@ class CAstStatIf : public CAstStatement {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert if into TAC
+    /// @param cb current code block
+    /// @param next next label to go after this if
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *next);
 
     /// @}
@@ -827,6 +846,10 @@ class CAstStatWhile : public CAstStatement {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert while into TAC
+    /// @param cb current code block
+    /// @param next next label to go after this while
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *next);
 
     /// @}
@@ -874,6 +897,7 @@ class CAstExpression : public CAstNode {
     /// @{
 
     virtual CTacAddr* ToTac(CCodeBlock *cb);
+
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *ltrue,CTacLabel *lfalse);
 
     /// @}
@@ -977,7 +1001,16 @@ class CAstBinaryOp : public CAstOperation {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert binary operation into TAC
+    /// @param cb current code block
+    /// @retval temp variable that contains the result of binOp
     virtual CTacAddr* ToTac(CCodeBlock *cb);
+
+    /// @brief convert binary operation into TAC
+    /// @param cb current code block
+    /// @param ltrue true label when the computed result is true
+    /// @param lfalse false label when the computed result is false
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *ltrue,CTacLabel *lfalse);
 
     /// @}
@@ -1054,7 +1087,16 @@ class CAstUnaryOp : public CAstOperation {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert unary operation into TAC
+    /// @param cb current code block
+    /// @retval temp variable that contains the result of unaryOp
     virtual CTacAddr* ToTac(CCodeBlock *cb);
+
+    /// @brief convert unary operation into TAC
+    /// @param cb current code block
+    /// @param ltrue true label when the computed result is true
+    /// @param lfalse false label when the computed result is false
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *ltrue,CTacLabel *lfalse);
 
     /// @}
@@ -1135,6 +1177,9 @@ class CAstSpecialOp : public CAstOperation {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert special operation(exactly, opAddress) into TAC
+    /// @param cb current code block
+    /// @retval temp variable that contains the result of specialOp
     virtual CTacAddr* ToTac(CCodeBlock *cb);
 
     /// @}
@@ -1219,7 +1264,16 @@ class CAstFunctionCall : public CAstExpression {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert function call into TAC
+    /// @param cb current code block
+    /// @retval temp variable that contains function call return value
     virtual CTacAddr* ToTac(CCodeBlock *cb);
+
+    /// @brief convert function call into TAC
+    /// @param cb current code block
+    /// @param ltrue true label when the computed result is true
+    /// @param lfalse false label when the computed result is false
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *ltrue,CTacLabel *lfalse);
 
     /// @}
@@ -1313,7 +1367,16 @@ class CAstDesignator : public CAstOperand {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert designator into TAC
+    /// @param cb current code block
+    /// @retval designator itself wrapped by tac function
     virtual CTacAddr* ToTac(CCodeBlock *cb);
+
+    /// @brief convert designator into TAC
+    /// @param cb current code block
+    /// @param ltrue true label when the computed result is true
+    /// @param lfalse false label when the computed result is false
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *ltrue,CTacLabel *lfalse);
 
     /// @}
@@ -1405,7 +1468,15 @@ class CAstArrayDesignator : public CAstDesignator {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert array designator into TAC
+    /// @param cb current code block
+    /// @retval reference wrapper of the temporary variable which contains result
     virtual CTacAddr* ToTac(CCodeBlock *cb);
+    /// @brief convert array designator into TAC
+    /// @param cb current code block
+    /// @param ltrue true label when the computed result is true
+    /// @param lfalse false label when the computed result is false
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *ltrue,CTacLabel *lfalse);
 
     /// @}
@@ -1486,7 +1557,16 @@ class CAstConstant : public CAstOperand {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert constant into TAC
+    /// @param cb current code block
+    /// @retval constant itself wrapped by TAC wrapper
     virtual CTacAddr* ToTac(CCodeBlock *cb);
+
+    /// @brief convert constant into TAC
+    /// @param cb current code block
+    /// @param ltrue true label when the computed result is true
+    /// @param lfalse false label when the computed result is false
+    /// @retval NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *ltrue,CTacLabel *lfalse);
 
     /// @}
@@ -1565,7 +1645,15 @@ class CAstStringConstant : public CAstOperand {
     /// @name transformation into TAC
     /// @{
 
+    /// @brief convert string constant into TAC which can be only used as a parameter of the function
+    /// @param cb current code block
+    /// @retval symbol itself wrapped by a TAC function
     virtual CTacAddr* ToTac(CCodeBlock *cb);
+    /// @brief convert string constant into TAC
+    /// @param cb current code block
+    /// @param ltrue true label when the computed result is true
+    /// @param lfalse false label when the computed result is false
+    /// @retval cannot return since it is asserted since string cannot be NULL
     virtual CTacAddr* ToTac(CCodeBlock *cb, CTacLabel *ltrue,CTacLabel *lfalse);
 
     /// @}
