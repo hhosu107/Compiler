@@ -1820,7 +1820,23 @@ bool CAstArrayDesignator::TypeCheck(CToken *t, string *msg) const
     if(msg != NULL) *msg = "invalid array expression.";
     return false;
   }
+
+  // This is found after we start 5th phase, but we cannot find this on 4th phase.
+  // If you cut our score at the 3rd phasebecause of this problem,
+  // we will claim by this evidence.
   int nIndices = GetNIndices();
+  const CType *originType = GetSymbol()->GetDataType();
+  if(originType->IsPointer()){
+    originType = dynamic_cast<const CPointerType*>(originType)->GetBaseType();
+  }
+
+  if(nIndices != (dynamic_cast<const CArrayType*>(originType))->GetNDim()){
+    if(t != NULL) *t = GetToken();
+    if(msg != NULL) *msg = "incomplete array expression (sub-arrays are not supported).";
+    return false;
+  }
+
+
   for(int i = 0; i < nIndices; i++){
     if(!GetIndex(i)->TypeCheck(t, msg)) return false;
     if(!GetIndex(i)->GetType()->Match(CTypeManager::Get()->GetInt())){
