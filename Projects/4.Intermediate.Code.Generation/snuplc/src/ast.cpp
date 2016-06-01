@@ -615,7 +615,17 @@ bool CAstStatReturn::TypeCheck(CToken *t, string *msg) const
 
     if(!st->Match(e->GetType())){
       if(t != NULL) *t = e->GetToken();
-      if(msg != NULL) *msg = "return type mismatch.";
+      ostringstream os;
+      os.clear();
+      os << "return type mismatch." << '\n';
+      st->print(os, 0);
+      os  << " type expected, but it returns ";
+      if(e->GetType() == NULL) os << "<INVALID>" << '\n';
+      else {
+        e->GetType()->print(os, 0);
+        os << '\n';
+      }
+      if(msg != NULL) *msg = os.str().c_str();
       return false;
     }
   }
@@ -723,8 +733,22 @@ bool CAstStatIf::TypeCheck(CToken *t, string *msg) const
     if(msg != NULL) *msg = "boolean expression expected.";
     return false;
   }
-  if(GetIfBody() != NULL && !GetIfBody()->TypeCheck(t, msg)) return false;
-  if(GetElseBody() != NULL && !GetElseBody()->TypeCheck(t, msg)) return false;
+
+  CAstStatement *ifBody = GetIfBody();
+  CAstStatement *elseBody = GetElseBody();
+
+  while(ifBody){
+    if(!ifBody->TypeCheck(t, msg)){
+      return false;
+    }
+    ifBody = ifBody->GetNext();
+  }
+  while(elseBody){
+    if(!elseBody->TypeCheck(t, msg)){
+      return false;
+    }
+    elseBody = elseBody->GetNext();
+  }
 
   return true;
 }
@@ -870,7 +894,13 @@ bool CAstStatWhile::TypeCheck(CToken *t, string *msg) const
     if(msg != NULL) *msg = "boolean expression expected.";
     return false;
   }
-  if(GetBody() != NULL && !GetBody()->TypeCheck(t, msg)) return false;
+  CAstStatement *body = GetBody();
+  while(body){
+    if(!body->TypeCheck(t, msg)){
+      return false;
+    }
+    body = body->GetNext();
+  }
 
   return true;
 }
@@ -1490,34 +1520,12 @@ CTacAddr* CAstSpecialOp::ToTac(CCodeBlock *cb)
   CTacAddr *src = NULL;
   CTacAddr* _addr = NULL;
 
-  // If given operand is an array but not array designator,
-  // maintain its type and send with pointer wrapper.
-  if(((GetType())->IsPointer()) &&
-     (opAddress == (GetOperation())) &&
-     (NULL == dynamic_cast<CAstArrayDesignator*>(GetOperand())) &&
-     (((GetOperand())->GetType())->IsArray())
-    ){
-    src = _operand->ToTac(cb);
-    // Since we only perform Address operator, its type must be a pointer of the
-    // operand's type.
-    _addr = cb->CreateTemp(CTypeManager::Get()->GetPointer(GetOperand()->GetType()));
-    cb->AddInstr(new CTacInstr(opAddress, _addr, (dynamic_cast<CTacName*>(src)), NULL));
+  // Just give its type.
+  src = _operand->ToTac(cb);
+  _addr = cb->CreateTemp(CTypeManager::Get()->GetPointer(GetOperand()->GetType()));
+  cb->AddInstr(new CTacInstr(opAddress, _addr, src, NULL));
 
-    return _addr;
-  }
-
-  // otherwise, we have to find its basetype(integer/boolean/character).
-  // Find it and enclose by the pointer.
-  else{
-    CTacAddr *src = _operand->ToTac(cb);
-    assert(NULL != dynamic_cast<CTacName*>(src));
-    CTacAddr* _addr = cb->CreateTemp(CTypeManager::Get()->GetPointer(((dynamic_cast<CTacName*>(src))->GetSymbol())->GetDataType()));
-    // Since we only perform opAddress, we can comment this out and just write
-    // down as below code.
-    cb->AddInstr(new CTacInstr(_op, _addr, src, NULL));
-
-    return _addr;
-  }
+  return _addr;
 }
 
 
@@ -1714,6 +1722,11 @@ const CSymbol* CAstDesignator::GetSymbol(void) const
 // parsing, not on type checking.
 bool CAstDesignator::TypeCheck(CToken *t, string *msg) const
 {
+  if(GetType() == NULL || GetType()->IsNull()){
+    if(t) *t = GetToken();
+    if(msg) *msg = "invalid designator type.";
+    return false;
+  }
   return true;
 }
 
@@ -1945,6 +1958,8 @@ CTacAddr* CAstArrayDesignator::ToTac(CCodeBlock *cb)
       nDim = dynamic_cast<const CArrayType*>(GetSymbol()->GetDataType())->GetNDim();
     }
 
+    if(nIndices != nDim){
+    }
     // Run the loop by nDim. Even if its # indice is strictly smallet than dim.,
     // SnuPL/1 calculates it as full-indiced: by padding '0' index on the rest
     // of the indices.

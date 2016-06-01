@@ -27,7 +27,7 @@ begin
 end f4;
 begin
   f1(a);
-  f2(b);
-  f3(c);
-  f4(d)
+  f2(a[1]);
+  f3(a[1][2]);
+  f4(a[1][2][3])
 end test18.

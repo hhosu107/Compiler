@@ -67,7 +67,7 @@ begin
   i := +0;                    // pass
 //  i := --0;                   // fail
 //  i := +-0;                   // fail
-//  i := (-2147483648)*3;           // pass (min int)
+  i := -2147483648;           // pass (min int)
   j :=  2147483647;           // pass (max int)
 //  i := -2147483649;           // fail (<min int)
 //  j :=  2147483648;           // fail (>max int)
@@ -151,7 +151,7 @@ begin
 //  a := i[0];                  // fail
 //  a[0] := true;               // fail
   A[0][A[0][0]] := i;                  // pass
-  A[-1][E[4] # true] := B[0][0][0];           // pass
+  A[-1][4] := B[0][0][0];           // pass
 //  A[0][0] := i;               // fail
   B[0][0][0] := i;               // pass
 //  D[1] := A[0];               // fail
