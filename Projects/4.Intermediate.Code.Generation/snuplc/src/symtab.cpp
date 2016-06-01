@@ -42,7 +42,7 @@ using namespace std;
 // CSymbol
 //
 CSymbol::CSymbol(const string name, ESymbolType stype, const CType *dtype)
-  : _name(name), _symboltype(stype), _datatype(dtype), _data(NULL), 
+  : _name(name), _symboltype(stype), _datatype(dtype), _data(NULL),
     _rbase(""), _offset(0), _symtab(NULL)
 {
   assert(_name != "");
