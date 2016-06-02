@@ -1,0 +1,12 @@
+digraph IR {
+  graph [fontname="Times New Roman",fontsize=10];
+  node  [fontname="Courier New",fontsize=10];
+  edge  [fontname="Times New Roman",fontsize=10];
+
+  // scope 'fibonacci'
+  fibonacci_cb [label="fibonacci\r  0:     &()    t0 <- _str_1\l  1:     param  0 <- t0\l  2:     call   WriteStr\l  3:     call   WriteLn\l  4:     call   WriteLn\l  5:     &()    t1 <- _str_2\l  6:     param  0 <- t1\l  7:     call   t2 <- ReadNumber\l  8:     assign i <- t2\l  9: 5_while_cond:\l 10:     if     i > 0 goto 6_while_body\l 11:     goto   4\l 12: 6_while_body:\l 13:     &()    t3 <- _str_3\l 14:     param  0 <- t3\l 15:     call   WriteStr\l 16:     param  0 <- i\l 17:     call   WriteInt\l 18:     &()    t4 <- _str_4\l 19:     param  0 <- t4\l 20:     call   WriteStr\l 21:     param  0 <- i\l 22:     call   t5 <- fib\l 23:     param  0 <- t5\l 24:     call   WriteInt\l 25:     call   WriteLn\l 26:     &()    t6 <- _str_5\l 27:     param  0 <- t6\l 28:     call   t7 <- ReadNumber\l 29:     assign i <- t7\l 30:     goto   5_while_cond\l 31: 4:\l",shape=box]
+  // scope 'fib'
+  fib_cb [label="fib\r  0:     if     n <= 1 goto 1_if_true\l  1:     goto   2_if_false\l  2: 1_if_true:\l  3:     return n\l  4:     goto   0\l  5: 2_if_false:\l  6:     sub    t0 <- n, 1\l  7:     param  0 <- t0\l  8:     call   t1 <- fib\l  9:     sub    t2 <- n, 2\l 10:     param  0 <- t2\l 11:     call   t3 <- fib\l 12:     add    t4 <- t1, t3\l 13:     return t4\l 14: 0:\l",shape=box]
+  // scope 'ReadNumber'
+  ReadNumber_cb [label="ReadNumber\r  0:     param  0 <- str\l  1:     call   WriteStr\l  2:     call   t0 <- ReadInt\l  3:     assign i <- t0\l  4:     return i\l",shape=box]
+};

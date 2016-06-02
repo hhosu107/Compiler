@@ -1,0 +1,130 @@
+../test/codegen/fibonacci.mod:
+    CAstScope: 'fibonacci'
+      symbol table:
+        [[
+          [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>           ]
+          [ *DOFS(<ptr(4) to <NULL>>) --> <int>           ]
+          [ *ReadInt() --> <int>           ]
+          [ *ReadNumber(<ptr(4) to <array of <char>>>) --> <int>           ]
+          [ *WriteChar(<char>) --> <NULL>           ]
+          [ *WriteInt(<int>) --> <NULL>           ]
+          [ *WriteLn() --> <NULL>           ]
+          [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>           ]
+          [ @_str_1   <array 18 of <char>>           ]
+            [ data: 'Fibonacci numbers' ]
+          [ @_str_2   <array 29 of <char>>           ]
+            [ data: 'Enter a number (0 to exit): ' ]
+          [ @_str_3   <array 11 of <char>>           ]
+            [ data: 'fibonacci(' ]
+          [ @_str_4   <array 5 of <char>>           ]
+            [ data: ') = ' ]
+          [ @_str_5   <array 29 of <char>>           ]
+            [ data: 'Enter a number (0 to exit): ' ]
+          [ *fib(<int>) --> <int>           ]
+          [ @i        <int>           ]
+        ]]
+      statement list:
+        call [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL> ] <NULL>
+          &() <ptr(4) to <array 18 of <char>>>
+            "Fibonacci numbers" <array 18 of <char>>
+        call [ *WriteLn() --> <NULL> ] <NULL>
+        call [ *WriteLn() --> <NULL> ] <NULL>
+        := <int>
+          [ @i        <int> ] <int>
+          call [ *ReadNumber(<ptr(4) to <array of <char>>>) --> <int> ] <int>
+            &() <ptr(4) to <array 29 of <char>>>
+              "Enter a number (0 to exit): " <array 29 of <char>>
+        while cond
+          > <bool>
+            [ @i        <int> ] <int>
+            0 <int>
+        while-body
+          call [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL> ] <NULL>
+            &() <ptr(4) to <array 11 of <char>>>
+              "fibonacci(" <array 11 of <char>>
+          call [ *WriteInt(<int>) --> <NULL> ] <NULL>
+            [ @i        <int> ] <int>
+          call [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL> ] <NULL>
+            &() <ptr(4) to <array 5 of <char>>>
+              ") = " <array 5 of <char>>
+          call [ *WriteInt(<int>) --> <NULL> ] <NULL>
+            call [ *fib(<int>) --> <int> ] <int>
+              [ @i        <int> ] <int>
+          call [ *WriteLn() --> <NULL> ] <NULL>
+          := <int>
+            [ @i        <int> ] <int>
+            call [ *ReadNumber(<ptr(4) to <array of <char>>>) --> <int> ] <int>
+              &() <ptr(4) to <array 29 of <char>>>
+                "Enter a number (0 to exit): " <array 29 of <char>>
+      nested scopes:
+        CAstScope: 'fib'
+          symbol table:
+            [[
+              [ %n        <int>               ]
+            ]]
+          statement list:
+            if cond
+              <= <bool>
+                [ %n        <int> ] <int>
+                1 <int>
+            if-body
+              return <int>
+                [ %n        <int> ] <int>
+            else-body
+              return <int>
+                add <int>
+                  call [ *fib(<int>) --> <int> ] <int>
+                    sub <int>
+                      [ %n        <int> ] <int>
+                      1 <int>
+                  call [ *fib(<int>) --> <int> ] <int>
+                    sub <int>
+                      [ %n        <int> ] <int>
+                      2 <int>
+          nested scopes:
+            empty.
+        
+        CAstScope: 'ReadNumber'
+          symbol table:
+            [[
+              [ $i        <int>               ]
+              [ %str      <ptr(4) to <array of <char>>>               ]
+            ]]
+          statement list:
+            call [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL> ] <NULL>
+              [ %str      <ptr(4) to <array of <char>>> ] <ptr(4) to <array of <char>>>
+            := <int>
+              [ $i        <int> ] <int>
+              call [ *ReadInt() --> <int> ] <int>
+            return <int>
+              [ $i        <int> ] <int>
+          nested scopes:
+            empty.
+        
+    
+
+
+  symbol table:
+    [[
+      [ *DIM(<ptr(4) to <NULL>>,<int>) --> <int>       ]
+      [ *DOFS(<ptr(4) to <NULL>>) --> <int>       ]
+      [ *ReadInt() --> <int>       ]
+      [ *ReadNumber(<ptr(4) to <array of <char>>>) --> <int>       ]
+      [ *WriteChar(<char>) --> <NULL>       ]
+      [ *WriteInt(<int>) --> <NULL>       ]
+      [ *WriteLn() --> <NULL>       ]
+      [ *WriteStr(<ptr(4) to <array of <char>>>) --> <NULL>       ]
+      [ @_str_1   <array 18 of <char>>       ]
+        [ data: 'Fibonacci numbers' ]
+      [ @_str_2   <array 29 of <char>>       ]
+        [ data: 'Enter a number (0 to exit): ' ]
+      [ @_str_3   <array 11 of <char>>       ]
+        [ data: 'fibonacci(' ]
+      [ @_str_4   <array 5 of <char>>       ]
+        [ data: ') = ' ]
+      [ @_str_5   <array 29 of <char>>       ]
+        [ data: 'Enter a number (0 to exit): ' ]
+      [ *fib(<int>) --> <int>       ]
+      [ @i        <int>       ]
+    ]]
+
