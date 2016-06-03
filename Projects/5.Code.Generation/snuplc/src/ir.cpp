@@ -422,10 +422,12 @@ CCodeBlock* CScope::GetCodeBlock(void) const
   return _cb;
 }
 
+int __temp_id;
+
 CTacTemp* CScope::CreateTemp(const CType *type)
 {
   ostringstream tmp;
-  tmp << "t" << _temp_id++;
+  tmp << "t" << __temp_id++;
 
   CSymbol *s = new CSymLocal(tmp.str(), type);
   GetSymbolTable()->AddSymbol(s);
