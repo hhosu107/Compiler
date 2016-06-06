@@ -376,7 +376,7 @@ ostream& CTacLabel::print(ostream &out, int indent) const
 // CScope
 //
 CScope::CScope(CAstNode *ast, CScope *parent)
-  : _ast(ast), _parent(parent), _temp_id(0), _label_id(0)
+  : _ast(ast), _parent(parent), _label_id(0)
 {
   CAstScope *s = dynamic_cast<CAstScope*>(ast);
   assert(s != NULL);
@@ -384,6 +384,8 @@ CScope::CScope(CAstNode *ast, CScope *parent)
   _name = s->GetName();
   _symtab = s->GetSymbolTable();
   _cb = new CCodeBlock(this);
+  if(parent) _temp_id = parent->_temp_id;
+  else _temp_id = 0;
   s->ToTac(_cb);
 
   for (size_t i=0; i<s->GetNumChildren(); i++) {
@@ -422,12 +424,10 @@ CCodeBlock* CScope::GetCodeBlock(void) const
   return _cb;
 }
 
-int __temp_id;
-
 CTacTemp* CScope::CreateTemp(const CType *type)
 {
   ostringstream tmp;
-  tmp << "t" << __temp_id++;
+  tmp << "t" << _temp_id++;
 
   CSymbol *s = new CSymLocal(tmp.str(), type);
   GetSymbolTable()->AddSymbol(s);

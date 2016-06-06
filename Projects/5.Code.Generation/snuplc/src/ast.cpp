@@ -2094,7 +2094,7 @@ CTacAddr* CAstArrayDesignator::ToTac(CCodeBlock *cb)
   //
   // How can we put the right symbol?
   // Is it res->GetSymbol?
-  return new CTacReference(res->GetSymbol(), res->GetSymbol());
+  return new CTacReference(res->GetSymbol(), GetSymbol());
 
 }
 
@@ -2260,7 +2260,7 @@ bool CAstStringConstant::TypeCheck(CToken *t, string *msg) const
 
 const CType* CAstStringConstant::GetType(void) const
 {
-  return CTypeManager::Get()->GetArray(GetValueStr().size() + 1, CTypeManager::Get()->GetChar());
+  return CTypeManager::Get()->GetArray(CToken::unescape(GetValueStr()).size() + 1, CTypeManager::Get()->GetChar());
 }
 
 ostream& CAstStringConstant::print(ostream &out, int indent) const
