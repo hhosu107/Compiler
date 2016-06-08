@@ -257,6 +257,7 @@ ostream& CSymProc::print(ostream &out, int indent) const
 //
 CSymtab::CSymtab(void)
 {
+  _parent = NULL;
 }
 
 CSymtab::CSymtab(CSymtab *parent)
