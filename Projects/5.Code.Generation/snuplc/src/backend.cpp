@@ -188,7 +188,7 @@ void CBackendx86::EmitScope(CScope *scope)
   if (scope->GetParent() == NULL) label = "main";
   else label = scope->GetName();
 
-  // label
+  // write proper label
   _out << _ind << "# scope " << scope->GetName() << endl
        << label << ":" << endl;
 
@@ -206,6 +206,7 @@ void CBackendx86::EmitScope(CScope *scope)
   _out << endl;
 
   if(stack_size > 0){
+    // Divide in two cases to reduce instructions
     if(stack_size >= 20){
       EmitInstruction("cld", "", "memset local stack area to 0");
       EmitInstruction("xorl", "%eax, %eax");
@@ -320,6 +321,7 @@ void CBackendx86::EmitGlobalData(CScope *scope)
   while (sit != scope->GetSubscopes().end()) EmitGlobalData(*sit++);
 }
 
+// This function is for the local array.
 void CBackendx86::EmitLocalData(CScope *scope)
 {
   assert(scope != NULL);
@@ -328,9 +330,12 @@ void CBackendx86::EmitLocalData(CScope *scope)
 
   for(CSymbol *sym : slist){
     if(sym->GetSymbolType() == stLocal){
+      // since local data would be saved in the stack,
+      // we have to put metadata of array by hand.
       if(sym->GetDataType()->IsArray()){
         const CArrayType *sym_array = dynamic_cast<const CArrayType*>(sym->GetDataType());
 
+        // dimension
         int off = sym->GetOffset();
         string reg = sym->GetBaseRegister();
 
@@ -340,6 +345,7 @@ void CBackendx86::EmitLocalData(CScope *scope)
 
         EmitInstruction("movl", dim_operand, dim_comment);
 
+        // each size
         for(int i = 1; i <= dim; i++){
           int elem = sym_array->GetNElem();
           string elem_operand = Imm(elem) + "," + to_string(off + 4 * i) + "(" + reg + ")";
@@ -364,6 +370,7 @@ void CBackendx86::EmitCodeBlock(CCodeBlock *cb)
   while (it != instr.end()) EmitInstruction(*it++);
 }
 
+// Emit instruction case by case.
 void CBackendx86::EmitInstruction(CTacInstr *i)
 {
   assert(i != NULL);
@@ -384,18 +391,21 @@ void CBackendx86::EmitInstruction(CTacInstr *i)
       EmitInstruction("addl", "%ebx, %eax");
       Store(i->GetDest(), 'a');
       break;
+
     case opSub:
       Load(i->GetSrc(1), "%eax", cmt.str());
       Load(i->GetSrc(2), "%ebx");
       EmitInstruction("subl", "%ebx, %eax");
       Store(i->GetDest(), 'a');
       break;
+
     case opMul:
       Load(i->GetSrc(1), "%eax", cmt.str());
       Load(i->GetSrc(2), "%ebx");
       EmitInstruction("imull", "%ebx");
       Store(i->GetDest(), 'a');
       break;
+
     case opDiv:
       Load(i->GetSrc(1), "%eax", cmt.str());
       Load(i->GetSrc(2), "%ebx");
@@ -403,12 +413,14 @@ void CBackendx86::EmitInstruction(CTacInstr *i)
       EmitInstruction("idivl", "%ebx");
       Store(i->GetDest(), 'a');
       break;
+
     case opAnd:
       Load(i->GetSrc(1), "%eax", cmt.str());
       Load(i->GetSrc(2), "%ebx");
       EmitInstruction("andl", "%ebx, %eax");
       Store(i->GetDest(), 'a');
       break;
+
     case opOr:
       Load(i->GetSrc(1), "%eax", cmt.str());
       Load(i->GetSrc(2), "%ebx");
@@ -418,7 +430,7 @@ void CBackendx86::EmitInstruction(CTacInstr *i)
 
     // unary operators
     // dst = op src1
-    // opNeg
+    // opNeg : appear except it was attached on the integer constant
     // opPos : do nothing
     // opNot : never appear
     case opNeg:
@@ -447,7 +459,6 @@ void CBackendx86::EmitInstruction(CTacInstr *i)
       // opDeref not generated for now
       EmitInstruction("# opDeref", "not implemented", cmt.str());
       break;
-
 
     // unconditional branching
     // goto dst
@@ -524,6 +535,7 @@ void CBackendx86::EmitInstruction(string mnemonic, string args, string comment)
   _out << endl;
 }
 
+// Load proper size
 void CBackendx86::Load(CTacAddr *src, string dst, string comment)
 {
   assert(src != NULL);
@@ -606,7 +618,7 @@ string CBackendx86::Operand(const CTac *op)
     }
   }
 
-  // else: maybe cannot be operand
+  // else: maybe cannot be an operand
   else{
     operand = "";
   }
@@ -653,6 +665,9 @@ string CBackendx86::Condition(EOperation cond) const
   }
 }
 
+// Decide Operand's size.
+// If it is not a reference type, just get its type and apply its size.
+// Otherwise, since it is a reference to the array, calculate it.
 int CBackendx86::OperandSize(CTac *t) const
 {
   int size = 4;
