@@ -133,15 +133,11 @@ void CBackendx86::EmitCode(void)
        << _ind << ".extern WriteLn" << endl
        << endl;
 
-  // TODO
-  // forall s in subscopes do
-  //  EmitScope(s)
   const vector<CScope*> &proc = _m->GetSubscopes();
   for(CScope* s : proc){
     EmitScope(s);
   }
 
-  // EmitScope(program)
   EmitScope(_m);
 
   _out << _ind << "# end of text section" << endl
@@ -196,8 +192,6 @@ void CBackendx86::EmitScope(CScope *scope)
   _out << _ind << "# scope " << scope->GetName() << endl
        << label << ":" << endl;
 
-  // TODO
-  // ComputeStackOffsets(scope)
   size_t stack_size = ComputeStackOffsets(scope->GetSymbolTable(), 8, -12);
 
   // emit function prologue
@@ -230,9 +224,6 @@ void CBackendx86::EmitScope(CScope *scope)
     _out << endl;
   }
 
-  // forall i in instructions do
-  //   EmitInstruction(i)
-  //
   _out << _ind << "# function body" << endl;
 
   EmitCodeBlock(scope->GetCodeBlock());
@@ -333,7 +324,6 @@ void CBackendx86::EmitLocalData(CScope *scope)
 {
   assert(scope != NULL);
 
-  // TODO TODO!
   vector<CSymbol*> slist = scope->GetSymbolTable()->GetSymbols();
 
   for(CSymbol *sym : slist){
@@ -428,8 +418,9 @@ void CBackendx86::EmitInstruction(CTacInstr *i)
 
     // unary operators
     // dst = op src1
-    // opNeg, opPos, opNot
-    // TODO
+    // opNeg
+    // opPos : do nothing
+    // opNot : never appear
     case opNeg:
       Load(i->GetSrc(1), "%eax", cmt.str());
       EmitInstruction("negl", "%eax");
@@ -579,7 +570,7 @@ string CBackendx86::Operand(const CTac *op)
     operand = Imm(dynamic_cast<const CTacConst*>(op)->GetValue());
   }
 
-  // TODO: reference
+  // reference
   else if(dynamic_cast<const CTacReference*>(op)){
     const CSymbol *sym = dynamic_cast<const CTacReference*>(op)->GetSymbol();
 
@@ -615,7 +606,7 @@ string CBackendx86::Operand(const CTac *op)
     }
   }
 
-  // else: maybe cannot b operand
+  // else: maybe cannot be operand
   else{
     operand = "";
   }
@@ -666,73 +657,52 @@ int CBackendx86::OperandSize(CTac *t) const
 {
   int size = 4;
 
-  // TODO
-  // compute the size for operand t of type CTacName
-  // Hint: you need to take special care of references (incl. references to pointers!)
-  //       and arrays. Compare your output to that of the reference implementation
-  //       if you are not sure.
-
   if(dynamic_cast<CTacConst*>(t)){
-    // _out << "OperandSize - constant" << endl;
     size = 4;
   }
   else if(!dynamic_cast<CTacReference*>(t)){
     const CSymbol *sym = dynamic_cast<CTacName*>(t)->GetSymbol();
     if(sym->GetDataType()->IsArray()){
-      _out << sym->GetName() << " : ";
-      _out << "OperandSize - not reference, array" << endl;
+      assert(false);
     }
     else if(sym->GetDataType()->IsPointer()){
-      // _out << "OperandSize - not reference, pointer" << endl;
       size = 4;
     }
     else if(sym->GetDataType()->IsInt()){
-      // _out << "OperandSize - not reference, integer" << endl;
       size = 4;
     }
     else if(sym->GetDataType()->IsChar()){
-      // _out << "OperandSize - not reference, char" << endl;
       size = 1;
     }
     else if(sym->GetDataType()->IsBoolean()){
-      // _out << "OperandSize - not reference, boolean" << endl;
       size = 1;
     }
     else{
-      _out << sym->GetName() << " : ";
-      _out << "OperandSize - not reference, something else" << endl;
+      assert(false);
     }
   }
   else{
     const CSymbol *sym = dynamic_cast<CTacReference*>(t)->GetDerefSymbol();
     if(sym->GetDataType()->IsArray()){
-      // _out << sym->GetName() << " : ";
-      // _out << "OperandSize - reference, array" << endl;
 
       size = dynamic_cast<const CArrayType*>(sym->GetDataType())->GetBaseType()->GetSize();
     }
     else if(sym->GetDataType()->IsPointer()){
-      // _out << sym->GetName() << " : ";
-      // _out << "OperandSize - reference, pointer" << endl;
 
       const CType *base = dynamic_cast<const CPointerType*>(sym->GetDataType())->GetBaseType();
       size = dynamic_cast<const CArrayType*>(base)->GetBaseType()->GetSize();
     }
     else if(sym->GetDataType()->IsInt()){
-      _out << sym->GetName() << " : ";
-      _out << "OperandSize - reference, integer" << endl;
+      assert(false);
     }
     else if(sym->GetDataType()->IsChar()){
-      _out << sym->GetName() << " : ";
-      _out << "OperandSize - reference, char" << endl;
+      assert(false);
     }
     else if(sym->GetDataType()->IsBoolean()){
-      _out << sym->GetName() << " : ";
-      _out << "OperandSize - reference, boolean" << endl;
+      assert(false);
     }
     else{
-      _out << sym->GetName() << " : ";
-      _out << "OperandSize - reference, something else" << endl;
+      assert(false);
     }
   }
 
@@ -747,24 +717,17 @@ size_t CBackendx86::ComputeStackOffsets(CSymtab *symtab,
 
   size_t size = 0;
 
-  // TODO
   for(CSymbol* sym : slist){
-    // foreach parameter p in slist do
     if(dynamic_cast<CSymParam*>(sym)){
       CSymParam *p = dynamic_cast<CSymParam*>(sym);
 
-      //   compute offset on stack and store in symbol p
       sym->SetOffset(param_ofs + (p->GetIndex()) * 4);
-
-      //   set base register to %ebp
       sym->SetBaseRegister("%ebp");
     }
-    // foreach local symbol l in slist do
     else if(dynamic_cast<CSymLocal*>(sym)){
       CSymLocal *l = dynamic_cast<CSymLocal*>(sym);
       int l_size = l->GetDataType()->GetSize();
 
-      //   compute aligned offset on stack and store in symbol l
       local_ofs -= l_size; size += l_size;
 
       // boolean and character : 1 byte alignment
@@ -774,8 +737,6 @@ size_t CBackendx86::ComputeStackOffsets(CSymtab *symtab,
       }
 
       sym->SetOffset(local_ofs);
-
-      //   set base register to %ebp
       sym->SetBaseRegister("%ebp");
     }
  }
