@@ -595,8 +595,8 @@ CAstStatement* CParser::statement(CAstScope *s){
   if(tt == tIdent){ // assignment, subroutineCall
     const CSymbol* found = symbols->FindSymbol(t.GetValue(), sGlobal);
     if(found == NULL){
-      cout << t.GetValue() << endl;
-      symbols->print(cout, 0);
+      // cout << t.GetValue() << endl;
+      // symbols->print(cout, 0);
       SetError(t, "not declared from statement");
     }
     if(found->GetSymbolType() == stProcedure){
